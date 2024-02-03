@@ -3,10 +3,10 @@
 	xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<pluginRepositories>
-        <pluginRepository>
+		<pluginRepository>
             <id>central</id>
             <name>Central Repository</name>
-            <url>https://repo.maven.apache.org/maven2</url>
+            <url>https://repo1.maven.org/maven2</url>
             <layout>default</layout>
             <snapshots>
                 <enabled>false</enabled>
@@ -14,15 +14,15 @@
         </pluginRepository>
     </pluginRepositories>
     <repositories>
-        <repository>
+		<repository>
 			<id>central</id>
 			<name>Central Repository</name>
-			<url>https://repo.maven.apache.org/maven2</url>
+			<url>https://repo1.maven.org/maven2</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-    </repository>
+    	</repository>
     </repositories>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
