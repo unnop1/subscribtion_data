@@ -24,11 +24,11 @@ public class RabbitMqConsumerService {
 
         // Process the message based on the queue name
         switch (queueName) {
-            case "new_order_type":
-                processNewOrderType(message);
+            case "top_up_type":
+                processTopUpType(message);
                 break;
-            case "suspended_order_type":
-                processSuspendedOrderType(message);
+            case "new_order_type", "suspended_order_type":
+                processOMType(message);
                 break;
             default:
                 System.out.println("Unknown queue: " + queueName);
@@ -36,15 +36,13 @@ public class RabbitMqConsumerService {
         }
     }
 
-    private void processNewOrderType(String message) {
+    private void processTopUpType(String message) {
         // Process for new_order_type
-        System.out.println("Processing new_order_type: " + message);
         kafkaTemplate.send("new_order", message);
     }
 
-    private void processSuspendedOrderType(String message) {
+    private void processOMType(String message) {
         // Process for new_order_type 
-        System.out.println("Processing new_order_type: " + message);
         kafkaTemplate.send("suspend_order", message);
     }
 }
