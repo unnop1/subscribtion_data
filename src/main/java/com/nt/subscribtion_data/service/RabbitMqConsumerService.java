@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RabbitMqConsumerService {
 
-    @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate; 
+    
 
     @RabbitListener(queues = {"new_order_type", "suspended_order_type"})
     public void receiveMessage(@Payload String message, @Headers Map<String, Object> headers) {
@@ -24,10 +23,10 @@ public class RabbitMqConsumerService {
 
         // Process the message based on the queue name
         switch (queueName) {
-            case "top_up_type":
+            case "RedsRechargeQ":
                 processTopUpType(message);
                 break;
-            case "new_order_type", "suspended_order_type":
+            case "RedsOrderQ":
                 processOMType(message);
                 break;
             default:
@@ -38,11 +37,11 @@ public class RabbitMqConsumerService {
 
     private void processTopUpType(String message) {
         // Process for new_order_type
-        kafkaTemplate.send("new_order", message);
+        // kafkaTemplate.send("new_order", message);
     }
 
     private void processOMType(String message) {
         // Process for new_order_type 
-        kafkaTemplate.send("suspend_order", message);
+        // kafkaTemplate.send("suspend_order", message);
     }
 }
