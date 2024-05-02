@@ -1,0 +1,73 @@
+package com.nt.subscribtion_data.model.dao.DataModel.EventData;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.EventItem;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class EventData {
+    /*
+    "eventData": {
+        "refTransId": "MFE20220801162918387160785887",
+        "bulkOrderId": "BULK20231115142424882192817372",
+        "channel": "MFE",
+        "eventType": "Suspend",
+        "submitedDate": "2022-09-14T12:45:47.000Z",
+        "completedDate": "2022-09-14T12:45:47.000Z",
+        "isProvisionRequired": true,
+        "rerunRevisionNumber": 0,
+        "eventItem": [],
+        "subscriberInfo" : {},
+        "saleInfo" : {},
+        "writtenLanguage" : "01",
+        "ivrLanguage": "01",
+        "orderStatus": "Completed"
+    }
+    */
+    @JsonProperty("refTransId")
+    private String refTransId;
+
+    @JsonProperty("bulkOrderId")
+    private String bulkOrderId;
+
+    @JsonProperty("channel")
+    private String channel;
+
+    @JsonProperty("eventType")
+    private String eventType;
+
+    @JsonProperty("submitedDate")
+    private String submitedDate;
+
+    @JsonProperty("completedDate")
+    private String completedDate;
+
+    @JsonProperty("isProvisionRequired")
+    private Boolean isProvisionRequired;
+    
+    @JsonProperty("rerunRevisionNumber")
+    private Integer rerunRevisionNumber;
+
+    @JsonProperty("eventItem")
+    private List<EventItem> eventItems;
+
+    @JsonProperty("subscriberInfo")
+    private SubscriberInfo subscriberInfo;
+
+    @JsonProperty("saleInfo")
+    private SaleInfo saleInfo;
+
+    @JsonProperty("writtenLanguage")
+    private String writtenLanguage;
+
+    @JsonProperty("ivrLanguage")
+    private String ivrLanguage;
+
+    @JsonProperty("orderStatus")
+    private String orderStatus;
+}

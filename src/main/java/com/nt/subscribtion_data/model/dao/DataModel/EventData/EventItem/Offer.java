@@ -1,0 +1,137 @@
+package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class Offer {
+    /*
+    {
+        "offeringId": "51005156",
+        "offeringType": "PO",
+        "actionFlag": "None",
+        "offeringNameTh": "",
+        "offeringNameEn": "",
+        "packageId": "",
+        "packageName": "",
+        "descriptionTh": "",
+        "descriptionEn": "",
+        "ServiceType": 0,
+        "ocsOfferingName": "",
+        "rcAmount": "",
+        "rcVatAmount": "",
+        "period": "",
+        "unitPeriod": "",
+        "saleStartDate": "",
+        "saleEndDate": "",
+        "maxDayAfterActiveDate": "",
+        "niceNumberFlag": "",
+        "niceNumberLevel": "",
+        "conTractFlag": "",
+        "contractUnitPeriod": "",
+        "catEmpFlag": "",
+        "catRetireEmpFlag": "",
+        "multisimFlag": "N",
+        "topupSimFlag": "",
+        "touristSimFlag": "",
+        "changePoUssdCode": "",
+        "addSoUssdCode": "",
+        "deleteSoUssdCode": "",
+        "frequency": "850",
+        "canSwapPoFlag": ""
+    }
+     */
+    @JsonProperty("offeringId")
+    private String offeringId;
+
+    @JsonProperty("offeringType")
+    private String offeringType;
+
+    @JsonProperty("actionFlag")
+    private String actionFlag;
+
+    @JsonProperty("offeringNameTh")
+    private String offeringNameTh;
+
+    @JsonProperty("offeringNameEn")
+    private String offeringNameEn;
+
+    @JsonProperty("packageId")
+    private String packageId;
+
+    @JsonProperty("packageName")
+    private String packageName;
+
+    @JsonProperty("descriptionTh")
+    private String descriptionTh;
+
+    @JsonProperty("descriptionEn")
+    private String descriptionEn;
+
+    @JsonProperty("ServiceType")
+    private Integer ServiceType;
+
+    @JsonProperty("ocsOfferingName")
+    private String ocsOfferingName;
+
+    @JsonProperty("rcAmount")
+    private String rcAmount;
+
+    @JsonProperty("rcVatAmount")
+    private String rcVatAmount;
+
+    @JsonProperty("period")
+    private String period;
+
+    @JsonProperty("unitPeriod")
+    private String unitPeriod;
+
+    @JsonProperty("saleStartDate")
+    private String saleStartDate;
+
+    @JsonProperty("saleEndDate")
+    private String saleEndDate;
+
+    @JsonProperty("maxDayAfterActiveDate")
+    private String maxDayAfterActiveDate;
+
+    @JsonProperty("niceNumberFlag")
+    private String niceNumberFlag;
+
+    @JsonProperty("niceNumberLevel")
+    private String niceNumberLevel;
+
+    @JsonProperty("conTractFlag")
+    private String conTractFlag;
+
+    @JsonProperty("contractUnitPeriod")
+    private String contractUnitPeriod;
+
+    @JsonProperty("catEmpFlag")
+    private String catEmpFlag;
+
+    @JsonProperty("catRetireEmpFlag")
+    private String catRetireEmpFlag;
+
+    @JsonProperty("multisimFlag")
+    private String multisimFlag;
+
+    @JsonProperty("topupSimFlag")
+    private String topupSimFlag;
+
+    @JsonProperty("touristSimFlag")
+    private String touristSimFlag;
+
+    @JsonProperty("changePoUssdCode")
+    private String changePoUssdCode;
+
+    @JsonProperty("addSoUssdCode")
+    private String addSoUssdCode;
+
+    @JsonProperty("deleteSoUssdCode")
+    private String deleteSoUssdCode;
+
+    @JsonProperty("frequency")
+    private String frequency;
+
+    @JsonProperty("canSwapPoFlag")
+    private String canSwapPoFlag;
+}
