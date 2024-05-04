@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-// Annotation to provide logging feature
 
 // Class
 @Component
@@ -39,6 +38,9 @@ public class JdbcDatabaseService {
     @Value("${spring.datasource.password}")
     private String password;
 
+    @Value("${spring.datasource.is_cluster_mode}")
+    private Boolean isClusterMode;
+
     private final HikariDataSource dataSource;
 
     public JdbcDatabaseService(@Value("${spring.datasource.url}") String jdbcUrl,
@@ -52,6 +54,10 @@ public class JdbcDatabaseService {
     }
 
     public Connection getConnection() throws SQLException {
+        if (isClusterMode){
+            System.out.println("Not supported");
+            return dataSource.getConnection();
+        }
         return dataSource.getConnection();
     }
 }
