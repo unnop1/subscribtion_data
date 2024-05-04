@@ -1,5 +1,17 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class VarietyService {
-    
+    /*
+    {
+        "varietyType": "",
+        "enabledFlag": ""
+    }    
+     */
+    @JsonProperty("varietyType")
+    private String varietyType;
+
+    @JsonProperty("enabledFlag")
+    private String enabledFlag;
 }

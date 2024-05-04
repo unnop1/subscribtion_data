@@ -1,12 +1,13 @@
-package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
+package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.BillingAccount;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class SouthernContactAddress {
+public class BillingAddress {
     /*
      {
         "building": "A",
@@ -22,7 +23,6 @@ public class SouthernContactAddress {
         "village": ""
     }
      */
-
     @JsonProperty("building")
     private String building;
 

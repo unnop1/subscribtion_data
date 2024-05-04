@@ -8,6 +8,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TopUp {
+    /*
+     {
+        "serialNumber": "",
+        "topupType": "",
+        "rechargeAmount": "",
+        "currencyId": "",
+        "channelId": ""
+    }
+     */
+    @JsonProperty("serialNumber")
+    private String serialNumber;
 
     @JsonProperty("topupType")
     private String topupType;

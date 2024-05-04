@@ -1,23 +1,22 @@
-package com.nt.subscribtion_data.model.dao.DataModel.EventData;
+package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo;
 
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSimInfo;
-import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.SourceSimInfo;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class SubscriberInfo {
+public class DestinationSubscriberInfo {
     /*
-     {
+    {
         "msisdn": "812345678",
         "serviceType": "0",
         "sourceSimInfo": [],
-        "touristSimFlag": "N",
-        "subscriberNumber": "1234567",
+        "touristSimFlag": "",
+        "subscriberNumber": "",
         "destinationSimInfo": []
     }
      */

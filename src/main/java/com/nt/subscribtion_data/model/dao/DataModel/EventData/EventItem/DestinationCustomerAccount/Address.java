@@ -1,5 +1,59 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Address {
-    
+    /*
+     {
+        "building": "",
+        "country": "",
+        "houseNumber": "",
+        "khetAmphur": "",
+        "kwangTambon": "",
+        "moo": "",
+        "postCode": "",
+        "province": "",
+        "road": "",
+        "troksoi": "",
+        "village": ""
+    }
+     */
+    @JsonProperty("building")
+    private String building;
+
+    @JsonProperty("country")
+    private String country;
+
+    @JsonProperty("houseNumber")
+    private String houseNumber;
+
+    @JsonProperty("khetAmphur")
+    private String khetAmphur;
+
+    @JsonProperty("kwangTambon")
+    private String kwangTambon;
+
+    @JsonProperty("moo")
+    private String moo;
+
+    @JsonProperty("postCode")
+    private String postCode;
+
+    @JsonProperty("province")
+    private String province;
+
+    @JsonProperty("road")
+    private String road;
+
+    @JsonProperty("troksoi")
+    private String troksoi;
+
+    @JsonProperty("village")
+    private String village;
 }

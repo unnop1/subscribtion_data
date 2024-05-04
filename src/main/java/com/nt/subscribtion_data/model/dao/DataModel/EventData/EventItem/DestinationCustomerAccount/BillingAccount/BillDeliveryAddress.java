@@ -1,28 +1,28 @@
-package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
+package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.BillingAccount;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class SouthernContactAddress {
+public class BillDeliveryAddress {
     /*
      {
-        "building": "A",
-        "country": "Thailand",
-        "houseNumber": "1",
-        "khetAmphur": "เขตหลักสี่",
-        "kwangTambon": "แขวงทุ่งสองห้อง",
-        "moo": "หมู่ 4",
-        "postCode": "11000",
-        "province": "กรุงเทพมหานคร",
+        "building": "",
+        "country": "",
+        "houseNumber": "",
+        "khetAmphur": "",
+        "kwangTambon": "",
+        "moo": "",
+        "postCode": "",
+        "province": "",
         "road": "",
         "troksoi": "",
         "village": ""
     }
      */
-
     @JsonProperty("building")
     private String building;
 

@@ -3,6 +3,12 @@ package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Destina
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.BillingAccount.BillingAccount;
 
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class DestinationCustomerAccount {
     /*
     {
