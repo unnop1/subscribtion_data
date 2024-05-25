@@ -2,28 +2,14 @@ package com.nt.subscribtion_data.service;
 // Java Program Illustrating Utility class for Connecting
 // and Querying the Databas
 
-import java.security.PublicKey;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.DatabaseMetaData;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+// Annotation to provide logging feature
 
 // Class
 @Component
@@ -38,27 +24,64 @@ public class JdbcDatabaseService {
     @Value("${spring.datasource.password}")
     private String password;
 
-    @Value("${spring.datasource.is_cluster_mode}")
-    private Boolean isClusterMode;
+    private static HikariDataSource dataSource;
 
-    private final HikariDataSource dataSource;
+    private static final int CONNECTION_TIMEOUT_MS = 30000; // Timeout for checking if the connection is still valid
+    private static final int MAX_RETRY_ATTEMPTS = 3; // Maximum number of retry attempts
+    private static final long RETRY_DELAY_MS = 1000; // Delay between retry attempts
+    
+
+    public static synchronized Connection getConnection() throws SQLException {
+        for (int attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
+            try {
+                Connection connection = dataSource.getConnection();
+                if (isConnectionValid(connection)) {
+                    return connection;
+                } else {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                if (attempt == MAX_RETRY_ATTEMPTS) {
+                    throw e;
+                }
+                try {
+                    Thread.sleep(RETRY_DELAY_MS);
+                } catch (InterruptedException ignored) {
+                }
+            }
+        }
+        throw new SQLException("Failed to obtain connection after maximum retry attempts");
+    }
+
+    private static boolean isConnectionValid(Connection connection) {
+        try {
+            return connection.isValid(CONNECTION_TIMEOUT_MS);
+        } catch (SQLException e) {
+            return false;
+        }
+    }
 
     public JdbcDatabaseService(@Value("${spring.datasource.url}") String jdbcUrl,
                                @Value("${spring.datasource.username}") String jdbcUsername,
                                @Value("${spring.datasource.password}") String jdbcPassword) {
+
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(jdbcUrl);
         config.setUsername(jdbcUsername);
         config.setPassword(jdbcPassword);
-        dataSource = new HikariDataSource(config);
-    }
 
-    public Connection getConnection() throws SQLException {
-        if (isClusterMode){
-            System.out.println("Not supported");
-            return dataSource.getConnection();
-        }
-        return dataSource.getConnection();
+        // Additional HikariCP configurations
+        config.setMaximumPoolSize(10); // Maximum number of connections in the pool
+        config.setMinimumIdle(5); // Minimum number of idle connections in the pool
+        config.setConnectionTimeout(30000); // Timeout for establishing a new connection
+        config.setIdleTimeout(600000); // Maximum time that a connection is allowed to remain idle
+        config.setMaxLifetime(1800000); // Maximum lifetime of a connection in the pool
+
+        // Add a connection test query to check if the connection is still valid
+        config.setConnectionTestQuery("SELECT 1 FROM dual");
+
+
+        dataSource = new HikariDataSource(config);
     }
 }
 

@@ -1,5 +1,6 @@
 package com.nt.subscribtion_data.service;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 // import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nt.subscribtion_data.model.dao.DataModel.TriggerMessageData;
 import com.nt.subscribtion_data.model.dto.ReceiveOMDataType;
 import com.nt.subscribtion_data.model.dto.ReceiveTopUpDataType;
 
@@ -19,23 +21,23 @@ import com.nt.subscribtion_data.model.dto.ReceiveTopUpDataType;
 public class RabbitMqConsumerService {
 
     @Autowired
-    private OMService omServices;
+    private DistributeService distributeService;
 
-    @Autowired
-    private TopUpService topUpService;
-
-    @RabbitListener(queues = {"new_order_type", "suspended_order_type"})
+    @RabbitListener(queues = {"RedsRechargeQ", "RedsOrderQ", "RedsPackageExpireQ"})
     public void receiveMessage(@Payload String message, @Headers Map<String, Object> headers) throws JsonMappingException, JsonProcessingException {
         try{
             String queueName = (String) headers.get("amqp_receivedRoutingKey");
             System.out.println("Received message from queue " + queueName + ": " + message);
             // Process the message based on the queue name
             switch (queueName) {
-                case "suspended_order_type":
+                case "RedsRechargeQ":
                     processTopUpType(message);
                     break;
-                case "new_order_type":
+                case "RedsOrderQ":
                     processOMType(message);
+                    break;
+                case "RedsPackageExpireQ":
+                    processExpiredType(message);
                     break;
                 default:
                     System.out.println("Unknown queue: " + queueName);
@@ -46,17 +48,55 @@ public class RabbitMqConsumerService {
         }
     }
 
-    private void processTopUpType(String message) throws JsonMappingException, JsonProcessingException {
-        // Process for new_order_type
-        ObjectMapper objectMapper = new ObjectMapper();
-        ReceiveTopUpDataType receivedData = objectMapper.readValue(message, ReceiveTopUpDataType.class);
-        topUpService.getTopUpQuery(receivedData);
-    }
-
-    private void processOMType(String message) throws JsonMappingException, JsonProcessingException {
+    private void processOMType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
         // Process for new_order_type
         ObjectMapper objectMapper = new ObjectMapper();
         ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
-        omServices.getOMQuery(receivedData);
+        
+        // Mapping DataType
+        MappingOMData(receivedData);
+
+        
+        TriggerMessageData triggerMsg = new TriggerMessageData();
+        distributeService.CreateTriggerMessage(triggerMsg);
+    }
+
+    private void processTopUpType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
+        // Process for new_order_type
+        ObjectMapper objectMapper = new ObjectMapper();
+        ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
+        
+        // Mapping DataType
+        MappingTopUpData(receivedData);
+
+        
+        TriggerMessageData triggerMsg = new TriggerMessageData();
+        distributeService.CreateTriggerMessage(triggerMsg);
+    }
+
+    private void processExpiredType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
+        // Process for new_order_type
+        ObjectMapper objectMapper = new ObjectMapper();
+        ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
+        
+        // Mapping DataType
+        MappingExpiredData(receivedData);
+
+        
+        TriggerMessageData triggerMsg = new TriggerMessageData();
+        distributeService.CreateTriggerMessage(triggerMsg);
+    }
+
+    private void MappingOMData(ReceiveOMDataType receivedData ){
+        System.out.println(receivedData.toString());
+        
+    }
+
+    private void MappingTopUpData(ReceiveOMDataType receivedData ){
+        System.out.println(receivedData.toString());
+    }
+
+    private void MappingExpiredData(ReceiveOMDataType receivedData ){
+        System.out.println(receivedData.toString());
     }
 }

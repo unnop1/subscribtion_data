@@ -17,6 +17,12 @@ public class Data {
     @JsonProperty("triggerDate")
     private String triggerDate;
 
+    @JsonProperty("orderType")
+    private String orderType;
+
+    @JsonProperty("msisdn")
+    private String msisdn;
+
     @JsonProperty("publishChannel")
     private String publishChannel;
 
