@@ -2,6 +2,11 @@ package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Offer {
     /*
     {
@@ -55,7 +60,7 @@ public class Offer {
     private String offeringNameEn;
 
     @JsonProperty("packageId")
-    private String packageId;
+    private Long packageId;
 
     @JsonProperty("packageName")
     private String packageName;
@@ -73,13 +78,13 @@ public class Offer {
     private String ocsOfferingName;
 
     @JsonProperty("rcAmount")
-    private String rcAmount;
+    private Long rcAmount;
 
     @JsonProperty("rcVatAmount")
-    private String rcVatAmount;
+    private Long rcVatAmount;
 
     @JsonProperty("period")
-    private String period;
+    private Integer period;
 
     @JsonProperty("unitPeriod")
     private String unitPeriod;
@@ -97,7 +102,7 @@ public class Offer {
     private String niceNumberFlag;
 
     @JsonProperty("niceNumberLevel")
-    private String niceNumberLevel;
+    private Long niceNumberLevel;
 
     @JsonProperty("conTractFlag")
     private String conTractFlag;

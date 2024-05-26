@@ -2,6 +2,11 @@ package com.nt.subscribtion_data.model.dao.CATMFE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class OfferingSpecData {
     @JsonProperty("offeringID")
     private Long offeringID;
@@ -127,7 +132,7 @@ public class OfferingSpecData {
     private String addsoussdcode;
 
     @JsonProperty("changepoussdcode")
-    private String xxchangepoussdcodexx;
+    private String changepoussdcode;
 
     @JsonProperty("communityflag")
     private String communityflag;
@@ -274,7 +279,7 @@ public class OfferingSpecData {
     private String freeunitdata3G4GAMOUNT;
 
     @JsonProperty("period")
-    private Long period;
+    private Integer period;
 
     @JsonProperty("fnflag")
     private String fnflag;

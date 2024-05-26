@@ -5,6 +5,11 @@ import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class OrderHeaderData {
     @JsonProperty("id")
     private Long id;
@@ -13,13 +18,13 @@ public class OrderHeaderData {
     private Long createBy;
 
     @JsonProperty("createdate")
-    private Timestamp createDate;
+    private String createDate;
 
     @JsonProperty("currentbalance")
     private String currentBalance;
 
     @JsonProperty("input_DATA")
-    private Clob inputData;
+    private String inputData;
 
     @JsonProperty("isfromfuturequeue")
     private String isFromFutureQueue;

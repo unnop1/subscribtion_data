@@ -1,5 +1,6 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -45,7 +46,7 @@ public class EventData {
     private String submitedDate;
 
     @JsonProperty("completedDate")
-    private String completedDate;
+    private Timestamp completedDate;
 
     @JsonProperty("isProvisionRequired")
     private Boolean isProvisionRequired;
