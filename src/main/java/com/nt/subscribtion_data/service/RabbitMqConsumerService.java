@@ -568,7 +568,7 @@ public class RabbitMqConsumerService {
         sourceSimInfoList.add(sourceSimInfo);
 
         destinationSubscriberInfo.setSourceSimInfo(sourceSimInfoList);
-        destinationSubscriberInfo.setTouristSimFlag();
+        destinationSubscriberInfo.setTouristSimFlag("");
 
         
 
