@@ -2,6 +2,11 @@ package com.nt.subscribtion_data.model.dao.OMUSER;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class TransManageContractDTLData {
     @JsonProperty("trans_MANAGE_CONTRACT_ID")
     private Long transManageContractId;

@@ -44,16 +44,16 @@ public class ContractInfo {
     private String refDocumentId;
 
     @JsonProperty("contractCode")
-    private String contractCode;
+    private Long contractCode;
 
     @JsonProperty("contractType")
-    private String contractType;
+    private Long contractType;
 
     @JsonProperty("contractDesc")
     private String contractDesc;
 
     @JsonProperty("contractMonth")
-    private String contractMonth;
+    private Long contractMonth;
 
     @JsonProperty("contractStart")
     private String contractStart;
@@ -62,17 +62,17 @@ public class ContractInfo {
     private String contractEnd;
 
     @JsonProperty("contractValue")
-    private String contractValue;
+    private Long contractValue;
     
 
     @JsonProperty("bypassBy")
-    private String bypassBy;
+    private Long bypassBy;
 
     @JsonProperty("bypassApproveBy")
     private String bypassApproveBy;
 
     @JsonProperty("bypassFee")
-    private String bypassFee;
+    private Long bypassFee;
 
     @JsonProperty("bypassReason")
     private String bypassReason;
@@ -94,10 +94,10 @@ public class ContractInfo {
     private String billRefDate;
 
     @JsonProperty("billRefAmount")
-    private String billRefAmount;
+    private Long billRefAmount;
     
     @JsonProperty("manageContractType")
-    private String manageContractType;
+    private Long manageContractType;
 
     @JsonProperty("remark")
     private String remark;

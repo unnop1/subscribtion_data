@@ -24,12 +24,17 @@ import com.nt.subscribtion_data.client.CATMFEClient;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
 import com.nt.subscribtion_data.model.dao.DataModel.TriggerMessageData;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventData;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.SaleInfo;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.BalanceTransferInfo;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.ContractInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.CreditLimit;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.EventItem;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.ExtendExpireInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Offer;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Photo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.SouthernContactAddress;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.TopUp;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.VarietyService;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.Address;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.DestinationCustomerAccount;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.BillingAccount.BillDeliveryAddress;
@@ -42,6 +47,7 @@ import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Destinat
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSubscriberInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.SourceSimInfo;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderData;
+import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLData;
 import com.nt.subscribtion_data.model.dto.ReceiveOMDataType;
 import com.nt.subscribtion_data.model.dto.ReceiveTopUpDataType;
 import com.nt.subscribtion_data.service.database.CATMFEService;
@@ -133,7 +139,6 @@ public class RabbitMqConsumerService {
         System.out.println(odheader.getInputData());
         JSONObject inputData = new JSONObject(odheader.getInputData().toString());
         System.out.println("=================================");
-        
         
         if (inputData.optString("orderId") != null){
             omEv.setRefTransId(inputData.getString("orderId"));
@@ -290,6 +295,332 @@ public class RabbitMqConsumerService {
 
 
 
+                /*
+                * destinationCustomerAccount
+                */
+
+                DestinationCustomerAccount destinationCustomerAccount = new DestinationCustomerAccount();
+                Address address = new Address();
+                BillingAccount billingAccount = new BillingAccount();
+                BillingInfo billingInfo = new BillingInfo();
+                BillingAddress billingAddress = new BillingAddress();
+                BillDeliveryAddress billDeliveryAddress = new BillDeliveryAddress();
+                VatAddress vatAddress = new VatAddress();
+                VatDeliveryAddress vatDeliveryAddress = new VatDeliveryAddress();
+                TopUp topUp = new TopUp();
+                CreditLimit creditLimit = new CreditLimit();
+                SouthernContactAddress southernContactAddress = new SouthernContactAddress();
+                DestinationSubscriberInfo destinationSubscriberInfo = new DestinationSubscriberInfo();
+
+                JSONObject inputSourceCustomerAccount = inputData.getJSONObject("sourceCustomerAccount");
+                JSONObject inputSouthernContactAddress = inputData.getJSONObject("southernContactAddress");
+                JSONObject inputSourceCustomerAccountAddress = inputSourceCustomerAccount.getJSONObject("address");
+
+                JSONObject sourceCustomerAccountBillingAccount = inputSourceCustomerAccount.getJSONObject("billingAccount");
+                JSONObject sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
+                JSONObject sourceCustomerAccountBillingAccountBillingInfo = sourceCustomerAccountBillingAccount.getJSONObject("billingInfo");
+                JSONObject sourceCustomerAccountVatAddress = inputSourceCustomerAccount.getJSONObject("vatAddress");
+                JSONObject sourceCustomerAccountVatDeliveryAddress = inputSourceCustomerAccount.getJSONObject("vatDeliveryAddress");
+                
+
+
+                // Destination Address
+                address.setBuilding(inputSourceCustomerAccountAddress.getString("building"));
+
+                address.setCountry(inputSourceCustomerAccountAddress.getString("country"));
+
+                address.setHouseNumber(inputSourceCustomerAccountAddress.getString("houseNumber"));
+
+                address.setKhetAmphur(inputSourceCustomerAccountAddress.getString("khetAmphur"));
+
+                address.setKwangTambon(inputSourceCustomerAccountAddress.getString("kwangTambon"));
+
+                address.setMoo(inputSourceCustomerAccountAddress.getString("moo"));
+
+                address.setPostCode(inputSourceCustomerAccountAddress.getString("postCode"));
+
+                address.setProvince(inputSourceCustomerAccountAddress.getString("province"));
+
+                address.setRoad(inputSourceCustomerAccountAddress.getString("road"));
+
+                address.setTroksoi(inputSourceCustomerAccountAddress.getString("troksoi"));
+
+                address.setVillage(inputSourceCustomerAccountAddress.getString("village"));
+
+                // billing account
+                billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+
+                billingAccount.setBillingAccountId(inputSourceCustomerAccount.getString("billingAccountId")); // must validate
+
+                billingAccount.setPaymentProfile(inputSourceCustomerAccount.getString("paymentProfile")); // must validate
+
+
+                // billing info
+                billingInfo.setCollectionUnit(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionUnit"));
+
+                billingInfo.setVat(sourceCustomerAccountBillingAccountBillingInfo.getString("vat"));
+
+                billingInfo.setBillingPeriod(sourceCustomerAccountBillingAccountBillingInfo.getString("billingPeriod"));
+
+                billingInfo.setBillable(sourceCustomerAccountBillingAccountBillingInfo.getString("billable"));
+
+                billingInfo.setBillingGroup(sourceCustomerAccountBillingAccountBillingInfo.getString("billingGroup"));
+
+                billingInfo.setCollectionTreatment(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionTreatment"));
+
+                billingInfo.setDispatchMethod(sourceCustomerAccountBillingAccountBillingInfo.getString("dispatchMethod"));
+
+                billingInfo.setEmailAddress(sourceCustomerAccountBillingAccountBillingInfo.getString("emailAddress"));
+
+                // billing address
+                billingAddress.setBuilding(inputSourceCustomerAccountAddress.getString("building"));
+
+                billingAddress.setCountry(inputSourceCustomerAccountAddress.getString("country"));
+
+                billingAddress.setHouseNumber(inputSourceCustomerAccountAddress.getString("houseNumber"));
+
+                billingAddress.setKhetAmphur(inputSourceCustomerAccountAddress.getString("khetAmphur"));
+
+                billingAddress.setKwangTambon(inputSourceCustomerAccountAddress.getString("kwangTambon"));
+
+                billingAddress.setMoo(inputSourceCustomerAccountAddress.getString("moo"));
+
+                billingAddress.setPostCode(inputSourceCustomerAccountAddress.getString("postCode"));
+
+                billingAddress.setProvince(inputSourceCustomerAccountAddress.getString("province"));
+
+                billingAddress.setRoad(inputSourceCustomerAccountAddress.getString("road"));
+
+                billingAddress.setTroksoi(inputSourceCustomerAccountAddress.getString("troksoi"));
+
+                billingAddress.setVillage(inputSourceCustomerAccountAddress.getString("village"));
+
+                // billing delivery address
+                billDeliveryAddress.setBuilding(sourceCustomerAccountBillDeliveryAddress.getString("building"));
+
+                billDeliveryAddress.setCountry(sourceCustomerAccountBillDeliveryAddress.getString("country"));
+
+                billDeliveryAddress.setHouseNumber(sourceCustomerAccountBillDeliveryAddress.getString("houseNumber"));
+
+                billDeliveryAddress.setKhetAmphur(sourceCustomerAccountBillDeliveryAddress.getString("khetAmphur"));
+
+                billDeliveryAddress.setKwangTambon(sourceCustomerAccountBillDeliveryAddress.getString("kwangTambon"));
+
+                billDeliveryAddress.setMoo(sourceCustomerAccountBillDeliveryAddress.getString("moo"));
+
+                billDeliveryAddress.setPostCode(sourceCustomerAccountBillDeliveryAddress.getString("postCode"));
+
+                billDeliveryAddress.setProvince(sourceCustomerAccountBillDeliveryAddress.getString("province"));
+
+                billDeliveryAddress.setRoad(sourceCustomerAccountBillDeliveryAddress.getString("road"));
+
+                billDeliveryAddress.setTroksoi(sourceCustomerAccountBillDeliveryAddress.getString("troksoi"));
+
+                billDeliveryAddress.setVillage(sourceCustomerAccountBillDeliveryAddress.getString("village"));
+
+
+                // vat address
+                vatAddress.setBuilding(sourceCustomerAccountVatAddress.getString("building"));
+
+                vatAddress.setCountry(sourceCustomerAccountVatAddress.getString("country"));
+
+                vatAddress.setHouseNumber(sourceCustomerAccountVatAddress.getString("houseNumber"));
+
+                vatAddress.setKhetAmphur(sourceCustomerAccountVatAddress.getString("khetAmphur"));
+
+                vatAddress.setKwangTambon(sourceCustomerAccountVatAddress.getString("kwangTambon"));
+
+                vatAddress.setMoo(sourceCustomerAccountVatAddress.getString("moo"));
+
+                vatAddress.setPostCode(sourceCustomerAccountVatAddress.getString("postCode"));
+
+                vatAddress.setProvince(sourceCustomerAccountVatAddress.getString("province"));
+
+                vatAddress.setRoad(sourceCustomerAccountVatAddress.getString("road"));
+
+                vatAddress.setTroksoi(sourceCustomerAccountVatAddress.getString("troksoi"));
+
+                vatAddress.setVillage(sourceCustomerAccountVatAddress.getString("village"));
+
+                // vat delivery address
+                vatDeliveryAddress.setBuilding(sourceCustomerAccountVatDeliveryAddress.getString("building"));
+
+                vatDeliveryAddress.setCountry(sourceCustomerAccountVatDeliveryAddress.getString("country"));
+
+                vatDeliveryAddress.setHouseNumber(sourceCustomerAccountVatDeliveryAddress.getString("houseNumber"));
+
+                vatDeliveryAddress.setKhetAmphur(sourceCustomerAccountVatDeliveryAddress.getString("khetAmphur"));
+
+                vatDeliveryAddress.setKwangTambon(sourceCustomerAccountVatDeliveryAddress.getString("kwangTambon"));
+
+                vatDeliveryAddress.setMoo(sourceCustomerAccountVatDeliveryAddress.getString("moo"));
+
+                vatDeliveryAddress.setPostCode(sourceCustomerAccountVatDeliveryAddress.getString("postCode"));
+
+                vatDeliveryAddress.setProvince(sourceCustomerAccountVatDeliveryAddress.getString("province"));
+
+                vatDeliveryAddress.setRoad(sourceCustomerAccountVatDeliveryAddress.getString("road"));
+
+                vatDeliveryAddress.setTroksoi(sourceCustomerAccountVatDeliveryAddress.getString("troksoi"));
+
+                vatDeliveryAddress.setVillage(sourceCustomerAccountVatDeliveryAddress.getString("village"));
+
+                // destinationCustomerAccount
+                destinationCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
+                destinationCustomerAccount.setCardType(inputSourceCustomerAccount.getString("cardType"));
+                destinationCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getString("catEmployeeFlag"));
+                destinationCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
+                destinationCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
+                destinationCustomerAccount.setCompanyType(inputSourceCustomerAccount.getString("companyType"));
+                destinationCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
+                destinationCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custAccountId"));
+                destinationCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
+                destinationCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getString("customerGroup"));
+                destinationCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
+                destinationCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getString("customerInfoType"));
+                destinationCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getString("customerSegment"));
+                destinationCustomerAccount.setCustomerType(inputSourceCustomerAccount.getString("customerType"));
+                destinationCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
+                destinationCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
+                destinationCustomerAccount.setDocumentType(inputSourceCustomerAccount.getString("documentType"));
+                destinationCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
+                destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+                destinationCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
+                destinationCustomerAccount.setGender(inputSourceCustomerAccount.getString("gender"));
+                destinationCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
+                destinationCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
+                destinationCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
+                destinationCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
+                destinationCustomerAccount.setTitle(inputSourceCustomerAccount.getString("title"));
+                destinationCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
+
+                /*
+                *  TopUp
+                */
+
+                JSONObject inputTopUp = inputData.getJSONObject("topUp");
+
+                topUp.setSerialNumber(inputTopUp.getString("serialNumber"));
+                topUp.setTopupType(inputTopUp.getString("topupType"));
+                topUp.setRechargeAmount(inputTopUp.getInt("rechargeAmount"));
+                topUp.setCurrencyId(inputTopUp.getInt("currencyId"));
+                topUp.setChannelId(inputTopUp.getInt("channelId"));
+
+                /*
+                *  Credit Limit
+                */
+                JSONObject inputCreditLimit = inputData.getJSONObject("creditLimit");
+                creditLimit.setType(inputCreditLimit.getString("type"));
+                creditLimit.setValue(inputCreditLimit.getString("value"));
+                creditLimit.setActionType(inputCreditLimit.getString("actionType"));
+
+                /*
+                *  SouthernContactAddress
+                */
+                southernContactAddress.setBuilding(inputSouthernContactAddress.getString("building"));
+
+                southernContactAddress.setCountry(inputSouthernContactAddress.getString("country"));
+
+                southernContactAddress.setHouseNumber(inputSouthernContactAddress.getString("houseNumber"));
+
+                southernContactAddress.setKhetAmphur(inputSouthernContactAddress.getString("khetAmphur"));
+
+                southernContactAddress.setKwangTambon(inputSouthernContactAddress.getString("kwangTambon"));
+
+                southernContactAddress.setMoo(inputSouthernContactAddress.getString("moo"));
+
+                southernContactAddress.setPostCode(inputSouthernContactAddress.getString("postCode"));
+
+                southernContactAddress.setProvince(inputSouthernContactAddress.getString("province"));
+
+                southernContactAddress.setRoad(inputSouthernContactAddress.getString("road"));
+
+                southernContactAddress.setTroksoi(inputSouthernContactAddress.getString("troksoi"));
+
+                southernContactAddress.setVillage(inputSouthernContactAddress.getString("village"));
+
+                /*
+                *  destinationSubscriberInfo
+                */
+                JSONObject inputSubscriberInfo = inputData.getJSONObject("subscriberInfo");
+                JSONObject inputSourceSimInfo = inputSubscriberInfo.getJSONObject("sourceSimInfo");
+                JSONObject inputDestinationSimInfo = inputSubscriberInfo.getJSONObject("destinationSimInfo");
+                
+                destinationSubscriberInfo.setMsisdn(inputSubscriberInfo.getString("msisdn"));
+                destinationSubscriberInfo.setServiceType(inputSubscriberInfo.getString("serviceType"));
+
+                // Source sim info
+                List<SourceSimInfo> sourceSimInfoList = new ArrayList<SourceSimInfo>();
+                SourceSimInfo sourceSimInfo = new SourceSimInfo();
+                sourceSimInfo.setIccid(inputSourceSimInfo.getString("iccid"));
+                sourceSimInfo.setImsi("query from db"); // your code here query
+                sourceSimInfo.setSimType(inputSourceSimInfo.getString("simType"));
+                sourceSimInfo.setFrequency("query from db"); // your code here query
+                sourceSimInfoList.add(sourceSimInfo);
+
+                // Source sim info
+                List<DestinationSimInfo> destinationSimInfoList = new ArrayList<DestinationSimInfo>();
+                DestinationSimInfo destinationSimInfo = new DestinationSimInfo();
+                
+                destinationSimInfo.setIccid(inputDestinationSimInfo.getString("iccid"));
+                destinationSimInfo.setIccid("query from db"); // your code here query
+                destinationSimInfo.setSimType(inputDestinationSimInfo.getString("simType"));
+                destinationSimInfo.setFrequency("query from db"); // your code here query
+                
+
+                destinationSubscriberInfo.setSourceSimInfo(sourceSimInfoList);
+                destinationSubscriberInfo.setTouristSimFlag(inputDestinationSimInfo.getString("itouristSimFlag"));
+                destinationSubscriberInfo.setSubscriberNumber(inputDestinationSimInfo.getString("subscriberNumber"));
+
+
+
+                // Varieties service
+                VarietyService varietyService = new VarietyService();
+                varietyService.setVarietyType(orderItem.getString("varietyServices"));
+                varietyService.setEnabledFlag(orderItem.getString("enabledFlag"));
+
+                // Balance transfer info
+                JSONObject orderItemBalanceTransferInfo = orderItem.getJSONObject("balanceTransferInfo");
+                BalanceTransferInfo balanceTransferInfo = new BalanceTransferInfo();
+                balanceTransferInfo.setTransferTotalFlag(orderItemBalanceTransferInfo.getString("transferTotalFlag"));
+                balanceTransferInfo.setTransferType(orderItemBalanceTransferInfo.getString("transferType"));
+                balanceTransferInfo.setTransferAmount(orderItemBalanceTransferInfo.getString("transferAmount"));
+
+                // ExtendExpireInfo
+                JSONObject orderItemExtendExpireInfo = orderItem.getJSONObject("extendExpireInfo");
+                ExtendExpireInfo extendExpireInfo = new ExtendExpireInfo();
+                extendExpireInfo.setBalanceAmount(orderItemExtendExpireInfo.getString("extendedDay"));
+                extendExpireInfo.setExtendedDay(orderItemExtendExpireInfo.getString("transAmount"));
+
+                // contractInfo
+
+                TransManageContractDTLData tMCDTLData = new TransManageContractDTLData();
+                ContractInfo contractInfo = new ContractInfo();
+                contractInfo.setSubscrNo(tMCDTLData.getSubscrNo());
+                contractInfo.setContractId(tMCDTLData.getContractId());
+                contractInfo.setRefDocumentId(tMCDTLData.getRefDocumentId());
+                contractInfo.setContractCode(tMCDTLData.getContractCode());
+                contractInfo.setRefDocumentId(tMCDTLData.getRefDocumentId());
+                contractInfo.setContractCode(tMCDTLData.getContractCode());
+                contractInfo.setContractType(tMCDTLData.getContractType());
+                contractInfo.setContractDesc(tMCDTLData.getContractDesc());
+                contractInfo.setContractMonth(tMCDTLData.getContractMonth());
+                contractInfo.setContractStart(tMCDTLData.getContractStart());
+                contractInfo.setContractEnd(tMCDTLData.getContractEnd());
+                contractInfo.setContractValue(tMCDTLData.getContractValue());
+                contractInfo.setBypassBy(tMCDTLData.getBypassBy());
+                contractInfo.setBypassApproveBy(tMCDTLData.getBypassApproveBy());
+                contractInfo.setBypassFee(tMCDTLData.getBypassFee());
+                contractInfo.setBypassReason(tMCDTLData.getBypassReason());
+                contractInfo.setBypassDate(tMCDTLData.getBypassDate());
+                contractInfo.setRequestBypassDate(tMCDTLData.getRequestBypassDate());
+                contractInfo.setApproveBypassDate(tMCDTLData.getApproveBypassDate());
+                contractInfo.setBillRefNo(tMCDTLData.getBillRefNo());
+                contractInfo.setBillRefDate(tMCDTLData.getBillRefDate());
+                contractInfo.setBillRefAmount(tMCDTLData.getBillRefAmount());
+                contractInfo.setManageContractType(tMCDTLData.getManageContractType());
+                contractInfo.setRemark(tMCDTLData.getRemark());
+
 
 
 
@@ -303,275 +634,28 @@ public class RabbitMqConsumerService {
             }
         }
 
-
-        /*
-        * destinationCustomerAccount
-        */
-
-        DestinationCustomerAccount destinationCustomerAccount = new DestinationCustomerAccount();
-        Address address = new Address();
-        BillingAccount billingAccount = new BillingAccount();
-        BillingInfo billingInfo = new BillingInfo();
-        BillingAddress billingAddress = new BillingAddress();
-        BillDeliveryAddress billDeliveryAddress = new BillDeliveryAddress();
-        VatAddress vatAddress = new VatAddress();
-        VatDeliveryAddress vatDeliveryAddress = new VatDeliveryAddress();
-        TopUp topUp = new TopUp();
-        CreditLimit creditLimit = new CreditLimit();
-        SouthernContactAddress southernContactAddress = new SouthernContactAddress();
-        DestinationSubscriberInfo destinationSubscriberInfo = new DestinationSubscriberInfo();
-
-        JSONObject inputSourceCustomerAccount = inputData.getJSONObject("sourceCustomerAccount");
-        JSONObject inputSouthernContactAddress = inputData.getJSONObject("southernContactAddress");
-        JSONObject inputSourceCustomerAccountAddress = inputSourceCustomerAccount.getJSONObject("address");
-
-        JSONObject sourceCustomerAccountBillingAccount = inputSourceCustomerAccount.getJSONObject("billingAccount");
-        JSONObject sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
-        JSONObject sourceCustomerAccountBillingAccountBillingInfo = sourceCustomerAccountBillingAccount.getJSONObject("billingInfo");
-        JSONObject sourceCustomerAccountVatAddress = inputSourceCustomerAccount.getJSONObject("vatAddress");
-        JSONObject sourceCustomerAccountVatDeliveryAddress = inputSourceCustomerAccount.getJSONObject("vatDeliveryAddress");
-        
-
-
-        // Destination Address
-        address.setBuilding(inputSourceCustomerAccountAddress.getString("building"));
-
-        address.setCountry(inputSourceCustomerAccountAddress.getString("country"));
-
-        address.setHouseNumber(inputSourceCustomerAccountAddress.getString("houseNumber"));
-
-        address.setKhetAmphur(inputSourceCustomerAccountAddress.getString("khetAmphur"));
-
-        address.setKwangTambon(inputSourceCustomerAccountAddress.getString("kwangTambon"));
-
-        address.setMoo(inputSourceCustomerAccountAddress.getString("moo"));
-
-        address.setPostCode(inputSourceCustomerAccountAddress.getString("postCode"));
-
-        address.setProvince(inputSourceCustomerAccountAddress.getString("province"));
-
-        address.setRoad(inputSourceCustomerAccountAddress.getString("road"));
-
-        address.setTroksoi(inputSourceCustomerAccountAddress.getString("troksoi"));
-
-        address.setVillage(inputSourceCustomerAccountAddress.getString("village"));
-
-        // billing account
-        billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-
-        billingAccount.setBillingAccountId(inputSourceCustomerAccount.getString("billingAccountId")); // must validate
-
-        billingAccount.setPaymentProfile(inputSourceCustomerAccount.getString("paymentProfile")); // must validate
-
-
-        // billing info
-        billingInfo.setCollectionUnit(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionUnit"));
-
-        billingInfo.setVat(sourceCustomerAccountBillingAccountBillingInfo.getString("vat"));
-
-        billingInfo.setBillingPeriod(sourceCustomerAccountBillingAccountBillingInfo.getString("billingPeriod"));
-
-        billingInfo.setBillable(sourceCustomerAccountBillingAccountBillingInfo.getString("billable"));
-
-        billingInfo.setBillingGroup(sourceCustomerAccountBillingAccountBillingInfo.getString("billingGroup"));
-
-        billingInfo.setCollectionTreatment(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionTreatment"));
-
-        billingInfo.setDispatchMethod(sourceCustomerAccountBillingAccountBillingInfo.getString("dispatchMethod"));
-
-        billingInfo.setEmailAddress(sourceCustomerAccountBillingAccountBillingInfo.getString("emailAddress"));
-
-        // billing address
-        billingAddress.setBuilding(inputSourceCustomerAccountAddress.getString("building"));
-
-        billingAddress.setCountry(inputSourceCustomerAccountAddress.getString("country"));
-
-        billingAddress.setHouseNumber(inputSourceCustomerAccountAddress.getString("houseNumber"));
-
-        billingAddress.setKhetAmphur(inputSourceCustomerAccountAddress.getString("khetAmphur"));
-
-        billingAddress.setKwangTambon(inputSourceCustomerAccountAddress.getString("kwangTambon"));
-
-        billingAddress.setMoo(inputSourceCustomerAccountAddress.getString("moo"));
-
-        billingAddress.setPostCode(inputSourceCustomerAccountAddress.getString("postCode"));
-
-        billingAddress.setProvince(inputSourceCustomerAccountAddress.getString("province"));
-
-        billingAddress.setRoad(inputSourceCustomerAccountAddress.getString("road"));
-
-        billingAddress.setTroksoi(inputSourceCustomerAccountAddress.getString("troksoi"));
-
-        billingAddress.setVillage(inputSourceCustomerAccountAddress.getString("village"));
-
-        // billing delivery address
-        billDeliveryAddress.setBuilding(sourceCustomerAccountBillDeliveryAddress.getString("building"));
-
-        billDeliveryAddress.setCountry(sourceCustomerAccountBillDeliveryAddress.getString("country"));
-
-        billDeliveryAddress.setHouseNumber(sourceCustomerAccountBillDeliveryAddress.getString("houseNumber"));
-
-        billDeliveryAddress.setKhetAmphur(sourceCustomerAccountBillDeliveryAddress.getString("khetAmphur"));
-
-        billDeliveryAddress.setKwangTambon(sourceCustomerAccountBillDeliveryAddress.getString("kwangTambon"));
-
-        billDeliveryAddress.setMoo(sourceCustomerAccountBillDeliveryAddress.getString("moo"));
-
-        billDeliveryAddress.setPostCode(sourceCustomerAccountBillDeliveryAddress.getString("postCode"));
-
-        billDeliveryAddress.setProvince(sourceCustomerAccountBillDeliveryAddress.getString("province"));
-
-        billDeliveryAddress.setRoad(sourceCustomerAccountBillDeliveryAddress.getString("road"));
-
-        billDeliveryAddress.setTroksoi(sourceCustomerAccountBillDeliveryAddress.getString("troksoi"));
-
-        billDeliveryAddress.setVillage(sourceCustomerAccountBillDeliveryAddress.getString("village"));
-
-
-        // vat address
-        vatAddress.setBuilding(sourceCustomerAccountVatAddress.getString("building"));
-
-        vatAddress.setCountry(sourceCustomerAccountVatAddress.getString("country"));
-
-        vatAddress.setHouseNumber(sourceCustomerAccountVatAddress.getString("houseNumber"));
-
-        vatAddress.setKhetAmphur(sourceCustomerAccountVatAddress.getString("khetAmphur"));
-
-        vatAddress.setKwangTambon(sourceCustomerAccountVatAddress.getString("kwangTambon"));
-
-        vatAddress.setMoo(sourceCustomerAccountVatAddress.getString("moo"));
-
-        vatAddress.setPostCode(sourceCustomerAccountVatAddress.getString("postCode"));
-
-        vatAddress.setProvince(sourceCustomerAccountVatAddress.getString("province"));
-
-        vatAddress.setRoad(sourceCustomerAccountVatAddress.getString("road"));
-
-        vatAddress.setTroksoi(sourceCustomerAccountVatAddress.getString("troksoi"));
-
-        vatAddress.setVillage(sourceCustomerAccountVatAddress.getString("village"));
-
-        // vat delivery address
-        vatDeliveryAddress.setBuilding(sourceCustomerAccountVatDeliveryAddress.getString("building"));
-
-        vatDeliveryAddress.setCountry(sourceCustomerAccountVatDeliveryAddress.getString("country"));
-
-        vatDeliveryAddress.setHouseNumber(sourceCustomerAccountVatDeliveryAddress.getString("houseNumber"));
-
-        vatDeliveryAddress.setKhetAmphur(sourceCustomerAccountVatDeliveryAddress.getString("khetAmphur"));
-
-        vatDeliveryAddress.setKwangTambon(sourceCustomerAccountVatDeliveryAddress.getString("kwangTambon"));
-
-        vatDeliveryAddress.setMoo(sourceCustomerAccountVatDeliveryAddress.getString("moo"));
-
-        vatDeliveryAddress.setPostCode(sourceCustomerAccountVatDeliveryAddress.getString("postCode"));
-
-        vatDeliveryAddress.setProvince(sourceCustomerAccountVatDeliveryAddress.getString("province"));
-
-        vatDeliveryAddress.setRoad(sourceCustomerAccountVatDeliveryAddress.getString("road"));
-
-        vatDeliveryAddress.setTroksoi(sourceCustomerAccountVatDeliveryAddress.getString("troksoi"));
-
-        vatDeliveryAddress.setVillage(sourceCustomerAccountVatDeliveryAddress.getString("village"));
-
-        // destinationCustomerAccount
-        destinationCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
-        destinationCustomerAccount.setCardType(inputSourceCustomerAccount.getString("cardType"));
-        destinationCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getString("catEmployeeFlag"));
-        destinationCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
-        destinationCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
-        destinationCustomerAccount.setCompanyType(inputSourceCustomerAccount.getString("companyType"));
-        destinationCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
-        destinationCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custAccountId"));
-        destinationCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
-        destinationCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getString("customerGroup"));
-        destinationCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
-        destinationCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getString("customerInfoType"));
-        destinationCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getString("customerSegment"));
-        destinationCustomerAccount.setCustomerType(inputSourceCustomerAccount.getString("customerType"));
-        destinationCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
-        destinationCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
-        destinationCustomerAccount.setDocumentType(inputSourceCustomerAccount.getString("documentType"));
-        destinationCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
-        destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-        destinationCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
-        destinationCustomerAccount.setGender(inputSourceCustomerAccount.getString("gender"));
-        destinationCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
-        destinationCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
-        destinationCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
-        destinationCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
-        destinationCustomerAccount.setTitle(inputSourceCustomerAccount.getString("title"));
-        destinationCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
-
-        /*
-        *  TopUp
-        */
-
-        JSONObject inputTopUp = inputData.getJSONObject("topUp");
-
-        topUp.setSerialNumber(inputTopUp.getString("serialNumber"));
-        topUp.setTopupType(inputTopUp.getString("topupType"));
-        topUp.setRechargeAmount(inputTopUp.getInt("rechargeAmount"));
-        topUp.setCurrencyId(inputTopUp.getInt("currencyId"));
-        topUp.setChannelId(inputTopUp.getInt("channelId"));
-
-        /*
-        *  Credit Limit
-        */
-        JSONObject inputCreditLimit = inputData.getJSONObject("creditLimit");
-        creditLimit.setType(inputCreditLimit.getString("type"));
-        creditLimit.setValue(inputCreditLimit.getString("value"));
-        creditLimit.setActionType(inputCreditLimit.getString("actionType"));
-
-        /*
-        *  SouthernContactAddress
-        */
-        southernContactAddress.setBuilding(inputSouthernContactAddress.getString("building"));
-
-        southernContactAddress.setCountry(inputSouthernContactAddress.getString("country"));
-
-        southernContactAddress.setHouseNumber(inputSouthernContactAddress.getString("houseNumber"));
-
-        southernContactAddress.setKhetAmphur(inputSouthernContactAddress.getString("khetAmphur"));
-
-        southernContactAddress.setKwangTambon(inputSouthernContactAddress.getString("kwangTambon"));
-
-        southernContactAddress.setMoo(inputSouthernContactAddress.getString("moo"));
-
-        southernContactAddress.setPostCode(inputSouthernContactAddress.getString("postCode"));
-
-        southernContactAddress.setProvince(inputSouthernContactAddress.getString("province"));
-
-        southernContactAddress.setRoad(inputSouthernContactAddress.getString("road"));
-
-        southernContactAddress.setTroksoi(inputSouthernContactAddress.getString("troksoi"));
-
-        southernContactAddress.setVillage(inputSouthernContactAddress.getString("village"));
-
-        /*
-        *  destinationSubscriberInfo
-        */
-        JSONObject inputSubscriberInfo = inputData.getJSONObject("subscriberInfo");
-        JSONObject inputSourceSimInfo = inputSubscriberInfo.getJSONObject("sourceSimInfo");
-        JSONObject inputDestinationSimInfo = inputSubscriberInfo.getJSONObject("destinationSimInfo");
-        
-        destinationSubscriberInfo.setMsisdn(inputSubscriberInfo.getString("msisdn"));
-        destinationSubscriberInfo.setServiceType(inputSubscriberInfo.getString("serviceType"));
-
-        // Source sim info
-        List<SourceSimInfo> sourceSimInfoList = new ArrayList<SourceSimInfo>();
-        SourceSimInfo sourceSimInfo = new SourceSimInfo();
-        sourceSimInfo.setIccid(inputSourceSimInfo.getString("iccid"));
-        sourceSimInfo.setImsi(inputSourceSimInfo.getString("imsi")); // your code here query
-        sourceSimInfo.setSimType(inputSourceSimInfo.getString("simType"));
-        sourceSimInfo.setFrequency(inputSourceSimInfo.getString("frequency")); // your code here query
-        sourceSimInfoList.add(sourceSimInfo);
-
-        destinationSubscriberInfo.setSourceSimInfo(sourceSimInfoList);
-        destinationSubscriberInfo.setTouristSimFlag("");
+        // saleInfo
+        JSONObject inputSaleInfo = inputData.getJSONObject("saleInfo");
+        SaleInfo saleInfo = new SaleInfo();
+        saleInfo.setSaleEmpId(inputSaleInfo.getString("saleEmpId"));
+        saleInfo.setSapCode(inputSaleInfo.getString("sapCode"));
+        saleInfo.setDealerCode(inputSaleInfo.getString("dealerCode"));
+        saleInfo.setRegisterBySellerName(inputSaleInfo.getString("registerBySellerName"));
+        saleInfo.setSaleRole(inputSaleInfo.getString("saleRole"));
+        saleInfo.setRegisterProvince(inputSaleInfo.getString("registerProvince"));
+        saleInfo.setTerritoryName(inputSaleInfo.getString("territoryName"));
+        saleInfo.setSaleRepEmpId(inputSaleInfo.getString("saleRepEmpId"));
+        saleInfo.setSaleRepSapCode(inputSaleInfo.getString("saleRepSapCode"));
 
         
+        omEv.setWrittenLanguage(inputData.getString("writtenLanguage"));
+        omEv.setIvrLanguage(inputData.getString("ivrLanguage"));
 
+        // Order Header
+        JSONObject orderHeader = inputData.getJSONObject("orderHeader");
+        omEv.setOrderStatus(orderHeader.getString("orderStatus"));
+
+        
 
 
 

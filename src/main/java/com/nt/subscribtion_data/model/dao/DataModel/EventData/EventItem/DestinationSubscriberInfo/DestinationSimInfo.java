@@ -10,8 +10,8 @@ import lombok.Setter;
 public class DestinationSimInfo {
     /*
      {
-        "iccid": "8966001234567890123",
-        "imsi": "520001234567890",
+        "touristSimFlag": "8966001234567890123",
+        "subscriberNumber": "520001234567890",
         "simType": "Primary",
         "frequency": "700"
     }
