@@ -27,6 +27,9 @@ public class EventItem {
     @JsonProperty("userRole")
     private String userRole;
 
+    @JsonProperty("expire")
+    private Expire expire;
+
     @JsonProperty("offer")
     private List<Offer> offer;
 

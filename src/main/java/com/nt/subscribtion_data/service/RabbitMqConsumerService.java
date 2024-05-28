@@ -1,6 +1,7 @@
 package com.nt.subscribtion_data.service;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.subscribtion_data.client.CATMFEClient;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
+import com.nt.subscribtion_data.model.dao.DataModel.Data;
 import com.nt.subscribtion_data.model.dao.DataModel.TriggerMessageData;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventData;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.SaleInfo;
@@ -29,6 +31,7 @@ import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.BalanceT
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.ContractInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.CreditLimit;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.EventItem;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Expire;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.ExtendExpireInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Offer;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Photo;
@@ -48,10 +51,12 @@ import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Destinat
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.SourceSimInfo;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderData;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLData;
+import com.nt.subscribtion_data.model.dto.ReceiveExpiredDataType;
 import com.nt.subscribtion_data.model.dto.ReceiveOMDataType;
 import com.nt.subscribtion_data.model.dto.ReceiveTopUpDataType;
 import com.nt.subscribtion_data.service.database.CATMFEService;
 import com.nt.subscribtion_data.service.database.OMMYFRONTService;
+import com.nt.subscribtion_data.util.DateTime;
 
 @Service
 public class RabbitMqConsumerService {
@@ -106,7 +111,7 @@ public class RabbitMqConsumerService {
     private void processTopUpType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
         // Process for new_order_type
         ObjectMapper objectMapper = new ObjectMapper();
-        ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
+        ReceiveTopUpDataType receivedData = objectMapper.readValue(message, ReceiveTopUpDataType.class);
         
         // Mapping DataType
         MappingTopUpData(receivedData);
@@ -119,7 +124,7 @@ public class RabbitMqConsumerService {
     private void processExpiredType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
         // Process for new_order_type
         ObjectMapper objectMapper = new ObjectMapper();
-        ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
+        ReceiveExpiredDataType receivedData = objectMapper.readValue(message, ReceiveExpiredDataType.class);
         
         // Mapping DataType
         MappingExpiredData(receivedData);
@@ -131,6 +136,11 @@ public class RabbitMqConsumerService {
 
     private void MappingOMData(ReceiveOMDataType receivedData ){
         System.out.println(receivedData.toString());
+
+        String triggerDate = DateTime.getTimeStampNowStr();
+
+        Data sendData = new Data();
+        
         EventData omEv = new EventData();
         // Get orderid from database OMMYFRONT at table order_header
         System.out.println("Get header from database OMMYFRONT");
@@ -657,16 +667,96 @@ public class RabbitMqConsumerService {
 
         
 
-
+        sendData.setTriggerDate(triggerDate);
+        sendData.setPublishChannel("OM-MFE");
+        sendData.setOrderType(receivedData.getOrderType().toUpperCase());
+        sendData.setMsisdn(String.format("0", "query")); // your code here
+        sendData.setEventData(omEv);
 
         
     }
 
-    private void MappingTopUpData(ReceiveOMDataType receivedData ){
+    private void MappingTopUpData(ReceiveTopUpDataType receivedData ){
         System.out.println(receivedData.toString());
+        String effectiveDate = DateTime.getTriggerTimeStampNow();
+        String triggerDate = DateTime.getTimeStampNowStr();
+
+        Data sendData = new Data();
+
+        EventData topUpEv = new EventData();
+        topUpEv.setEventType("TOPUP_RECHARGE");
+
+        List<EventItem> eventItems = new ArrayList<EventItem>();
+        EventItem eventItem = new EventItem();
+        eventItem.setItemType("Topup");
+        eventItem.setExecutionType("Now");
+        eventItem.setEffectiveDate(effectiveDate);
+
+        // EventItem TopUp 
+        TopUp topUp = new TopUp();
+        topUp.setTopupType(String.valueOf(receivedData.getRechargeType()));
+        topUp.setRechargeAmount(receivedData.getRechargeAmount());
+        topUp.setCurrencyId(receivedData.getCurrencyId());
+        topUp.setChannelId(receivedData.getChannelId());
+        topUp.setRechargeDate(receivedData.getRechargeDate());
+        topUp.setNotiMsgSeq(receivedData.getNotiMsgSeq());
+        topUp.setRechargeLogId(receivedData.getRechargeLogId());
+        eventItem.setTopUp(topUp);
+        eventItems.add(eventItem);
+
+        sendData.setTriggerDate(triggerDate);
+        sendData.setPublishChannel("Topup-GW");
+        sendData.setOrderType("TOPUP_RECHARGE");
+        sendData.setMsisdn(String.format("0", receivedData.getMsisdn()));
+        sendData.setEventData(topUpEv);
     }
 
-    private void MappingExpiredData(ReceiveOMDataType receivedData ){
+    private void MappingExpiredData(ReceiveExpiredDataType receivedData ){
         System.out.println(receivedData.toString());
+
+        String effectiveDate = DateTime.getTriggerTimeStampNow();
+        String triggerDate = DateTime.getTimeStampNowStr();
+
+        Data sendData = new Data();
+
+        EventData expiredEv = new EventData();
+        expiredEv.setEventType("PACKAGE_EXPIRE");
+
+        List<EventItem> eventItems = new ArrayList<EventItem>();
+        EventItem eventItem = new EventItem();
+        eventItem.setItemType("PackageExpire"); // Fix
+        eventItem.setExecutionType("Now");
+        eventItem.setEffectiveDate(effectiveDate);
+
+        // Expire data
+        Expire expire = new Expire();
+        expire.setMsisdn(receivedData.getMsisdn());
+        expire.setExpireOfferId(receivedData.getExpireOfferId());
+        expire.setExpireOfferInstId(receivedData.getExpireOfferInstId());
+        expire.setExpireOfferName(receivedData.getExpireOfferName());
+        expire.setExpireDate(receivedData.getExpireDate());
+        expire.setOfferPerchaseSeq(receivedData.getOfferPerchaseSeq());
+        expire.setNotiMsgSeq(receivedData.getNotiMsgSeq());
+        expire.setPoId(receivedData.getPoId());
+        expire.setPoName(receivedData.getPoName());
+        expire.setBrandId(receivedData.getBrandId());
+        expire.setBrandName(receivedData.getBrandName());
+        eventItem.setExpire(expire);
+
+
+        // Offer data
+        List<Offer> offers = new ArrayList<Offer>();
+        Offer offer = new Offer();
+        offer.setOfferingId(receivedData.getPoId());
+        eventItem.setOffer(offers);
+
+
+        eventItems.add(eventItem);
+
+        sendData.setTriggerDate(triggerDate);
+        sendData.setPublishChannel("OM-MFE");
+        sendData.setOrderType("PACKAGE_EXPIRE");
+        sendData.setMsisdn(String.format("0", receivedData.getMsisdn()));
+        sendData.setEventData(expiredEv);
     }
 }

@@ -14,7 +14,10 @@ public class TopUp {
         "topupType": "",
         "rechargeAmount": "",
         "currencyId": "",
-        "channelId": ""
+        "channelId": "",
+        "notiMsgSeq" : "",
+        "rechargeDate" : "",
+        "rechargeLogId" : ""
     }
      */
     @JsonProperty("serialNumber")
@@ -31,4 +34,13 @@ public class TopUp {
 
     @JsonProperty("channelId")
     private Integer channelId;
+
+    @JsonProperty("rechargeDate")
+    private String rechargeDate;
+
+    @JsonProperty("notiMsgSeq")
+    private String notiMsgSeq;
+
+    @JsonProperty("rechargeLogId")
+    private String rechargeLogId;
 }
