@@ -175,39 +175,34 @@ public class RabbitMqConsumerService {
         JSONObject inputData = new JSONObject(odheader.getInputData().toString());
         System.out.println("=================================");
         
-        if (inputData.optString("orderId") != null){
+        if (inputData.has("orderId")){
             omEv.setRefTransId(inputData.getString("orderId"));
         }
 
-        if (inputData.optString("bulkId") != null){
+        if (inputData.has("bulkId")){
             omEv.setBulkOrderId(inputData.getString("bulkId"));
         }
 
-        if (inputData.optString("channel") != null){
+        if (inputData.has("channel")){
             omEv.setChannel(inputData.getString("channel"));
         }
 
-        if (inputData.optString("highPriorityOrderType") != null){
+        if (inputData.has("highPriorityOrderType")){
             omEv.setEventType(inputData.getString("highPriorityOrderType"));
         }
 
-        if (inputData.optString("submitedDate") != null){
-            omEv.setSubmitedDate(odheader.getCreateDate());
-        }
+        omEv.setSubmitedDate(odheader.getCreateDate());
+        omEv.setCompletedDate(odheader.getUpdateDate());
 
-        if (inputData.optString("completedDate") != null){
-            omEv.setCompletedDate(odheader.getUpdateDate());
-        }
-
-        if (inputData.optString("isProvisionRequired") != null){
+        if (inputData.has("isProvisionRequired")){
             omEv.setIsProvisionRequired(inputData.getBoolean("isProvisionRequired"));
         }
 
-        if (inputData.optString("rerunRevisionNumber") != null){
+        if (inputData.has("rerunRevisionNumber")){
             omEv.setRerunRevisionNumber(inputData.getInt("rerunRevisionNumber"));
         }
 
-        if (inputData.optString("orderItem") != null){
+        if (inputData.has("orderItem")){
             List<EventItem> evenItems = new ArrayList<>();
             JSONArray orderItems = inputData.getJSONArray("orderItem");
             for (int i = 0; i < orderItems.length(); i++){
@@ -215,34 +210,34 @@ public class RabbitMqConsumerService {
                 EventItem evenItem = new EventItem();
 
                 // EventItem
-                if (orderItem.optString("orderId") != null){
+                if (orderItem.has("orderId")){
                     evenItem.setItemType(orderItem.getString("orderId"));
                 }
                 
-                if (orderItem.optString("orderExecutionDate") != null){
+                if (orderItem.has("orderExecutionDate")){
                     evenItem.setEffectiveDate(orderItem.getString("orderExecutionDate"));
                 }
                 
-                if (orderItem.optString("orderExecutionType") != null){
+                if (orderItem.has("orderExecutionType")){
                     evenItem.setExecutionType(orderItem.getString("orderExecutionType"));
                 }
 
-                if (orderItem.optString("sourceEntity") != null){
+                if (orderItem.has("sourceEntity")){
                     evenItem.setSourceEntity(orderItem.getString("sourceEntity"));
                 }
 
-                if (orderItem.optString("userRole") != null){
+                if (orderItem.has("userRole")){
                     evenItem.setUserRole(orderItem.getString("userRole"));
                 }
 
                 // OrderItem
                 JSONObject productOffering = null;
-                if (orderItem.optString("productOffering") != null){
+                if (orderItem.has("productOffering")){
                     productOffering = orderItem.getJSONObject("productOffering");
                 }
 
                 JSONObject subscriberInfo = null;
-                if (orderItem.optString("subscriberInfo") != null){
+                if (orderItem.has("subscriberInfo")){
                     subscriberInfo = orderItem.getJSONObject("subscriberInfo");
                 }
                 
@@ -253,8 +248,8 @@ public class RabbitMqConsumerService {
                 Offer offer = new Offer();
 
                 String offeringId = null;
-                if (productOffering != null){
-                    if (productOffering.optString("offeringId") != null){
+                if (productOffering != null ){
+                    if (productOffering.has("offeringId")){
                         offeringId = productOffering.getString("offeringId");
                     }
 
@@ -262,11 +257,11 @@ public class RabbitMqConsumerService {
         
                     offer.setOfferingId(offeringId);
 
-                    if (productOffering.optString("offeringType") != null){
+                    if (productOffering.has("offeringType")){
                         offer.setOfferingType(productOffering.getString("offeringType"));
                     }
                     
-                    if (productOffering.optString("actionFlag") != null){
+                    if (productOffering.has("actionFlag")){
                         offer.setActionFlag(productOffering.getString("actionFlag"));
                     }
                 
@@ -283,7 +278,7 @@ public class RabbitMqConsumerService {
 
                         offer.setDescriptionEn(ofrspec.getDescEN());
                         if (subscriberInfo != null){
-                            if (subscriberInfo.optString("serviceType") != null){
+                            if (subscriberInfo.has("serviceType")){
                                 offer.setServiceType(subscriberInfo.getInt("serviceType"));
                             }
                         }
@@ -360,20 +355,20 @@ public class RabbitMqConsumerService {
                  * Photo
                  */
                 List<Photo> photos = new ArrayList<Photo>();
-                if (orderItem.optString("photo") != null){
+                if (orderItem.has("photo")){
                     JSONArray orderPhotos = orderItem.getJSONArray("photo");
                     for (int j = 0; j < orderPhotos.length(); j++){
                         JSONObject orderPhoto = orderPhotos.getJSONObject(j);
                         Photo photo = new Photo();
-                        if (orderPhoto.optString("photoId") != null){
+                        if (orderPhoto.has("photoId")){
                             photo.setPhotoId(orderPhoto.getString("photoId"));
                         }
 
-                        if (orderPhoto.optString("photoType") != null){
+                        if (orderPhoto.has("photoType")){
                             photo.setPhotoType(orderPhoto.getString("photoType"));
                         }
 
-                        if (orderPhoto.optString("dummyPhotoFlag") != null){
+                        if (orderPhoto.has("dummyPhotoFlag")){
                             photo.setDummyPhotoFlag(orderPhoto.getBoolean("dummyPhotoFlag"));
                         }
 
@@ -409,63 +404,63 @@ public class RabbitMqConsumerService {
                 JSONObject sourceCustomerAccountBillingAccountBillingInfo = null;
                 JSONObject sourceCustomerAccountVatAddress = null;
                 JSONObject sourceCustomerAccountVatDeliveryAddress = null;
-                if (inputData.optString("sourceCustomerAccount") != null){
+                if (inputData.has("sourceCustomerAccount")){
                     inputSourceCustomerAccount = inputData.getJSONObject("sourceCustomerAccount");
                 }
 
-                if (inputData.optString("southernContactAddress") != null){
+                if (inputData.has("southernContactAddress")){
                     inputSouthernContactAddress = inputData.getJSONObject("southernContactAddress");
 
                     /*
                     *  SouthernContactAddress
                     */
-                    if (inputSouthernContactAddress.optString("building") != null){
+                    if (inputSouthernContactAddress.has("building")){
                         southernContactAddress.setBuilding(inputSouthernContactAddress.getString("building"));
                     }
 
-                    if (inputSouthernContactAddress.optString("country") != null){
+                    if (inputSouthernContactAddress.has("country")){
                         southernContactAddress.setCountry(inputSouthernContactAddress.getString("country"));
                     }
                     
-                    if (inputSouthernContactAddress.optString("houseNumber") != null){
+                    if (inputSouthernContactAddress.has("houseNumber")){
                         southernContactAddress.setHouseNumber(inputSouthernContactAddress.getString("houseNumber"));
                     }
 
-                    if (inputSouthernContactAddress.optString("khetAmphur") != null){
+                    if (inputSouthernContactAddress.has("khetAmphur")){
                         southernContactAddress.setKhetAmphur(inputSouthernContactAddress.getString("khetAmphur"));
                     }
 
-                    if (inputSouthernContactAddress.optString("kwangTambon") != null){
+                    if (inputSouthernContactAddress.has("kwangTambon")){
                         southernContactAddress.setKwangTambon(inputSouthernContactAddress.getString("kwangTambon"));
                     }
 
-                    if (inputSouthernContactAddress.optString("moo") != null){
+                    if (inputSouthernContactAddress.has("moo")){
                         southernContactAddress.setMoo(inputSouthernContactAddress.getString("moo"));
                     }
 
-                    if (inputSouthernContactAddress.optString("postCode") != null){
+                    if (inputSouthernContactAddress.has("postCode")){
                         southernContactAddress.setPostCode(inputSouthernContactAddress.getString("postCode"));
                     }
 
-                    if (inputSouthernContactAddress.optString("province") != null){
+                    if (inputSouthernContactAddress.has("province")){
                         southernContactAddress.setProvince(inputSouthernContactAddress.getString("province"));
                     }
 
-                    if (inputSouthernContactAddress.optString("road") != null){
+                    if (inputSouthernContactAddress.has("road")){
                         southernContactAddress.setRoad(inputSouthernContactAddress.getString("road"));
                     }
 
-                    if (inputSouthernContactAddress.optString("troksoi") != null){
+                    if (inputSouthernContactAddress.has("troksoi")){
                         southernContactAddress.setTroksoi(inputSouthernContactAddress.getString("troksoi"));
                     }
 
-                    if (inputSouthernContactAddress.optString("village") != null){
+                    if (inputSouthernContactAddress.has("village")){
                         southernContactAddress.setVillage(inputSouthernContactAddress.getString("village"));
                     }
                 }
 
                 if (inputSourceCustomerAccount != null){
-                    if (inputSourceCustomerAccount.optString("address") != null){
+                    if (inputSourceCustomerAccount.has("address")){
                         inputSourceCustomerAccountAddress = inputSourceCustomerAccount.getJSONObject("address");
 
                         // Destination Address
@@ -516,122 +511,122 @@ public class RabbitMqConsumerService {
 
                     }
 
-                    if (inputSourceCustomerAccount.optString("billingAccount") != null){
+                    if (inputSourceCustomerAccount.has("billingAccount")){
                         sourceCustomerAccountBillingAccount = inputSourceCustomerAccount.getJSONObject("billingAccount");
                     }
 
-                    if (inputSourceCustomerAccount.optString("billDeliveryAddress") != null){
+                    if (inputSourceCustomerAccount.has("billDeliveryAddress")){
                         sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
                     }
 
-                    if (inputSourceCustomerAccount.optString("vatAddress") != null){
+                    if (inputSourceCustomerAccount.has("vatAddress")){
                         sourceCustomerAccountVatAddress = inputSourceCustomerAccount.getJSONObject("vatAddress");
 
                         // vat address
-                        if (sourceCustomerAccountVatAddress.optString("building") != null){
+                        if (sourceCustomerAccountVatAddress.has("building")){
                             vatAddress.setBuilding(sourceCustomerAccountVatAddress.getString("building"));
                         }
 
-                        if (sourceCustomerAccountVatAddress.optString("country") != null){
+                        if (sourceCustomerAccountVatAddress.has("country")){
                             vatAddress.setCountry(sourceCustomerAccountVatAddress.getString("country"));
                         }
 
-                        if (sourceCustomerAccountVatAddress.optString("houseNumber") != null){
+                        if (sourceCustomerAccountVatAddress.has("houseNumber")){
                             vatAddress.setHouseNumber(sourceCustomerAccountVatAddress.getString("houseNumber"));
                         }
 
-                        if (sourceCustomerAccountVatAddress.optString("khetAmphur") != null){
+                        if (sourceCustomerAccountVatAddress.has("khetAmphur")){
                             vatAddress.setKhetAmphur(sourceCustomerAccountVatAddress.getString("khetAmphur"));
                         }
 
-                        if (sourceCustomerAccountVatAddress.optString("kwangTambon") != null){
+                        if (sourceCustomerAccountVatAddress.has("kwangTambon")){
                             vatAddress.setKwangTambon(sourceCustomerAccountVatAddress.getString("kwangTambon"));
                         }
 
-                        if (sourceCustomerAccountVatAddress.optString("moo") != null){
+                        if (sourceCustomerAccountVatAddress.has("moo")){
                             vatAddress.setMoo(sourceCustomerAccountVatAddress.getString("moo"));
                         }
 
-                        if (sourceCustomerAccountVatAddress.optString("postCode") != null){
+                        if (sourceCustomerAccountVatAddress.has("postCode")){
                             vatAddress.setPostCode(sourceCustomerAccountVatAddress.getString("postCode"));
                         }
 
-                        if (sourceCustomerAccountVatAddress.optString("province") != null){
+                        if (sourceCustomerAccountVatAddress.has("province")){
                             vatAddress.setProvince(sourceCustomerAccountVatAddress.getString("province"));
                         }
 
-                        if (sourceCustomerAccountVatAddress.optString("road") != null){
+                        if (sourceCustomerAccountVatAddress.has("road")){
                             vatAddress.setRoad(sourceCustomerAccountVatAddress.getString("road"));
                         }
 
-                        if (sourceCustomerAccountVatAddress.optString("troksoi") != null){
+                        if (sourceCustomerAccountVatAddress.has("troksoi")){
                             vatAddress.setTroksoi(sourceCustomerAccountVatAddress.getString("troksoi"));
                         }
 
-                        if (sourceCustomerAccountVatAddress.optString("village") != null){
+                        if (sourceCustomerAccountVatAddress.has("village")){
                             vatAddress.setVillage(sourceCustomerAccountVatAddress.getString("village"));
                         }
                     }
                     
-                    if (inputSourceCustomerAccount.optString("vatDeliveryAddress") != null){
+                    if (inputSourceCustomerAccount.has("vatDeliveryAddress")){
                         sourceCustomerAccountVatDeliveryAddress = inputSourceCustomerAccount.getJSONObject("vatDeliveryAddress");
 
                         // vat delivery address
-                        if (sourceCustomerAccountVatDeliveryAddress.optString("building") != null){
+                        if (sourceCustomerAccountVatDeliveryAddress.has("building")){
                             vatDeliveryAddress.setBuilding(sourceCustomerAccountVatDeliveryAddress.getString("building"));
                         }
 
-                        if (sourceCustomerAccountVatDeliveryAddress.optString("country") != null){
+                        if (sourceCustomerAccountVatDeliveryAddress.has("country")){
                             vatDeliveryAddress.setCountry(sourceCustomerAccountVatDeliveryAddress.getString("country"));
                         }
 
-                        if (sourceCustomerAccountVatDeliveryAddress.optString("houseNumber") != null){
+                        if (sourceCustomerAccountVatDeliveryAddress.has("houseNumber")){
                             vatDeliveryAddress.setHouseNumber(sourceCustomerAccountVatDeliveryAddress.getString("houseNumber"));
                         }
 
-                        if (sourceCustomerAccountVatDeliveryAddress.optString("khetAmphur") != null){
+                        if (sourceCustomerAccountVatDeliveryAddress.has("khetAmphur")){
                             vatDeliveryAddress.setKhetAmphur(sourceCustomerAccountVatDeliveryAddress.getString("khetAmphur"));
                         }
 
-                        if (sourceCustomerAccountVatDeliveryAddress.optString("kwangTambon") != null){
+                        if (sourceCustomerAccountVatDeliveryAddress.has("kwangTambon")){
                             vatDeliveryAddress.setKwangTambon(sourceCustomerAccountVatDeliveryAddress.getString("kwangTambon"));
                         }
 
-                        if (sourceCustomerAccountVatDeliveryAddress.optString("moo") != null){
+                        if (sourceCustomerAccountVatDeliveryAddress.has("moo")){
                             vatDeliveryAddress.setMoo(sourceCustomerAccountVatDeliveryAddress.getString("moo"));
                         }
 
-                        if (sourceCustomerAccountVatDeliveryAddress.optString("postCode") != null){
+                        if (sourceCustomerAccountVatDeliveryAddress.has("postCode")){
                             vatDeliveryAddress.setPostCode(sourceCustomerAccountVatDeliveryAddress.getString("postCode"));
                         }
 
-                        if (sourceCustomerAccountVatDeliveryAddress.optString("province") != null){
+                        if (sourceCustomerAccountVatDeliveryAddress.has("province")){
                             vatDeliveryAddress.setProvince(sourceCustomerAccountVatDeliveryAddress.getString("province"));
                         }
 
-                        if (sourceCustomerAccountVatDeliveryAddress.optString("road") != null){
+                        if (sourceCustomerAccountVatDeliveryAddress.has("road")){
                             vatDeliveryAddress.setRoad(sourceCustomerAccountVatDeliveryAddress.getString("road"));
                         }
 
-                        if (sourceCustomerAccountVatDeliveryAddress.optString("troksoi") != null){
+                        if (sourceCustomerAccountVatDeliveryAddress.has("troksoi")){
                             vatDeliveryAddress.setTroksoi(sourceCustomerAccountVatDeliveryAddress.getString("troksoi"));
                         }
 
-                        if (sourceCustomerAccountVatDeliveryAddress.optString("village") != null){
+                        if (sourceCustomerAccountVatDeliveryAddress.has("village")){
                             vatDeliveryAddress.setVillage(sourceCustomerAccountVatDeliveryAddress.getString("village"));
                         }
                     }
 
                     // billing account
-                    if (inputSourceCustomerAccount.optString("existingFlag") != null){
+                    if (inputSourceCustomerAccount.has("existingFlag")){
                         billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("billingAccountId") != null){
+                    if (inputSourceCustomerAccount.has("billingAccountId")){
                         billingAccount.setBillingAccountId(inputSourceCustomerAccount.getString("billingAccountId")); // must validate
                     }
 
-                    if (inputSourceCustomerAccount.optString("paymentProfile") != null){
+                    if (inputSourceCustomerAccount.has("paymentProfile")){
                         billingAccount.setPaymentProfile(inputSourceCustomerAccount.getString("paymentProfile")); // must validate
                     }
 
@@ -639,39 +634,39 @@ public class RabbitMqConsumerService {
 
                 
                 if (sourceCustomerAccountBillingAccount != null){
-                    if (sourceCustomerAccountBillingAccount.optString("billingInfo") != null){
+                    if (sourceCustomerAccountBillingAccount.has("billingInfo")){
                         sourceCustomerAccountBillingAccountBillingInfo = sourceCustomerAccountBillingAccount.getJSONObject("billingInfo");
 
                         // billing info
-                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("collectionUnit") != null){
+                        if (sourceCustomerAccountBillingAccountBillingInfo.has("collectionUnit")){
                             billingInfo.setCollectionUnit(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionUnit"));
                         }
 
-                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("vat") != null){
+                        if (sourceCustomerAccountBillingAccountBillingInfo.has("vat")){
                             billingInfo.setVat(sourceCustomerAccountBillingAccountBillingInfo.getString("vat"));
                         }
 
-                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("billingPeriod") != null){
+                        if (sourceCustomerAccountBillingAccountBillingInfo.has("billingPeriod")){
                             billingInfo.setBillingPeriod(sourceCustomerAccountBillingAccountBillingInfo.getString("billingPeriod"));
                         }
 
-                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("billable") != null){
+                        if (sourceCustomerAccountBillingAccountBillingInfo.has("billable")){
                             billingInfo.setBillable(sourceCustomerAccountBillingAccountBillingInfo.getString("billable"));
                         }
 
-                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("billingGroup") != null){
+                        if (sourceCustomerAccountBillingAccountBillingInfo.has("billingGroup")){
                             billingInfo.setBillingGroup(sourceCustomerAccountBillingAccountBillingInfo.getString("billingGroup"));
                         }
 
-                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("collectionTreatment") != null){
+                        if (sourceCustomerAccountBillingAccountBillingInfo.has("collectionTreatment")){
                             billingInfo.setCollectionTreatment(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionTreatment"));
                         }
 
-                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("dispatchMethod") != null){
+                        if (sourceCustomerAccountBillingAccountBillingInfo.has("dispatchMethod")){
                             billingInfo.setDispatchMethod(sourceCustomerAccountBillingAccountBillingInfo.getString("dispatchMethod"));
                         }
 
-                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("emailAddress") != null){
+                        if (sourceCustomerAccountBillingAccountBillingInfo.has("emailAddress")){
                             billingInfo.setEmailAddress(sourceCustomerAccountBillingAccountBillingInfo.getString("emailAddress"));
                         }
                     }
@@ -680,47 +675,47 @@ public class RabbitMqConsumerService {
 
                 // billing delivery address
                 if (sourceCustomerAccountBillDeliveryAddress != null){
-                    if (sourceCustomerAccountBillDeliveryAddress.optString("building") != null){
+                    if (sourceCustomerAccountBillDeliveryAddress.has("building")){
                         billDeliveryAddress.setBuilding(sourceCustomerAccountBillDeliveryAddress.getString("building"));
                     }
 
-                    if (sourceCustomerAccountBillDeliveryAddress.optString("country") != null){
+                    if (sourceCustomerAccountBillDeliveryAddress.has("country")){
                         billDeliveryAddress.setCountry(sourceCustomerAccountBillDeliveryAddress.getString("country"));
                     }
 
-                    if (sourceCustomerAccountBillDeliveryAddress.optString("houseNumber") != null){
+                    if (sourceCustomerAccountBillDeliveryAddress.has("houseNumber")){
                         billDeliveryAddress.setHouseNumber(sourceCustomerAccountBillDeliveryAddress.getString("houseNumber"));
                     }
 
-                    if (sourceCustomerAccountBillDeliveryAddress.optString("khetAmphur") != null){
+                    if (sourceCustomerAccountBillDeliveryAddress.has("khetAmphur")){
                         billDeliveryAddress.setKhetAmphur(sourceCustomerAccountBillDeliveryAddress.getString("khetAmphur"));
                     }
 
-                    if (sourceCustomerAccountBillDeliveryAddress.optString("kwangTambon") != null){
+                    if (sourceCustomerAccountBillDeliveryAddress.has("kwangTambon")){
                         billDeliveryAddress.setKwangTambon(sourceCustomerAccountBillDeliveryAddress.getString("kwangTambon"));
                     }
 
-                    if (sourceCustomerAccountBillDeliveryAddress.optString("moo") != null){
+                    if (sourceCustomerAccountBillDeliveryAddress.has("moo")){
                         billDeliveryAddress.setMoo(sourceCustomerAccountBillDeliveryAddress.getString("moo"));
                     }
 
-                    if (sourceCustomerAccountBillDeliveryAddress.optString("postCode") != null){
+                    if (sourceCustomerAccountBillDeliveryAddress.has("postCode")){
                         billDeliveryAddress.setPostCode(sourceCustomerAccountBillDeliveryAddress.getString("postCode"));
                     }
 
-                    if (sourceCustomerAccountBillDeliveryAddress.optString("province") != null){
+                    if (sourceCustomerAccountBillDeliveryAddress.has("province")){
                         billDeliveryAddress.setProvince(sourceCustomerAccountBillDeliveryAddress.getString("province"));
                     }
 
-                    if (sourceCustomerAccountBillDeliveryAddress.optString("road") != null){
+                    if (sourceCustomerAccountBillDeliveryAddress.has("road")){
                         billDeliveryAddress.setRoad(sourceCustomerAccountBillDeliveryAddress.getString("road"));
                     }
 
-                    if (sourceCustomerAccountBillDeliveryAddress.optString("troksoi") != null){
+                    if (sourceCustomerAccountBillDeliveryAddress.has("troksoi")){
                         billDeliveryAddress.setTroksoi(sourceCustomerAccountBillDeliveryAddress.getString("troksoi"));
                     }
 
-                    if (sourceCustomerAccountBillDeliveryAddress.optString("village") != null){
+                    if (sourceCustomerAccountBillDeliveryAddress.has("village")){
                         billDeliveryAddress.setVillage(sourceCustomerAccountBillDeliveryAddress.getString("village"));
                     }
                 }
@@ -728,137 +723,137 @@ public class RabbitMqConsumerService {
                 // destinationCustomerAccount
                 if (inputSourceCustomerAccount != null){
 
-                    if (inputSourceCustomerAccount.optString("cardNumber") != null){
+                    if (inputSourceCustomerAccount.has("cardNumber")){
                         destinationCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("cardType") != null){
+                    if (inputSourceCustomerAccount.has("cardType")){
                         destinationCustomerAccount.setCardType(inputSourceCustomerAccount.getString("cardType"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("catEmployeeFlag") != null){
+                    if (inputSourceCustomerAccount.has("catEmployeeFlag")){
                         destinationCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getString("catEmployeeFlag"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("companyBranchId") != null){
+                    if (inputSourceCustomerAccount.has("companyBranchId")){
                         destinationCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("companyName") != null){
+                    if (inputSourceCustomerAccount.has("companyName")){
                         destinationCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("companyType") != null){
+                    if (inputSourceCustomerAccount.has("companyType")){
                         destinationCustomerAccount.setCompanyType(inputSourceCustomerAccount.getString("companyType"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("contactNumber") != null){
+                    if (inputSourceCustomerAccount.has("contactNumber")){
                         destinationCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("custAccountId") != null){
+                    if (inputSourceCustomerAccount.has("custAccountId")){
                         destinationCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custAccountId"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("customerFocus") != null){
+                    if (inputSourceCustomerAccount.has("customerFocus")){
                         destinationCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("customerGroup") != null){
+                    if (inputSourceCustomerAccount.has("customerGroup")){
                         destinationCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getString("customerGroup"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("customerId") != null){
+                    if (inputSourceCustomerAccount.has("customerId")){
                         destinationCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("customerInfoType") != null){
+                    if (inputSourceCustomerAccount.has("customerInfoType")){
                         destinationCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getString("customerInfoType"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("customerSegment") != null){
+                    if (inputSourceCustomerAccount.has("customerSegment")){
                         destinationCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getString("customerSegment"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("customerType") != null){
+                    if (inputSourceCustomerAccount.has("customerType")){
                         destinationCustomerAccount.setCustomerType(inputSourceCustomerAccount.getString("customerType"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("dob") != null){
+                    if (inputSourceCustomerAccount.has("dob")){
                         destinationCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("documentNumber") != null){
+                    if (inputSourceCustomerAccount.has("documentNumber")){
                         destinationCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("documentType") != null){
+                    if (inputSourceCustomerAccount.has("documentType")){
                         destinationCustomerAccount.setDocumentType(inputSourceCustomerAccount.getString("documentType"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("emailAddress") != null){
+                    if (inputSourceCustomerAccount.has("emailAddress")){
                         destinationCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("existingFlag") != null){
+                    if (inputSourceCustomerAccount.has("existingFlag")){
                         destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("firstName") != null){
+                    if (inputSourceCustomerAccount.has("firstName")){
                         destinationCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("gender") != null){
+                    if (inputSourceCustomerAccount.has("gender")){
                         destinationCustomerAccount.setGender(inputSourceCustomerAccount.getString("gender"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("ivrLanguage") != null){
+                    if (inputSourceCustomerAccount.has("ivrLanguage")){
                         destinationCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("lastName") != null){
+                    if (inputSourceCustomerAccount.has("lastName")){
                         destinationCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("nationality") != null){
+                    if (inputSourceCustomerAccount.has("nationality")){
                         destinationCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("taxRegisterNumber") != null){
+                    if (inputSourceCustomerAccount.has("taxRegisterNumber")){
                         destinationCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("title") != null){
+                    if (inputSourceCustomerAccount.has("title")){
                         destinationCustomerAccount.setTitle(inputSourceCustomerAccount.getString("title"));
                     }
 
-                    if (inputSourceCustomerAccount.optString("writtenLanguage") != null){
+                    if (inputSourceCustomerAccount.has("writtenLanguage")){
                         destinationCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
                     }
                 }
                 /*
                 *  TopUp
                 */
-                if (inputData.optString("topUp") != null){
+                if (inputData.has("topUp")){
                     JSONObject inputTopUp = inputData.getJSONObject("topUp");
 
-                    if (inputData.optString("serialNumber") != null){
+                    if (inputData.has("serialNumber")){
                         topUp.setSerialNumber(inputTopUp.getString("serialNumber"));
                     }
 
-                    if (inputData.optString("topupType") != null){
+                    if (inputData.has("topupType")){
                         topUp.setTopupType(inputTopUp.getString("topupType"));
                     }
 
-                    if (inputData.optString("rechargeAmount") != null){
+                    if (inputData.has("rechargeAmount")){
                         topUp.setRechargeAmount(inputTopUp.getInt("rechargeAmount"));
                     }
 
-                    if (inputData.optString("currencyId") != null){
+                    if (inputData.has("currencyId")){
                         topUp.setCurrencyId(inputTopUp.getInt("currencyId"));
                     }
 
-                    if (inputData.optString("channelId") != null){
+                    if (inputData.has("channelId")){
                         topUp.setChannelId(inputTopUp.getInt("channelId"));
                     }
                 }
