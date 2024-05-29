@@ -49,13 +49,18 @@ import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Destinat
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSimInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSubscriberInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.SourceSimInfo;
+import com.nt.subscribtion_data.model.dao.INVUSER.INVMappingData;
+import com.nt.subscribtion_data.model.dao.INVUSER.INVMasterData;
+import com.nt.subscribtion_data.model.dao.OMMYFRONT.IMSIOfferingConfig;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderData;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLData;
 import com.nt.subscribtion_data.model.dto.ReceiveExpiredDataType;
 import com.nt.subscribtion_data.model.dto.ReceiveOMDataType;
 import com.nt.subscribtion_data.model.dto.ReceiveTopUpDataType;
 import com.nt.subscribtion_data.service.database.CATMFEService;
+import com.nt.subscribtion_data.service.database.INVUSERService;
 import com.nt.subscribtion_data.service.database.OMMYFRONTService;
+import com.nt.subscribtion_data.service.database.OMUSERService;
 import com.nt.subscribtion_data.util.DateTime;
 
 @Service
@@ -66,6 +71,12 @@ public class RabbitMqConsumerService {
 
     @Autowired
     private OMMYFRONTService ommyfrontService;
+    
+    @Autowired
+    private OMUSERService omuserService;
+
+    @Autowired
+    private INVUSERService invuserService;
 
     @Autowired
     private CATMFEService catmfeService;
@@ -95,46 +106,52 @@ public class RabbitMqConsumerService {
         }
     }
 
-    private void processOMType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
+    private Data processOMType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
         // Process for new_order_type
         ObjectMapper objectMapper = new ObjectMapper();
         ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
         
         // Mapping DataType
-        MappingOMData(receivedData);
+        Data sendData = MappingOMData(receivedData);
 
         
         TriggerMessageData triggerMsg = new TriggerMessageData();
         distributeService.CreateTriggerMessage(triggerMsg);
+
+        return sendData;
     }
 
-    private void processTopUpType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
+    private Data processTopUpType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
         // Process for new_order_type
         ObjectMapper objectMapper = new ObjectMapper();
         ReceiveTopUpDataType receivedData = objectMapper.readValue(message, ReceiveTopUpDataType.class);
         
         // Mapping DataType
-        MappingTopUpData(receivedData);
+        Data sendData = MappingTopUpData(receivedData);
 
         
         TriggerMessageData triggerMsg = new TriggerMessageData();
         distributeService.CreateTriggerMessage(triggerMsg);
+
+        return sendData;
     }
 
-    private void processExpiredType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
+    private Data processExpiredType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
         // Process for new_order_type
         ObjectMapper objectMapper = new ObjectMapper();
         ReceiveExpiredDataType receivedData = objectMapper.readValue(message, ReceiveExpiredDataType.class);
         
         // Mapping DataType
-        MappingExpiredData(receivedData);
+        Data sendData = MappingExpiredData(receivedData);
 
         
         TriggerMessageData triggerMsg = new TriggerMessageData();
         distributeService.CreateTriggerMessage(triggerMsg);
+
+        return sendData;
     }
 
-    private void MappingOMData(ReceiveOMDataType receivedData ){
+    private Data MappingOMData(ReceiveOMDataType receivedData ){
         System.out.println(receivedData.toString());
 
         String triggerDate = DateTime.getTimeStampNowStr();
@@ -146,7 +163,15 @@ public class RabbitMqConsumerService {
         System.out.println("Get header from database OMMYFRONT");
         OrderHeaderData odheader = ommyfrontService.getOrderHeaderDataByOrderID(receivedData.getOrderId());
         
-        System.out.println(odheader.getInputData());
+        String externalId = odheader.getMsisdn();
+        INVMappingData invMappingData = invuserService.getInvMappingData(externalId);
+
+        List<IMSIOfferingConfig> imsiOfferConfigList = ommyfrontService.getImsiOfferingConfigList();
+
+        TransManageContractDTLData transmanageData = omuserService.getTransManageContractDTLData("");
+
+        
+        // System.out.println(odheader.getInputData());
         JSONObject inputData = new JSONObject(odheader.getInputData().toString());
         System.out.println("=================================");
         
@@ -190,118 +215,172 @@ public class RabbitMqConsumerService {
                 EventItem evenItem = new EventItem();
 
                 // EventItem
-                evenItem.setItemType(orderItem.getString("orderType"));
+                if (orderItem.optString("orderId") != null){
+                    evenItem.setItemType(orderItem.getString("orderId"));
+                }
                 
-                evenItem.setEffectiveDate(orderItem.getString("orderExecutionDate"));
+                if (orderItem.optString("orderExecutionDate") != null){
+                    evenItem.setEffectiveDate(orderItem.getString("orderExecutionDate"));
+                }
                 
-                evenItem.setExecutionType(orderItem.getString("orderExecutionType"));
+                if (orderItem.optString("orderExecutionType") != null){
+                    evenItem.setExecutionType(orderItem.getString("orderExecutionType"));
+                }
 
-                evenItem.setSourceEntity(orderItem.getString("sourceEntity"));
+                if (orderItem.optString("sourceEntity") != null){
+                    evenItem.setSourceEntity(orderItem.getString("sourceEntity"));
+                }
 
-                evenItem.setUserRole(orderItem.getString("userRole"));
+                if (orderItem.optString("userRole") != null){
+                    evenItem.setUserRole(orderItem.getString("userRole"));
+                }
 
                 // OrderItem
-                JSONObject productOffering = orderItem.getJSONObject("productOffering");
-                JSONObject subscriberInfo = orderItem.getJSONObject("subscriberInfo");
-                
-                
+                JSONObject productOffering = null;
+                if (orderItem.optString("productOffering") != null){
+                    productOffering = orderItem.getJSONObject("productOffering");
+                }
 
-
+                JSONObject subscriberInfo = null;
+                if (orderItem.optString("subscriberInfo") != null){
+                    subscriberInfo = orderItem.getJSONObject("subscriberInfo");
+                }
+                
                 /*  
                  * Offer 
                  */
                 List<Offer> offers = new ArrayList<Offer>();
                 Offer offer = new Offer();
 
+                String offeringId = null;
+                if (productOffering != null){
+                    if (productOffering.optString("offeringId") != null){
+                        offeringId = productOffering.getString("offeringId");
+                    }
 
-                String offeringId = productOffering.getString("offeringId");
-                OfferingSpecData ofrspec = catmfeService.getOfferingSpecByOfferingId(offeringId);
+                    OfferingSpecData ofrspec = catmfeService.getOfferingSpecByOfferingId(offeringId);
         
-                offer.setOfferingId(offeringId);
+                    offer.setOfferingId(offeringId);
 
-                offer.setOfferingType(productOffering.getString("offeringType"));
+                    if (productOffering.optString("offeringType") != null){
+                        offer.setOfferingType(productOffering.getString("offeringType"));
+                    }
+                    
+                    if (productOffering.optString("actionFlag") != null){
+                        offer.setActionFlag(productOffering.getString("actionFlag"));
+                    }
+                
+                    if (ofrspec != null){
+                        offer.setOfferingNameTh(ofrspec.getOfferingnameTH());
 
-                offer.setActionFlag(productOffering.getString("actionFlag"));
+                        offer.setOfferingNameEn(ofrspec.getOfferingnameEN());
 
-                offer.setOfferingNameTh(ofrspec.getOfferingnameTH());
+                        offer.setPackageId(ofrspec.getPackageID());
 
-                offer.setOfferingNameEn(ofrspec.getOfferingnameEN());
+                        offer.setPackageName(ofrspec.getPackageName());
 
-                offer.setPackageId(ofrspec.getPackageID());
+                        offer.setDescriptionTh(ofrspec.getDescTH());
 
-                offer.setPackageName(ofrspec.getPackageName());
+                        offer.setDescriptionEn(ofrspec.getDescEN());
+                        if (subscriberInfo != null){
+                            if (subscriberInfo.optString("serviceType") != null){
+                                offer.setServiceType(subscriberInfo.getInt("serviceType"));
+                            }
+                        }
 
-                offer.setDescriptionTh(ofrspec.getDescTH());
+                        offer.setOcsOfferingName(ofrspec.getOcsofferingname());
 
-                offer.setDescriptionEn(ofrspec.getDescEN());
+                        offer.setRcAmount(ofrspec.getRcamount());
 
-                offer.setServiceType(subscriberInfo.getInt("serviceType"));
+                        offer.setRcVatAmount(ofrspec.getRcvatamount());
 
-                offer.setOcsOfferingName(ofrspec.getOcsofferingname());
+                        offer.setPeriod(ofrspec.getPeriod());
 
-                offer.setRcAmount(ofrspec.getRcamount());
+                        offer.setUnitPeriod(ofrspec.getUnitperiod());
 
-                offer.setRcVatAmount(ofrspec.getRcvatamount());
+                        offer.setSaleStartDate(ofrspec.getSalestartdate());
 
-                offer.setPeriod(ofrspec.getPeriod());
+                        offer.setSaleEndDate(ofrspec.getSaleenddate());
 
-                offer.setUnitPeriod(ofrspec.getUnitperiod());
+                        offer.setMaxDayAfterActiveDate(ofrspec.getMaxdayafteractivedate());
 
-                offer.setSaleStartDate(ofrspec.getSalestartdate());
+                        offer.setNiceNumberFlag(ofrspec.getNicenumberflag());
 
-                offer.setSaleEndDate(ofrspec.getSaleenddate());
+                        offer.setNiceNumberLevel(ofrspec.getNicenumberlevel());
 
-                offer.setMaxDayAfterActiveDate(ofrspec.getMaxdayafteractivedate());
+                        offer.setConTractFlag(ofrspec.getContractflag());
 
-                offer.setNiceNumberFlag(ofrspec.getNicenumberflag());
+                        offer.setContractUnitPeriod(ofrspec.getContractunitperiod());
 
-                offer.setNiceNumberLevel(ofrspec.getNicenumberlevel());
+                        offer.setCatEmpFlag(ofrspec.getCatempflag());
 
-                offer.setConTractFlag(ofrspec.getContractflag());
+                        offer.setCatRetireEmpFlag(ofrspec.getRetiredcatempflag());
 
-                offer.setContractUnitPeriod(ofrspec.getContractunitperiod());
+                        // offer.multisimFlag your code here with logic
+                        offer.setMultisimFlag(String.valueOf(invMappingData.getMultisimFlag()));
 
-                offer.setCatEmpFlag(ofrspec.getCatempflag());
+                        offer.setTopupSimFlag(ofrspec.getTopupsimflag());
 
-                offer.setCatRetireEmpFlag(ofrspec.getRetiredcatempflag());
+                        offer.setTouristSimFlag(ofrspec.getTouristsimflag());
 
-                // offer.multisimFlag your code here with logic
+                        offer.setChangePoUssdCode(ofrspec.getChangepoussdcode());
 
-                offer.setTopupSimFlag(ofrspec.getTopupsimflag());
+                        offer.setAddSoUssdCode(ofrspec.getAddsoussdcode());
 
-                offer.setTouristSimFlag(ofrspec.getTouristsimflag());
+                        offer.setDeleteSoUssdCode(ofrspec.getDeletesoussdcode());
 
-                offer.setChangePoUssdCode(ofrspec.getChangepoussdcode());
+                        // offer.frequency your code here with logic
+                        String imsiMapping = invMappingData.getImsi();
+                        String imsiFrequency = "";
+                        for (IMSIOfferingConfig config : imsiOfferConfigList) {
+                            String prefix = config.getImsiPrefix();
+                            if (imsiMapping.startsWith(prefix)) {
+                                imsiMapping = prefix;
+                                imsiFrequency = config.getFrequency();
+                                break;
+                            }
+                        }
 
-                offer.setAddSoUssdCode(ofrspec.getAddsoussdcode());
+                        offer.setFrequency(imsiFrequency);
 
-                offer.setDeleteSoUssdCode(ofrspec.getDeletesoussdcode());
+                        offer.setCanSwapPoFlag(ofrspec.getCanswappoflag());
 
-                // offer.frequency your code here with logic
+                        offers.add(offer);
 
-                offer.setCanSwapPoFlag(ofrspec.getCanswappoflag());
+                        evenItem.setOffer(offers);
+                        /*  
+                        * End offer
+                        */
+                    }
+                }
 
-                offers.add(offer);
-
-                evenItem.setOffer(offers);
-                /*  
-                 * End offer
-                 */
+                
 
                 /*
                  * Photo
                  */
                 List<Photo> photos = new ArrayList<Photo>();
-                JSONArray orderPhotos = orderItem.getJSONArray("photo");
-                for (int j = 0; j < orderPhotos.length(); j++){
-                    JSONObject orderPhoto = orderPhotos.getJSONObject(j);
-                    Photo photo = new Photo();
-                    photo.setPhotoId(orderPhoto.getString("photoId"));
-                    photo.setPhotoType(orderPhoto.getString("photoType"));
-                    photo.setDummyPhotoFlag(orderPhoto.getBoolean("dummyPhotoFlag"));
-                    photos.add(photo);
+                if (orderItem.optString("photo") != null){
+                    JSONArray orderPhotos = orderItem.getJSONArray("photo");
+                    for (int j = 0; j < orderPhotos.length(); j++){
+                        JSONObject orderPhoto = orderPhotos.getJSONObject(j);
+                        Photo photo = new Photo();
+                        if (orderPhoto.optString("photoId") != null){
+                            photo.setPhotoId(orderPhoto.getString("photoId"));
+                        }
+
+                        if (orderPhoto.optString("photoType") != null){
+                            photo.setPhotoType(orderPhoto.getString("photoType"));
+                        }
+
+                        if (orderPhoto.optString("dummyPhotoFlag") != null){
+                            photo.setDummyPhotoFlag(orderPhoto.getBoolean("dummyPhotoFlag"));
+                        }
+
+                        photos.add(photo);
+                    }
+                    evenItem.setPhoto(photos);
                 }
-                evenItem.setPhoto(photos);
 
 
 
@@ -322,199 +401,467 @@ public class RabbitMqConsumerService {
                 SouthernContactAddress southernContactAddress = new SouthernContactAddress();
                 DestinationSubscriberInfo destinationSubscriberInfo = new DestinationSubscriberInfo();
 
-                JSONObject inputSourceCustomerAccount = inputData.getJSONObject("sourceCustomerAccount");
-                JSONObject inputSouthernContactAddress = inputData.getJSONObject("southernContactAddress");
-                JSONObject inputSourceCustomerAccountAddress = inputSourceCustomerAccount.getJSONObject("address");
+                JSONObject inputSourceCustomerAccount = null;
+                JSONObject inputSouthernContactAddress = null;
+                JSONObject inputSourceCustomerAccountAddress = null;
+                JSONObject sourceCustomerAccountBillingAccount = null;
+                JSONObject sourceCustomerAccountBillDeliveryAddress = null;
+                JSONObject sourceCustomerAccountBillingAccountBillingInfo = null;
+                JSONObject sourceCustomerAccountVatAddress = null;
+                JSONObject sourceCustomerAccountVatDeliveryAddress = null;
+                if (inputData.optString("sourceCustomerAccount") != null){
+                    inputSourceCustomerAccount = inputData.getJSONObject("sourceCustomerAccount");
+                }
 
-                JSONObject sourceCustomerAccountBillingAccount = inputSourceCustomerAccount.getJSONObject("billingAccount");
-                JSONObject sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
-                JSONObject sourceCustomerAccountBillingAccountBillingInfo = sourceCustomerAccountBillingAccount.getJSONObject("billingInfo");
-                JSONObject sourceCustomerAccountVatAddress = inputSourceCustomerAccount.getJSONObject("vatAddress");
-                JSONObject sourceCustomerAccountVatDeliveryAddress = inputSourceCustomerAccount.getJSONObject("vatDeliveryAddress");
+                if (inputData.optString("southernContactAddress") != null){
+                    inputSouthernContactAddress = inputData.getJSONObject("southernContactAddress");
+
+                    /*
+                    *  SouthernContactAddress
+                    */
+                    if (inputSouthernContactAddress.optString("building") != null){
+                        southernContactAddress.setBuilding(inputSouthernContactAddress.getString("building"));
+                    }
+
+                    if (inputSouthernContactAddress.optString("country") != null){
+                        southernContactAddress.setCountry(inputSouthernContactAddress.getString("country"));
+                    }
+                    
+                    if (inputSouthernContactAddress.optString("houseNumber") != null){
+                        southernContactAddress.setHouseNumber(inputSouthernContactAddress.getString("houseNumber"));
+                    }
+
+                    if (inputSouthernContactAddress.optString("khetAmphur") != null){
+                        southernContactAddress.setKhetAmphur(inputSouthernContactAddress.getString("khetAmphur"));
+                    }
+
+                    if (inputSouthernContactAddress.optString("kwangTambon") != null){
+                        southernContactAddress.setKwangTambon(inputSouthernContactAddress.getString("kwangTambon"));
+                    }
+
+                    if (inputSouthernContactAddress.optString("moo") != null){
+                        southernContactAddress.setMoo(inputSouthernContactAddress.getString("moo"));
+                    }
+
+                    if (inputSouthernContactAddress.optString("postCode") != null){
+                        southernContactAddress.setPostCode(inputSouthernContactAddress.getString("postCode"));
+                    }
+
+                    if (inputSouthernContactAddress.optString("province") != null){
+                        southernContactAddress.setProvince(inputSouthernContactAddress.getString("province"));
+                    }
+
+                    if (inputSouthernContactAddress.optString("road") != null){
+                        southernContactAddress.setRoad(inputSouthernContactAddress.getString("road"));
+                    }
+
+                    if (inputSouthernContactAddress.optString("troksoi") != null){
+                        southernContactAddress.setTroksoi(inputSouthernContactAddress.getString("troksoi"));
+                    }
+
+                    if (inputSouthernContactAddress.optString("village") != null){
+                        southernContactAddress.setVillage(inputSouthernContactAddress.getString("village"));
+                    }
+                }
+
+                if (inputSourceCustomerAccount != null){
+                    if (inputSourceCustomerAccount.optString("address") != null){
+                        inputSourceCustomerAccountAddress = inputSourceCustomerAccount.getJSONObject("address");
+
+                        // Destination Address
+                        address.setBuilding(inputSourceCustomerAccountAddress.getString("building"));
+
+                        address.setCountry(inputSourceCustomerAccountAddress.getString("country"));
+
+                        address.setHouseNumber(inputSourceCustomerAccountAddress.getString("houseNumber"));
+
+                        address.setKhetAmphur(inputSourceCustomerAccountAddress.getString("khetAmphur"));
+
+                        address.setKwangTambon(inputSourceCustomerAccountAddress.getString("kwangTambon"));
+
+                        address.setMoo(inputSourceCustomerAccountAddress.getString("moo"));
+
+                        address.setPostCode(inputSourceCustomerAccountAddress.getString("postCode"));
+
+                        address.setProvince(inputSourceCustomerAccountAddress.getString("province"));
+
+                        address.setRoad(inputSourceCustomerAccountAddress.getString("road"));
+
+                        address.setTroksoi(inputSourceCustomerAccountAddress.getString("troksoi"));
+
+                        address.setVillage(inputSourceCustomerAccountAddress.getString("village"));
+
+                        // billing address
+                        billingAddress.setBuilding(inputSourceCustomerAccountAddress.getString("building"));
+
+                        billingAddress.setCountry(inputSourceCustomerAccountAddress.getString("country"));
+
+                        billingAddress.setHouseNumber(inputSourceCustomerAccountAddress.getString("houseNumber"));
+
+                        billingAddress.setKhetAmphur(inputSourceCustomerAccountAddress.getString("khetAmphur"));
+
+                        billingAddress.setKwangTambon(inputSourceCustomerAccountAddress.getString("kwangTambon"));
+
+                        billingAddress.setMoo(inputSourceCustomerAccountAddress.getString("moo"));
+
+                        billingAddress.setPostCode(inputSourceCustomerAccountAddress.getString("postCode"));
+
+                        billingAddress.setProvince(inputSourceCustomerAccountAddress.getString("province"));
+
+                        billingAddress.setRoad(inputSourceCustomerAccountAddress.getString("road"));
+
+                        billingAddress.setTroksoi(inputSourceCustomerAccountAddress.getString("troksoi"));
+
+                        billingAddress.setVillage(inputSourceCustomerAccountAddress.getString("village"));
+
+                    }
+
+                    if (inputSourceCustomerAccount.optString("billingAccount") != null){
+                        sourceCustomerAccountBillingAccount = inputSourceCustomerAccount.getJSONObject("billingAccount");
+                    }
+
+                    if (inputSourceCustomerAccount.optString("billDeliveryAddress") != null){
+                        sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
+                    }
+
+                    if (inputSourceCustomerAccount.optString("vatAddress") != null){
+                        sourceCustomerAccountVatAddress = inputSourceCustomerAccount.getJSONObject("vatAddress");
+
+                        // vat address
+                        if (sourceCustomerAccountVatAddress.optString("building") != null){
+                            vatAddress.setBuilding(sourceCustomerAccountVatAddress.getString("building"));
+                        }
+
+                        if (sourceCustomerAccountVatAddress.optString("country") != null){
+                            vatAddress.setCountry(sourceCustomerAccountVatAddress.getString("country"));
+                        }
+
+                        if (sourceCustomerAccountVatAddress.optString("houseNumber") != null){
+                            vatAddress.setHouseNumber(sourceCustomerAccountVatAddress.getString("houseNumber"));
+                        }
+
+                        if (sourceCustomerAccountVatAddress.optString("khetAmphur") != null){
+                            vatAddress.setKhetAmphur(sourceCustomerAccountVatAddress.getString("khetAmphur"));
+                        }
+
+                        if (sourceCustomerAccountVatAddress.optString("kwangTambon") != null){
+                            vatAddress.setKwangTambon(sourceCustomerAccountVatAddress.getString("kwangTambon"));
+                        }
+
+                        if (sourceCustomerAccountVatAddress.optString("moo") != null){
+                            vatAddress.setMoo(sourceCustomerAccountVatAddress.getString("moo"));
+                        }
+
+                        if (sourceCustomerAccountVatAddress.optString("postCode") != null){
+                            vatAddress.setPostCode(sourceCustomerAccountVatAddress.getString("postCode"));
+                        }
+
+                        if (sourceCustomerAccountVatAddress.optString("province") != null){
+                            vatAddress.setProvince(sourceCustomerAccountVatAddress.getString("province"));
+                        }
+
+                        if (sourceCustomerAccountVatAddress.optString("road") != null){
+                            vatAddress.setRoad(sourceCustomerAccountVatAddress.getString("road"));
+                        }
+
+                        if (sourceCustomerAccountVatAddress.optString("troksoi") != null){
+                            vatAddress.setTroksoi(sourceCustomerAccountVatAddress.getString("troksoi"));
+                        }
+
+                        if (sourceCustomerAccountVatAddress.optString("village") != null){
+                            vatAddress.setVillage(sourceCustomerAccountVatAddress.getString("village"));
+                        }
+                    }
+                    
+                    if (inputSourceCustomerAccount.optString("vatDeliveryAddress") != null){
+                        sourceCustomerAccountVatDeliveryAddress = inputSourceCustomerAccount.getJSONObject("vatDeliveryAddress");
+
+                        // vat delivery address
+                        if (sourceCustomerAccountVatDeliveryAddress.optString("building") != null){
+                            vatDeliveryAddress.setBuilding(sourceCustomerAccountVatDeliveryAddress.getString("building"));
+                        }
+
+                        if (sourceCustomerAccountVatDeliveryAddress.optString("country") != null){
+                            vatDeliveryAddress.setCountry(sourceCustomerAccountVatDeliveryAddress.getString("country"));
+                        }
+
+                        if (sourceCustomerAccountVatDeliveryAddress.optString("houseNumber") != null){
+                            vatDeliveryAddress.setHouseNumber(sourceCustomerAccountVatDeliveryAddress.getString("houseNumber"));
+                        }
+
+                        if (sourceCustomerAccountVatDeliveryAddress.optString("khetAmphur") != null){
+                            vatDeliveryAddress.setKhetAmphur(sourceCustomerAccountVatDeliveryAddress.getString("khetAmphur"));
+                        }
+
+                        if (sourceCustomerAccountVatDeliveryAddress.optString("kwangTambon") != null){
+                            vatDeliveryAddress.setKwangTambon(sourceCustomerAccountVatDeliveryAddress.getString("kwangTambon"));
+                        }
+
+                        if (sourceCustomerAccountVatDeliveryAddress.optString("moo") != null){
+                            vatDeliveryAddress.setMoo(sourceCustomerAccountVatDeliveryAddress.getString("moo"));
+                        }
+
+                        if (sourceCustomerAccountVatDeliveryAddress.optString("postCode") != null){
+                            vatDeliveryAddress.setPostCode(sourceCustomerAccountVatDeliveryAddress.getString("postCode"));
+                        }
+
+                        if (sourceCustomerAccountVatDeliveryAddress.optString("province") != null){
+                            vatDeliveryAddress.setProvince(sourceCustomerAccountVatDeliveryAddress.getString("province"));
+                        }
+
+                        if (sourceCustomerAccountVatDeliveryAddress.optString("road") != null){
+                            vatDeliveryAddress.setRoad(sourceCustomerAccountVatDeliveryAddress.getString("road"));
+                        }
+
+                        if (sourceCustomerAccountVatDeliveryAddress.optString("troksoi") != null){
+                            vatDeliveryAddress.setTroksoi(sourceCustomerAccountVatDeliveryAddress.getString("troksoi"));
+                        }
+
+                        if (sourceCustomerAccountVatDeliveryAddress.optString("village") != null){
+                            vatDeliveryAddress.setVillage(sourceCustomerAccountVatDeliveryAddress.getString("village"));
+                        }
+                    }
+
+                    // billing account
+                    if (inputSourceCustomerAccount.optString("existingFlag") != null){
+                        billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("billingAccountId") != null){
+                        billingAccount.setBillingAccountId(inputSourceCustomerAccount.getString("billingAccountId")); // must validate
+                    }
+
+                    if (inputSourceCustomerAccount.optString("paymentProfile") != null){
+                        billingAccount.setPaymentProfile(inputSourceCustomerAccount.getString("paymentProfile")); // must validate
+                    }
+
+                }
+
                 
+                if (sourceCustomerAccountBillingAccount != null){
+                    if (sourceCustomerAccountBillingAccount.optString("billingInfo") != null){
+                        sourceCustomerAccountBillingAccountBillingInfo = sourceCustomerAccountBillingAccount.getJSONObject("billingInfo");
 
+                        // billing info
+                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("collectionUnit") != null){
+                            billingInfo.setCollectionUnit(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionUnit"));
+                        }
 
-                // Destination Address
-                address.setBuilding(inputSourceCustomerAccountAddress.getString("building"));
+                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("vat") != null){
+                            billingInfo.setVat(sourceCustomerAccountBillingAccountBillingInfo.getString("vat"));
+                        }
 
-                address.setCountry(inputSourceCustomerAccountAddress.getString("country"));
+                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("billingPeriod") != null){
+                            billingInfo.setBillingPeriod(sourceCustomerAccountBillingAccountBillingInfo.getString("billingPeriod"));
+                        }
 
-                address.setHouseNumber(inputSourceCustomerAccountAddress.getString("houseNumber"));
+                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("billable") != null){
+                            billingInfo.setBillable(sourceCustomerAccountBillingAccountBillingInfo.getString("billable"));
+                        }
 
-                address.setKhetAmphur(inputSourceCustomerAccountAddress.getString("khetAmphur"));
+                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("billingGroup") != null){
+                            billingInfo.setBillingGroup(sourceCustomerAccountBillingAccountBillingInfo.getString("billingGroup"));
+                        }
 
-                address.setKwangTambon(inputSourceCustomerAccountAddress.getString("kwangTambon"));
+                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("collectionTreatment") != null){
+                            billingInfo.setCollectionTreatment(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionTreatment"));
+                        }
 
-                address.setMoo(inputSourceCustomerAccountAddress.getString("moo"));
+                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("dispatchMethod") != null){
+                            billingInfo.setDispatchMethod(sourceCustomerAccountBillingAccountBillingInfo.getString("dispatchMethod"));
+                        }
 
-                address.setPostCode(inputSourceCustomerAccountAddress.getString("postCode"));
+                        if (sourceCustomerAccountBillingAccountBillingInfo.optString("emailAddress") != null){
+                            billingInfo.setEmailAddress(sourceCustomerAccountBillingAccountBillingInfo.getString("emailAddress"));
+                        }
+                    }
+                }
 
-                address.setProvince(inputSourceCustomerAccountAddress.getString("province"));
-
-                address.setRoad(inputSourceCustomerAccountAddress.getString("road"));
-
-                address.setTroksoi(inputSourceCustomerAccountAddress.getString("troksoi"));
-
-                address.setVillage(inputSourceCustomerAccountAddress.getString("village"));
-
-                // billing account
-                billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-
-                billingAccount.setBillingAccountId(inputSourceCustomerAccount.getString("billingAccountId")); // must validate
-
-                billingAccount.setPaymentProfile(inputSourceCustomerAccount.getString("paymentProfile")); // must validate
-
-
-                // billing info
-                billingInfo.setCollectionUnit(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionUnit"));
-
-                billingInfo.setVat(sourceCustomerAccountBillingAccountBillingInfo.getString("vat"));
-
-                billingInfo.setBillingPeriod(sourceCustomerAccountBillingAccountBillingInfo.getString("billingPeriod"));
-
-                billingInfo.setBillable(sourceCustomerAccountBillingAccountBillingInfo.getString("billable"));
-
-                billingInfo.setBillingGroup(sourceCustomerAccountBillingAccountBillingInfo.getString("billingGroup"));
-
-                billingInfo.setCollectionTreatment(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionTreatment"));
-
-                billingInfo.setDispatchMethod(sourceCustomerAccountBillingAccountBillingInfo.getString("dispatchMethod"));
-
-                billingInfo.setEmailAddress(sourceCustomerAccountBillingAccountBillingInfo.getString("emailAddress"));
-
-                // billing address
-                billingAddress.setBuilding(inputSourceCustomerAccountAddress.getString("building"));
-
-                billingAddress.setCountry(inputSourceCustomerAccountAddress.getString("country"));
-
-                billingAddress.setHouseNumber(inputSourceCustomerAccountAddress.getString("houseNumber"));
-
-                billingAddress.setKhetAmphur(inputSourceCustomerAccountAddress.getString("khetAmphur"));
-
-                billingAddress.setKwangTambon(inputSourceCustomerAccountAddress.getString("kwangTambon"));
-
-                billingAddress.setMoo(inputSourceCustomerAccountAddress.getString("moo"));
-
-                billingAddress.setPostCode(inputSourceCustomerAccountAddress.getString("postCode"));
-
-                billingAddress.setProvince(inputSourceCustomerAccountAddress.getString("province"));
-
-                billingAddress.setRoad(inputSourceCustomerAccountAddress.getString("road"));
-
-                billingAddress.setTroksoi(inputSourceCustomerAccountAddress.getString("troksoi"));
-
-                billingAddress.setVillage(inputSourceCustomerAccountAddress.getString("village"));
 
                 // billing delivery address
-                billDeliveryAddress.setBuilding(sourceCustomerAccountBillDeliveryAddress.getString("building"));
+                if (sourceCustomerAccountBillDeliveryAddress != null){
+                    if (sourceCustomerAccountBillDeliveryAddress.optString("building") != null){
+                        billDeliveryAddress.setBuilding(sourceCustomerAccountBillDeliveryAddress.getString("building"));
+                    }
 
-                billDeliveryAddress.setCountry(sourceCustomerAccountBillDeliveryAddress.getString("country"));
+                    if (sourceCustomerAccountBillDeliveryAddress.optString("country") != null){
+                        billDeliveryAddress.setCountry(sourceCustomerAccountBillDeliveryAddress.getString("country"));
+                    }
 
-                billDeliveryAddress.setHouseNumber(sourceCustomerAccountBillDeliveryAddress.getString("houseNumber"));
+                    if (sourceCustomerAccountBillDeliveryAddress.optString("houseNumber") != null){
+                        billDeliveryAddress.setHouseNumber(sourceCustomerAccountBillDeliveryAddress.getString("houseNumber"));
+                    }
 
-                billDeliveryAddress.setKhetAmphur(sourceCustomerAccountBillDeliveryAddress.getString("khetAmphur"));
+                    if (sourceCustomerAccountBillDeliveryAddress.optString("khetAmphur") != null){
+                        billDeliveryAddress.setKhetAmphur(sourceCustomerAccountBillDeliveryAddress.getString("khetAmphur"));
+                    }
 
-                billDeliveryAddress.setKwangTambon(sourceCustomerAccountBillDeliveryAddress.getString("kwangTambon"));
+                    if (sourceCustomerAccountBillDeliveryAddress.optString("kwangTambon") != null){
+                        billDeliveryAddress.setKwangTambon(sourceCustomerAccountBillDeliveryAddress.getString("kwangTambon"));
+                    }
 
-                billDeliveryAddress.setMoo(sourceCustomerAccountBillDeliveryAddress.getString("moo"));
+                    if (sourceCustomerAccountBillDeliveryAddress.optString("moo") != null){
+                        billDeliveryAddress.setMoo(sourceCustomerAccountBillDeliveryAddress.getString("moo"));
+                    }
 
-                billDeliveryAddress.setPostCode(sourceCustomerAccountBillDeliveryAddress.getString("postCode"));
+                    if (sourceCustomerAccountBillDeliveryAddress.optString("postCode") != null){
+                        billDeliveryAddress.setPostCode(sourceCustomerAccountBillDeliveryAddress.getString("postCode"));
+                    }
 
-                billDeliveryAddress.setProvince(sourceCustomerAccountBillDeliveryAddress.getString("province"));
+                    if (sourceCustomerAccountBillDeliveryAddress.optString("province") != null){
+                        billDeliveryAddress.setProvince(sourceCustomerAccountBillDeliveryAddress.getString("province"));
+                    }
 
-                billDeliveryAddress.setRoad(sourceCustomerAccountBillDeliveryAddress.getString("road"));
+                    if (sourceCustomerAccountBillDeliveryAddress.optString("road") != null){
+                        billDeliveryAddress.setRoad(sourceCustomerAccountBillDeliveryAddress.getString("road"));
+                    }
 
-                billDeliveryAddress.setTroksoi(sourceCustomerAccountBillDeliveryAddress.getString("troksoi"));
+                    if (sourceCustomerAccountBillDeliveryAddress.optString("troksoi") != null){
+                        billDeliveryAddress.setTroksoi(sourceCustomerAccountBillDeliveryAddress.getString("troksoi"));
+                    }
 
-                billDeliveryAddress.setVillage(sourceCustomerAccountBillDeliveryAddress.getString("village"));
-
-
-                // vat address
-                vatAddress.setBuilding(sourceCustomerAccountVatAddress.getString("building"));
-
-                vatAddress.setCountry(sourceCustomerAccountVatAddress.getString("country"));
-
-                vatAddress.setHouseNumber(sourceCustomerAccountVatAddress.getString("houseNumber"));
-
-                vatAddress.setKhetAmphur(sourceCustomerAccountVatAddress.getString("khetAmphur"));
-
-                vatAddress.setKwangTambon(sourceCustomerAccountVatAddress.getString("kwangTambon"));
-
-                vatAddress.setMoo(sourceCustomerAccountVatAddress.getString("moo"));
-
-                vatAddress.setPostCode(sourceCustomerAccountVatAddress.getString("postCode"));
-
-                vatAddress.setProvince(sourceCustomerAccountVatAddress.getString("province"));
-
-                vatAddress.setRoad(sourceCustomerAccountVatAddress.getString("road"));
-
-                vatAddress.setTroksoi(sourceCustomerAccountVatAddress.getString("troksoi"));
-
-                vatAddress.setVillage(sourceCustomerAccountVatAddress.getString("village"));
-
-                // vat delivery address
-                vatDeliveryAddress.setBuilding(sourceCustomerAccountVatDeliveryAddress.getString("building"));
-
-                vatDeliveryAddress.setCountry(sourceCustomerAccountVatDeliveryAddress.getString("country"));
-
-                vatDeliveryAddress.setHouseNumber(sourceCustomerAccountVatDeliveryAddress.getString("houseNumber"));
-
-                vatDeliveryAddress.setKhetAmphur(sourceCustomerAccountVatDeliveryAddress.getString("khetAmphur"));
-
-                vatDeliveryAddress.setKwangTambon(sourceCustomerAccountVatDeliveryAddress.getString("kwangTambon"));
-
-                vatDeliveryAddress.setMoo(sourceCustomerAccountVatDeliveryAddress.getString("moo"));
-
-                vatDeliveryAddress.setPostCode(sourceCustomerAccountVatDeliveryAddress.getString("postCode"));
-
-                vatDeliveryAddress.setProvince(sourceCustomerAccountVatDeliveryAddress.getString("province"));
-
-                vatDeliveryAddress.setRoad(sourceCustomerAccountVatDeliveryAddress.getString("road"));
-
-                vatDeliveryAddress.setTroksoi(sourceCustomerAccountVatDeliveryAddress.getString("troksoi"));
-
-                vatDeliveryAddress.setVillage(sourceCustomerAccountVatDeliveryAddress.getString("village"));
+                    if (sourceCustomerAccountBillDeliveryAddress.optString("village") != null){
+                        billDeliveryAddress.setVillage(sourceCustomerAccountBillDeliveryAddress.getString("village"));
+                    }
+                }
 
                 // destinationCustomerAccount
-                destinationCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
-                destinationCustomerAccount.setCardType(inputSourceCustomerAccount.getString("cardType"));
-                destinationCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getString("catEmployeeFlag"));
-                destinationCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
-                destinationCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
-                destinationCustomerAccount.setCompanyType(inputSourceCustomerAccount.getString("companyType"));
-                destinationCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
-                destinationCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custAccountId"));
-                destinationCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
-                destinationCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getString("customerGroup"));
-                destinationCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
-                destinationCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getString("customerInfoType"));
-                destinationCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getString("customerSegment"));
-                destinationCustomerAccount.setCustomerType(inputSourceCustomerAccount.getString("customerType"));
-                destinationCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
-                destinationCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
-                destinationCustomerAccount.setDocumentType(inputSourceCustomerAccount.getString("documentType"));
-                destinationCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
-                destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-                destinationCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
-                destinationCustomerAccount.setGender(inputSourceCustomerAccount.getString("gender"));
-                destinationCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
-                destinationCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
-                destinationCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
-                destinationCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
-                destinationCustomerAccount.setTitle(inputSourceCustomerAccount.getString("title"));
-                destinationCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
+                if (inputSourceCustomerAccount != null){
 
+                    if (inputSourceCustomerAccount.optString("cardNumber") != null){
+                        destinationCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("cardType") != null){
+                        destinationCustomerAccount.setCardType(inputSourceCustomerAccount.getString("cardType"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("catEmployeeFlag") != null){
+                        destinationCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getString("catEmployeeFlag"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("companyBranchId") != null){
+                        destinationCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("companyName") != null){
+                        destinationCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("companyType") != null){
+                        destinationCustomerAccount.setCompanyType(inputSourceCustomerAccount.getString("companyType"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("contactNumber") != null){
+                        destinationCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("custAccountId") != null){
+                        destinationCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custAccountId"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("customerFocus") != null){
+                        destinationCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("customerGroup") != null){
+                        destinationCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getString("customerGroup"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("customerId") != null){
+                        destinationCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("customerInfoType") != null){
+                        destinationCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getString("customerInfoType"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("customerSegment") != null){
+                        destinationCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getString("customerSegment"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("customerType") != null){
+                        destinationCustomerAccount.setCustomerType(inputSourceCustomerAccount.getString("customerType"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("dob") != null){
+                        destinationCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("documentNumber") != null){
+                        destinationCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("documentType") != null){
+                        destinationCustomerAccount.setDocumentType(inputSourceCustomerAccount.getString("documentType"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("emailAddress") != null){
+                        destinationCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("existingFlag") != null){
+                        destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("firstName") != null){
+                        destinationCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("gender") != null){
+                        destinationCustomerAccount.setGender(inputSourceCustomerAccount.getString("gender"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("ivrLanguage") != null){
+                        destinationCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("lastName") != null){
+                        destinationCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("nationality") != null){
+                        destinationCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("taxRegisterNumber") != null){
+                        destinationCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("title") != null){
+                        destinationCustomerAccount.setTitle(inputSourceCustomerAccount.getString("title"));
+                    }
+
+                    if (inputSourceCustomerAccount.optString("writtenLanguage") != null){
+                        destinationCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
+                    }
+                }
                 /*
                 *  TopUp
                 */
+                if (inputData.optString("topUp") != null){
+                    JSONObject inputTopUp = inputData.getJSONObject("topUp");
 
-                JSONObject inputTopUp = inputData.getJSONObject("topUp");
+                    if (inputData.optString("serialNumber") != null){
+                        topUp.setSerialNumber(inputTopUp.getString("serialNumber"));
+                    }
 
-                topUp.setSerialNumber(inputTopUp.getString("serialNumber"));
-                topUp.setTopupType(inputTopUp.getString("topupType"));
-                topUp.setRechargeAmount(inputTopUp.getInt("rechargeAmount"));
-                topUp.setCurrencyId(inputTopUp.getInt("currencyId"));
-                topUp.setChannelId(inputTopUp.getInt("channelId"));
+                    if (inputData.optString("topupType") != null){
+                        topUp.setTopupType(inputTopUp.getString("topupType"));
+                    }
+
+                    if (inputData.optString("rechargeAmount") != null){
+                        topUp.setRechargeAmount(inputTopUp.getInt("rechargeAmount"));
+                    }
+
+                    if (inputData.optString("currencyId") != null){
+                        topUp.setCurrencyId(inputTopUp.getInt("currencyId"));
+                    }
+
+                    if (inputData.optString("channelId") != null){
+                        topUp.setChannelId(inputTopUp.getInt("channelId"));
+                    }
+                }
 
                 /*
                 *  Credit Limit
@@ -524,30 +871,7 @@ public class RabbitMqConsumerService {
                 creditLimit.setValue(inputCreditLimit.getString("value"));
                 creditLimit.setActionType(inputCreditLimit.getString("actionType"));
 
-                /*
-                *  SouthernContactAddress
-                */
-                southernContactAddress.setBuilding(inputSouthernContactAddress.getString("building"));
-
-                southernContactAddress.setCountry(inputSouthernContactAddress.getString("country"));
-
-                southernContactAddress.setHouseNumber(inputSouthernContactAddress.getString("houseNumber"));
-
-                southernContactAddress.setKhetAmphur(inputSouthernContactAddress.getString("khetAmphur"));
-
-                southernContactAddress.setKwangTambon(inputSouthernContactAddress.getString("kwangTambon"));
-
-                southernContactAddress.setMoo(inputSouthernContactAddress.getString("moo"));
-
-                southernContactAddress.setPostCode(inputSouthernContactAddress.getString("postCode"));
-
-                southernContactAddress.setProvince(inputSouthernContactAddress.getString("province"));
-
-                southernContactAddress.setRoad(inputSouthernContactAddress.getString("road"));
-
-                southernContactAddress.setTroksoi(inputSouthernContactAddress.getString("troksoi"));
-
-                southernContactAddress.setVillage(inputSouthernContactAddress.getString("village"));
+                
 
                 /*
                 *  destinationSubscriberInfo
@@ -673,10 +997,11 @@ public class RabbitMqConsumerService {
         sendData.setMsisdn(String.format("0", "query")); // your code here
         sendData.setEventData(omEv);
 
+        return sendData;
         
     }
 
-    private void MappingTopUpData(ReceiveTopUpDataType receivedData ){
+    private Data MappingTopUpData(ReceiveTopUpDataType receivedData ){
         System.out.println(receivedData.toString());
         String effectiveDate = DateTime.getTriggerTimeStampNow();
         String triggerDate = DateTime.getTimeStampNowStr();
@@ -709,9 +1034,11 @@ public class RabbitMqConsumerService {
         sendData.setOrderType("TOPUP_RECHARGE");
         sendData.setMsisdn(String.format("0", receivedData.getMsisdn()));
         sendData.setEventData(topUpEv);
+
+        return sendData;
     }
 
-    private void MappingExpiredData(ReceiveExpiredDataType receivedData ){
+    private Data MappingExpiredData(ReceiveExpiredDataType receivedData ){
         System.out.println(receivedData.toString());
 
         String effectiveDate = DateTime.getTriggerTimeStampNow();
@@ -758,5 +1085,7 @@ public class RabbitMqConsumerService {
         sendData.setOrderType("PACKAGE_EXPIRE");
         sendData.setMsisdn(String.format("0", receivedData.getMsisdn()));
         sendData.setEventData(expiredEv);
+
+        return sendData;
     }
 }

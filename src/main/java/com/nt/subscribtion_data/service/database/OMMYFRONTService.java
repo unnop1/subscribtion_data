@@ -1,22 +1,25 @@
 package com.nt.subscribtion_data.service.database;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.nt.subscribtion_data.client.OMMYFRONTClient;
+import com.nt.subscribtion_data.model.dao.OMMYFRONT.IMSIOfferingConfig;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderData;
 
 @Service
 public class OMMYFRONTService {
 
-    @Value("${data-mapping.host}")
+    @Value("${ommyfront.host}")
     private String host;
 
-    @Value("${data-mapping.port}")
+    @Value("${ommyfront.port}")
     private String port;
 
-    @Value("${data-mapping.context}")
+    @Value("${ommyfront.context}")
     private String context="/";
 
     private OMMYFRONTClient client;
@@ -24,5 +27,10 @@ public class OMMYFRONTService {
     public OrderHeaderData getOrderHeaderDataByOrderID(String orderId){
         client = new OMMYFRONTClient(host, port, context);
         return client.GetOfferingSpecById(orderId);
+    }
+
+    public List<IMSIOfferingConfig> getImsiOfferingConfigList(){
+        client = new OMMYFRONTClient(host, port, context);
+        return client.GetListIMSIOfferingConfig();
     }
 }

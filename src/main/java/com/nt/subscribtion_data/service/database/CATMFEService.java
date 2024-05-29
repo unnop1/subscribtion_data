@@ -9,13 +9,13 @@ import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
 @Service
 public class CATMFEService {
 
-    @Value("${data-mapping.host}")
+    @Value("${catmfe.host}")
     private String host;
 
-    @Value("${data-mapping.port}")
+    @Value("${catmfe.port}")
     private String port;
 
-    @Value("${data-mapping.context}")
+    @Value("${catmfe.context}")
     private String context="/";
 
     private CATMFEClient client;
