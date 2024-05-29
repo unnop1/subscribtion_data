@@ -630,6 +630,7 @@ public class RabbitMqConsumerService {
                         billingAccount.setPaymentProfile(inputSourceCustomerAccount.getString("paymentProfile")); // must validate
                     }
 
+
                 }
 
                 
@@ -719,6 +720,7 @@ public class RabbitMqConsumerService {
                         billDeliveryAddress.setVillage(sourceCustomerAccountBillDeliveryAddress.getString("village"));
                     }
                 }
+                
 
                 // destinationCustomerAccount
                 if (inputSourceCustomerAccount != null){
@@ -831,6 +833,21 @@ public class RabbitMqConsumerService {
                         destinationCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
                     }
                 }
+
+                billingAccount.setBillingAccountId(offeringId);
+                billingAccount.setExistingFlag(null);
+                billingAccount.setPaymentProfile(externalId);
+                billingAccount.setBillingAccountId("");
+                billingAccount.setBillingInfo(billingInfo);
+                billingAccount.setVatAddress(vatAddress);
+                billingAccount.setVatDeliveryAddress(vatDeliveryAddress);
+                billingAccount.setBillDeliveryAddress(billDeliveryAddress);
+                destinationCustomerAccount.setAddress(address);
+                destinationCustomerAccount.setBillingAccount(billingAccount);
+                evenItem.setDestinationCustomerAccount(destinationCustomerAccount);
+
+
+
                 /*
                 *  TopUp
                 */
@@ -856,70 +873,151 @@ public class RabbitMqConsumerService {
                     if (inputData.has("channelId")){
                         topUp.setChannelId(inputTopUp.getInt("channelId"));
                     }
+                    evenItem.setTopUp(topUp);
                 }
 
                 /*
                 *  Credit Limit
                 */
-                JSONObject inputCreditLimit = inputData.getJSONObject("creditLimit");
-                creditLimit.setType(inputCreditLimit.getString("type"));
-                creditLimit.setValue(inputCreditLimit.getString("value"));
-                creditLimit.setActionType(inputCreditLimit.getString("actionType"));
+                JSONObject inputCreditLimit = null;
+                if (inputData.has("creditLimit")){
+                    inputCreditLimit = inputData.getJSONObject("creditLimit");
+
+                    if (inputCreditLimit.has("type")){
+                        creditLimit.setType(inputCreditLimit.getString("type"));
+                    }
+
+                    if (inputCreditLimit.has("value")){
+                        creditLimit.setValue(inputCreditLimit.getString("value"));
+                    }
+
+                    if (inputCreditLimit.has("actionType")){
+                        creditLimit.setActionType(inputCreditLimit.getString("actionType"));
+                    }
+                    evenItem.setCreditLimit(creditLimit);
+                }
+                
 
                 
 
                 /*
                 *  destinationSubscriberInfo
                 */
-                JSONObject inputSubscriberInfo = inputData.getJSONObject("subscriberInfo");
-                JSONObject inputSourceSimInfo = inputSubscriberInfo.getJSONObject("sourceSimInfo");
-                JSONObject inputDestinationSimInfo = inputSubscriberInfo.getJSONObject("destinationSimInfo");
+                JSONObject inputSubscriberInfo = null;
+                if (inputData.has("subscriberInfo")){
+                    inputSubscriberInfo = inputData.getJSONObject("subscriberInfo");
+
+                    JSONObject inputSourceSimInfo = null;
+                    if (inputData.has("sourceSimInfo")){
+                        inputSourceSimInfo = inputSubscriberInfo.getJSONObject("sourceSimInfo");
+
+                        // Source sim info
+                        List<SourceSimInfo> sourceSimInfoList = new ArrayList<SourceSimInfo>();
+                        SourceSimInfo sourceSimInfo = new SourceSimInfo();
+                        sourceSimInfo.setIccid(inputSourceSimInfo.getString("iccid"));
+                        sourceSimInfo.setImsi("query from db"); // your code here query
+                        sourceSimInfo.setSimType(inputSourceSimInfo.getString("simType"));
+                        sourceSimInfo.setFrequency("query from db"); // your code here query
+                        sourceSimInfoList.add(sourceSimInfo);
+
+                        JSONObject inputDestinationSimInfo = null;
+                        if (inputData.has("destinationSimInfo")){
+                            inputDestinationSimInfo = inputSubscriberInfo.getJSONObject("destinationSimInfo");
+                            
+                            // Source sim info
+                            List<DestinationSimInfo> destinationSimInfoList = new ArrayList<DestinationSimInfo>();
+                            DestinationSimInfo destinationSimInfo = new DestinationSimInfo();
+                            
+                            if (inputDestinationSimInfo.has("iccid")){
+                                destinationSimInfo.setIccid(inputDestinationSimInfo.getString("iccid"));
+                                destinationSimInfo.setImsi("imsi"); // search and query
+                            }                            
+                            destinationSimInfo.setSimType(null);
+
+                            destinationSimInfo.setFrequency(null); // Fix null
+                            destinationSimInfoList.add(destinationSimInfo);
+
+                            destinationSubscriberInfo.setDestinationSimInfo(destinationSimInfoList);
+                            destinationSubscriberInfo.setSourceSimInfo(sourceSimInfoList);
+
+                            if (inputDestinationSimInfo.has("itouristSimFlag")){
+                                destinationSubscriberInfo.setTouristSimFlag(inputDestinationSimInfo.getString("itouristSimFlag"));
+                            }
+
+                            if (inputDestinationSimInfo.has("subscriberNumber")){
+                                destinationSubscriberInfo.setSubscriberNumber(inputDestinationSimInfo.getString("subscriberNumber"));
+                            }
+
+                        }
+                        evenItem.setDestinationSubscriberInfo(destinationSubscriberInfo);
+                    }
+    
+                    
+                    
+                    if (inputSubscriberInfo.has("msisdn")){
+                        destinationSubscriberInfo.setMsisdn(inputSubscriberInfo.getString("msisdn"));
+                    }
+
+                    if (inputSubscriberInfo.has("serviceType")){
+                        destinationSubscriberInfo.setServiceType(inputSubscriberInfo.getString("serviceType"));
+                    }
+                }
                 
-                destinationSubscriberInfo.setMsisdn(inputSubscriberInfo.getString("msisdn"));
-                destinationSubscriberInfo.setServiceType(inputSubscriberInfo.getString("serviceType"));
-
-                // Source sim info
-                List<SourceSimInfo> sourceSimInfoList = new ArrayList<SourceSimInfo>();
-                SourceSimInfo sourceSimInfo = new SourceSimInfo();
-                sourceSimInfo.setIccid(inputSourceSimInfo.getString("iccid"));
-                sourceSimInfo.setImsi("query from db"); // your code here query
-                sourceSimInfo.setSimType(inputSourceSimInfo.getString("simType"));
-                sourceSimInfo.setFrequency("query from db"); // your code here query
-                sourceSimInfoList.add(sourceSimInfo);
-
-                // Source sim info
-                List<DestinationSimInfo> destinationSimInfoList = new ArrayList<DestinationSimInfo>();
-                DestinationSimInfo destinationSimInfo = new DestinationSimInfo();
-                
-                destinationSimInfo.setIccid(inputDestinationSimInfo.getString("iccid"));
-                destinationSimInfo.setIccid("query from db"); // your code here query
-                destinationSimInfo.setSimType(inputDestinationSimInfo.getString("simType"));
-                destinationSimInfo.setFrequency("query from db"); // your code here query
                 
 
-                destinationSubscriberInfo.setSourceSimInfo(sourceSimInfoList);
-                destinationSubscriberInfo.setTouristSimFlag(inputDestinationSimInfo.getString("itouristSimFlag"));
-                destinationSubscriberInfo.setSubscriberNumber(inputDestinationSimInfo.getString("subscriberNumber"));
 
+                
 
 
                 // Varieties service
+                List<VarietyService> varietyServices = new ArrayList<VarietyService>();
                 VarietyService varietyService = new VarietyService();
-                varietyService.setVarietyType(orderItem.getString("varietyServices"));
-                varietyService.setEnabledFlag(orderItem.getString("enabledFlag"));
+                if (orderItem.has("varietyServices")){
+                    varietyService.setVarietyType(orderItem.getString("varietyServices"));
+                }
+
+                if (orderItem.has("enabledFlag")){
+                    varietyService.setEnabledFlag(orderItem.getString("enabledFlag"));
+                }
+                varietyServices.add(varietyService);
+                evenItem.setVarietyServices(varietyServices);
 
                 // Balance transfer info
-                JSONObject orderItemBalanceTransferInfo = orderItem.getJSONObject("balanceTransferInfo");
-                BalanceTransferInfo balanceTransferInfo = new BalanceTransferInfo();
-                balanceTransferInfo.setTransferTotalFlag(orderItemBalanceTransferInfo.getString("transferTotalFlag"));
-                balanceTransferInfo.setTransferType(orderItemBalanceTransferInfo.getString("transferType"));
-                balanceTransferInfo.setTransferAmount(orderItemBalanceTransferInfo.getString("transferAmount"));
+                
+                JSONObject orderItemBalanceTransferInfo = null;
+                if (orderItem.has("balanceTransferInfo")){
+                    orderItemBalanceTransferInfo = orderItem.getJSONObject("balanceTransferInfo");
+                
+                    BalanceTransferInfo balanceTransferInfo = new BalanceTransferInfo();
+                    if (orderItemBalanceTransferInfo.has("transferTotalFlag")){
+                        balanceTransferInfo.setTransferTotalFlag(orderItemBalanceTransferInfo.getString("transferTotalFlag"));
+                    }
+
+                    if (orderItemBalanceTransferInfo.has("transferType")){
+                        balanceTransferInfo.setTransferType(orderItemBalanceTransferInfo.getString("transferType"));
+                    }
+
+                    if (orderItemBalanceTransferInfo.has("transferAmount")){
+                        balanceTransferInfo.setTransferAmount(orderItemBalanceTransferInfo.getString("transferAmount"));
+                    }
+                    evenItem.setBalanceTransferInfo(balanceTransferInfo);
+                }
 
                 // ExtendExpireInfo
-                JSONObject orderItemExtendExpireInfo = orderItem.getJSONObject("extendExpireInfo");
-                ExtendExpireInfo extendExpireInfo = new ExtendExpireInfo();
-                extendExpireInfo.setBalanceAmount(orderItemExtendExpireInfo.getString("extendedDay"));
-                extendExpireInfo.setExtendedDay(orderItemExtendExpireInfo.getString("transAmount"));
+                JSONObject orderItemExtendExpireInfo = null;
+                if (orderItem.has("extendExpireInfo")){
+                    orderItemExtendExpireInfo = orderItem.getJSONObject("extendExpireInfo");
+                    ExtendExpireInfo extendExpireInfo = new ExtendExpireInfo();
+
+                    if (orderItemExtendExpireInfo.has("extendedDay")){
+                        extendExpireInfo.setBalanceAmount(orderItemExtendExpireInfo.getString("extendedDay"));
+                    }
+
+                    if (orderItemExtendExpireInfo.has("transAmount")){
+                        extendExpireInfo.setExtendedDay(orderItemExtendExpireInfo.getString("transAmount"));
+                    }
+                    evenItem.setExtendExpireInfo(extendExpireInfo);
+                }
 
                 // contractInfo
 
@@ -949,13 +1047,11 @@ public class RabbitMqConsumerService {
                 contractInfo.setBillRefAmount(tMCDTLData.getBillRefAmount());
                 contractInfo.setManageContractType(tMCDTLData.getManageContractType());
                 contractInfo.setRemark(tMCDTLData.getRemark());
+                evenItem.setContractInfo(contractInfo);
 
 
 
-
-
-
-
+                // append eventItem
                 evenItems.add(evenItem);
 
                 
@@ -976,7 +1072,7 @@ public class RabbitMqConsumerService {
         saleInfo.setSaleRepEmpId(inputSaleInfo.getString("saleRepEmpId"));
         saleInfo.setSaleRepSapCode(inputSaleInfo.getString("saleRepSapCode"));
 
-        
+        omEv.setSaleInfo(saleInfo);
         omEv.setWrittenLanguage(inputData.getString("writtenLanguage"));
         omEv.setIvrLanguage(inputData.getString("ivrLanguage"));
 
