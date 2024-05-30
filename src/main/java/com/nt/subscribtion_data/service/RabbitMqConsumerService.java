@@ -134,6 +134,8 @@ public class RabbitMqConsumerService {
         TriggerMessageData triggerMsg = new TriggerMessageData();
         distributeService.CreateTriggerMessage(triggerMsg);
 
+        System.out.println("sendData:"+sendData.toString());
+
         return sendData;
     }
 
@@ -171,7 +173,7 @@ public class RabbitMqConsumerService {
 
         IMSIOfferingConfig imsiConfigData = getImsiConfigByImsi(invMappingData.getImsi(), imsiOfferConfigList);
 
-        TransManageContractDTLData transmanageData = omuserService.getTransManageContractDTLData("");
+        // TransManageContractDTLData transmanageData = omuserService.getTransManageContractDTLData("");
 
         
         // System.out.println(odheader.getInputData());
@@ -249,7 +251,7 @@ public class RabbitMqConsumerService {
                  */
                 List<Offer> offers = new ArrayList<Offer>();
                 Offer offer = new Offer();
-                String offeringId = null;
+                String offeringId = "";
                 
 
 
@@ -258,7 +260,7 @@ public class RabbitMqConsumerService {
                         offeringId = productOffering.getString("offeringId");
                     }
                 }
-
+                
                 OfferingSpecData ofrspec = catmfeService.getOfferingSpecByOfferingId(offeringId);
 
                 if (ofrspec != null){
@@ -1169,7 +1171,8 @@ public class RabbitMqConsumerService {
                     evenItem.setExtendExpireInfo(extendExpireInfo);
                 }
 
-                // contractInfo
+                // contractInfo 
+                /* Not Query ???? Unknown field for query */
                 TransManageContractDTLData tMCDTLData = new TransManageContractDTLData();
                 ContractInfo contractInfo = new ContractInfo();
                 contractInfo.setSubscrNo(tMCDTLData.getSubscrNo());

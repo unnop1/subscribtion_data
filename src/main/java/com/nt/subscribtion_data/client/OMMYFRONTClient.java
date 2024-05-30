@@ -28,7 +28,7 @@ public class OMMYFRONTClient {
         OrderHeaderData respData = null;
         try {
             URL url = new URL(String.format(
-                    "http://%s:%s%s/order_header/by_id?order_id=%s",
+                    "http://%s:%s%s/order_header/by_order_id?order_id=%s",
                     host,
                     port,
                     context,
@@ -64,7 +64,7 @@ public class OMMYFRONTClient {
         OrderHeaderData respData = null;
         try {
             URL url = new URL(String.format(
-                    "http://%s:%s%s/order_header/by_id?iccid=%s",
+                    "http://%s:%s%s/order_header/by_iccid?iccid=%s",
                     host,
                     port,
                     context,
