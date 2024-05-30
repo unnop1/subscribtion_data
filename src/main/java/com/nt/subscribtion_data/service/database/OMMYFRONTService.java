@@ -2,7 +2,6 @@ package com.nt.subscribtion_data.service.database;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +25,12 @@ public class OMMYFRONTService {
 
     public OrderHeaderData getOrderHeaderDataByOrderID(String orderId){
         client = new OMMYFRONTClient(host, port, context);
-        return client.GetOfferingSpecById(orderId);
+        return client.GetOfferHeaderById(orderId);
+    }
+
+    public OrderHeaderData getOrderHeaderDataByICCID(String iccid){
+        client = new OMMYFRONTClient(host, port, context);
+        return client.GetOfferHeaderByIccid(iccid);
     }
 
     public List<IMSIOfferingConfig> getImsiOfferingConfigList(){

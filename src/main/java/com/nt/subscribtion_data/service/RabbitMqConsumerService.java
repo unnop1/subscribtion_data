@@ -1,5 +1,6 @@
 package com.nt.subscribtion_data.service;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -168,6 +169,8 @@ public class RabbitMqConsumerService {
 
         List<IMSIOfferingConfig> imsiOfferConfigList = ommyfrontService.getImsiOfferingConfigList();
 
+        IMSIOfferingConfig imsiConfigData = getImsiConfigByImsi(invMappingData.getImsi(), imsiOfferConfigList);
+
         TransManageContractDTLData transmanageData = omuserService.getTransManageContractDTLData("");
 
         
@@ -210,8 +213,8 @@ public class RabbitMqConsumerService {
                 EventItem evenItem = new EventItem();
 
                 // EventItem
-                if (orderItem.has("orderId")){
-                    evenItem.setItemType(orderItem.getString("orderId"));
+                if (orderItem.has("orderType")){
+                    evenItem.setItemType(orderItem.getString("orderType"));
                 }
                 
                 if (orderItem.has("orderExecutionDate")){
@@ -246,108 +249,121 @@ public class RabbitMqConsumerService {
                  */
                 List<Offer> offers = new ArrayList<Offer>();
                 Offer offer = new Offer();
-
                 String offeringId = null;
+                
+
+
                 if (productOffering != null ){
                     if (productOffering.has("offeringId")){
                         offeringId = productOffering.getString("offeringId");
                     }
+                }
 
-                    OfferingSpecData ofrspec = catmfeService.getOfferingSpecByOfferingId(offeringId);
-        
+                OfferingSpecData ofrspec = catmfeService.getOfferingSpecByOfferingId(offeringId);
+
+                if (ofrspec != null){
+
                     offer.setOfferingId(offeringId);
 
-                    if (productOffering.has("offeringType")){
-                        offer.setOfferingType(productOffering.getString("offeringType"));
+                    if (productOffering != null ){
+                        if (productOffering.has("offeringType")){
+                            offer.setOfferingType(productOffering.getString("offeringType"));
+                        }
+                        
+                        if (productOffering.has("actionFlag")){
+                            offer.setActionFlag(productOffering.getString("actionFlag"));
+                        }
                     }
                     
-                    if (productOffering.has("actionFlag")){
-                        offer.setActionFlag(productOffering.getString("actionFlag"));
-                    }
-                
-                    if (ofrspec != null){
-                        offer.setOfferingNameTh(ofrspec.getOfferingnameTH());
 
-                        offer.setOfferingNameEn(ofrspec.getOfferingnameEN());
+                    offer.setOfferingNameTh(ofrspec.getOfferingnameTH());
 
-                        offer.setPackageId(ofrspec.getPackageID());
+                    offer.setOfferingNameEn(ofrspec.getOfferingnameEN());
 
-                        offer.setPackageName(ofrspec.getPackageName());
+                    offer.setPackageId(ofrspec.getPackageID());
 
-                        offer.setDescriptionTh(ofrspec.getDescTH());
+                    offer.setPackageName(ofrspec.getPackageName());
 
-                        offer.setDescriptionEn(ofrspec.getDescEN());
-                        if (subscriberInfo != null){
-                            if (subscriberInfo.has("serviceType")){
-                                offer.setServiceType(subscriberInfo.getInt("serviceType"));
-                            }
+                    offer.setDescriptionTh(ofrspec.getDescTH());
+
+                    offer.setDescriptionEn(ofrspec.getDescEN());
+
+                    if (subscriberInfo != null){
+                        if (subscriberInfo.has("serviceType")){
+                            offer.setServiceType(subscriberInfo.getInt("serviceType"));
                         }
+                    }    
 
-                        offer.setOcsOfferingName(ofrspec.getOcsofferingname());
+                    offer.setOcsOfferingName(ofrspec.getOcsofferingname());
 
-                        offer.setRcAmount(ofrspec.getRcamount());
+                    BigDecimal rcamount = new BigDecimal(ofrspec.getRcamount());
+                    offer.setRcAmount(rcamount);
 
-                        offer.setRcVatAmount(ofrspec.getRcvatamount());
+                    BigDecimal rcvatamount = new BigDecimal(ofrspec.getRcvatamount());
+                    offer.setRcVatAmount(rcvatamount);
 
-                        offer.setPeriod(ofrspec.getPeriod());
+                    offer.setPeriod(ofrspec.getPeriod());
 
-                        offer.setUnitPeriod(ofrspec.getUnitperiod());
+                    offer.setUnitPeriod(ofrspec.getUnitperiod());
 
-                        offer.setSaleStartDate(ofrspec.getSalestartdate());
+                    offer.setSaleStartDate(ofrspec.getSalestartdate());
 
-                        offer.setSaleEndDate(ofrspec.getSaleenddate());
+                    offer.setSaleEndDate(ofrspec.getSaleenddate());
 
-                        offer.setMaxDayAfterActiveDate(ofrspec.getMaxdayafteractivedate());
+                    BigDecimal maxdayafteractivedate = new BigDecimal(ofrspec.getMaxdayafteractivedate());
+                    offer.setMaxDayAfterActiveDate(maxdayafteractivedate);
 
-                        offer.setNiceNumberFlag(ofrspec.getNicenumberflag());
+                    offer.setNiceNumberFlag(ofrspec.getNicenumberflag());
 
-                        offer.setNiceNumberLevel(ofrspec.getNicenumberlevel());
+                    BigDecimal nicenumberlevel = new BigDecimal(ofrspec.getNicenumberlevel());
+                    offer.setNiceNumberLevel(nicenumberlevel);
 
-                        offer.setConTractFlag(ofrspec.getContractflag());
+                    offer.setConTractFlag(ofrspec.getContractflag());
 
-                        offer.setContractUnitPeriod(ofrspec.getContractunitperiod());
+                    BigDecimal contractunitperiod = new BigDecimal(ofrspec.getContractunitperiod());
+                    offer.setContractUnitPeriod(contractunitperiod);
 
-                        offer.setCatEmpFlag(ofrspec.getCatempflag());
+                    offer.setCatEmpFlag(ofrspec.getCatempflag());
 
-                        offer.setCatRetireEmpFlag(ofrspec.getRetiredcatempflag());
+                    offer.setCatRetireEmpFlag(ofrspec.getRetiredcatempflag());
 
-                        // offer.multisimFlag your code here with logic
-                        offer.setMultisimFlag(String.valueOf(invMappingData.getMultisimFlag()));
+                    // offer.multisimFlag your code here with logic
+                    offer.setMultisimFlag(String.valueOf(invMappingData.getMultisimFlag()));
 
-                        offer.setTopupSimFlag(ofrspec.getTopupsimflag());
+                    offer.setTopupSimFlag(ofrspec.getTopupsimflag());
 
-                        offer.setTouristSimFlag(ofrspec.getTouristsimflag());
+                    offer.setTouristSimFlag(ofrspec.getTouristsimflag());
 
-                        offer.setChangePoUssdCode(ofrspec.getChangepoussdcode());
+                    offer.setChangePoUssdCode(ofrspec.getChangepoussdcode());
 
-                        offer.setAddSoUssdCode(ofrspec.getAddsoussdcode());
+                    offer.setAddSoUssdCode(ofrspec.getAddsoussdcode());
 
-                        offer.setDeleteSoUssdCode(ofrspec.getDeletesoussdcode());
+                    offer.setDeleteSoUssdCode(ofrspec.getDeletesoussdcode());
 
-                        // offer.frequency your code here with logic
-                        String imsiMapping = invMappingData.getImsi();
-                        String imsiFrequency = "";
-                        for (IMSIOfferingConfig config : imsiOfferConfigList) {
-                            String prefix = config.getImsiPrefix();
-                            if (imsiMapping.startsWith(prefix)) {
-                                imsiMapping = prefix;
-                                imsiFrequency = config.getFrequency();
-                                break;
-                            }
+                    // offer.frequency your code here with logic
+                    String imsiMapping = invMappingData.getImsi();
+                    String imsiFrequency = "";
+                    for (IMSIOfferingConfig config : imsiOfferConfigList) {
+                        String prefix = config.getImsiPrefix();
+                        if (imsiMapping.startsWith(prefix)) {
+                            imsiMapping = prefix;
+                            imsiFrequency = config.getFrequency();
+                            break;
                         }
-
-                        offer.setFrequency(imsiFrequency);
-
-                        offer.setCanSwapPoFlag(ofrspec.getCanswappoflag());
-
-                        offers.add(offer);
-
-                        evenItem.setOffer(offers);
-                        /*  
-                        * End offer
-                        */
                     }
+
+                    offer.setFrequency(imsiFrequency);
+
+                    offer.setCanSwapPoFlag(ofrspec.getCanswappoflag());
+
+                    offers.add(offer);
+
+                    evenItem.setOffer(offers);
+                    /*  
+                    * End offer
+                    */
                 }
+                
 
                 
 
@@ -365,7 +381,7 @@ public class RabbitMqConsumerService {
                         }
 
                         if (orderPhoto.has("photoType")){
-                            photo.setPhotoType(orderPhoto.getString("photoType"));
+                            photo.setPhotoType(Integer.valueOf(orderPhoto.getInt("photoType")));
                         }
 
                         if (orderPhoto.has("dummyPhotoFlag")){
@@ -391,6 +407,11 @@ public class RabbitMqConsumerService {
                 BillDeliveryAddress billDeliveryAddress = new BillDeliveryAddress();
                 VatAddress vatAddress = new VatAddress();
                 VatDeliveryAddress vatDeliveryAddress = new VatDeliveryAddress();
+
+
+
+
+
                 TopUp topUp = new TopUp();
                 CreditLimit creditLimit = new CreditLimit();
                 SouthernContactAddress southernContactAddress = new SouthernContactAddress();
@@ -404,8 +425,575 @@ public class RabbitMqConsumerService {
                 JSONObject sourceCustomerAccountBillingAccountBillingInfo = null;
                 JSONObject sourceCustomerAccountVatAddress = null;
                 JSONObject sourceCustomerAccountVatDeliveryAddress = null;
+                
                 if (inputData.has("sourceCustomerAccount")){
                     inputSourceCustomerAccount = inputData.getJSONObject("sourceCustomerAccount");
+
+                    if (inputSourceCustomerAccount != null){
+                        if (inputSourceCustomerAccount.has("address")){
+                            inputSourceCustomerAccountAddress = inputSourceCustomerAccount.getJSONObject("address");
+    
+                            // DestinationCustomerAccount Address
+                            if (inputSourceCustomerAccountAddress.has("building")){
+                                address.setBuilding(inputSourceCustomerAccountAddress.getString("building"));
+                            }
+    
+                            if (inputSourceCustomerAccountAddress.has("country")){
+                                address.setCountry(inputSourceCustomerAccountAddress.getString("country"));
+                            }
+                            
+                            if (inputSourceCustomerAccountAddress.has("houseNumber")){
+                                address.setHouseNumber(inputSourceCustomerAccountAddress.getString("houseNumber"));
+                            }
+    
+                            if (inputSourceCustomerAccountAddress.has("khetAmphur")){
+                                address.setKhetAmphur(inputSourceCustomerAccountAddress.getString("khetAmphur"));
+                            }
+
+                            if (inputSourceCustomerAccountAddress.has("kwangTambon")){
+                                address.setKwangTambon(inputSourceCustomerAccountAddress.getString("kwangTambon"));
+                            }
+    
+                            if (inputSourceCustomerAccountAddress.has("moo")){
+                                address.setMoo(inputSourceCustomerAccountAddress.getString("moo"));
+                            }
+    
+                            if (inputSourceCustomerAccountAddress.has("postCode")){
+                                address.setPostCode(inputSourceCustomerAccountAddress.getString("postCode"));
+                            }
+                            
+                            if (inputSourceCustomerAccountAddress.has("province")){
+                                address.setProvince(inputSourceCustomerAccountAddress.getString("province"));
+                            }
+    
+                            if (inputSourceCustomerAccountAddress.has("road")){
+                                address.setRoad(inputSourceCustomerAccountAddress.getString("road"));
+                            }
+    
+                            if (inputSourceCustomerAccountAddress.has("troksoi")){
+                                address.setTroksoi(inputSourceCustomerAccountAddress.getString("troksoi"));
+                            }
+                            
+                            if (inputSourceCustomerAccountAddress.has("village")){
+                                address.setVillage(inputSourceCustomerAccountAddress.getString("village"));
+                            }
+
+                            // Billing Account
+                            if (inputSourceCustomerAccount.has("billingAccount")){
+
+                                sourceCustomerAccountBillingAccount = inputSourceCustomerAccount.getJSONObject("billingAccount");
+
+                                if (sourceCustomerAccountBillingAccount != null){
+                                    if (inputSourceCustomerAccount.has("existingFlag")){
+                                        billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+                                    }
+
+                                    if (inputSourceCustomerAccount.has("billingAccountId")){
+                                        billingAccount.setBillingAccountId(inputSourceCustomerAccount.getString("billingAccountId"));
+                                    }
+
+                                    if (inputSourceCustomerAccount.has("paymentProfile")){
+                                        billingAccount.setPaymentProfile(inputSourceCustomerAccount.getString("paymentProfile"));
+                                    }
+
+                                    
+                                    // Billing info
+                                    if (sourceCustomerAccountBillingAccount.has("billingInfo")){
+                                        sourceCustomerAccountBillingAccountBillingInfo = sourceCustomerAccountBillingAccount.getJSONObject("billingInfo");
+                
+                                        
+                                        if (sourceCustomerAccountBillingAccountBillingInfo.has("collectionUnit")){
+                                            billingInfo.setCollectionUnit(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionUnit"));
+                                        }
+                
+                                        if (sourceCustomerAccountBillingAccountBillingInfo.has("vat")){
+                                            billingInfo.setVat(sourceCustomerAccountBillingAccountBillingInfo.getInt("vat"));
+                                        }
+                
+                                        if (sourceCustomerAccountBillingAccountBillingInfo.has("billingPeriod")){
+                                            billingInfo.setBillingPeriod(sourceCustomerAccountBillingAccountBillingInfo.getString("billingPeriod"));
+                                        }
+                
+                                        if (sourceCustomerAccountBillingAccountBillingInfo.has("billable")){
+                                            billingInfo.setBillable(sourceCustomerAccountBillingAccountBillingInfo.getInt("billable"));
+                                        }
+                
+                                        if (sourceCustomerAccountBillingAccountBillingInfo.has("billingGroup")){
+                                            billingInfo.setBillingGroup(sourceCustomerAccountBillingAccountBillingInfo.getString("billingGroup"));
+                                        }
+                
+                                        if (sourceCustomerAccountBillingAccountBillingInfo.has("collectionTreatment")){
+                                            billingInfo.setCollectionTreatment(sourceCustomerAccountBillingAccountBillingInfo.getInt("collectionTreatment"));
+                                        }
+                
+                                        if (sourceCustomerAccountBillingAccountBillingInfo.has("dispatchMethod")){
+                                            billingInfo.setDispatchMethod(sourceCustomerAccountBillingAccountBillingInfo.getInt("dispatchMethod"));
+                                        }
+                
+                                        if (sourceCustomerAccountBillingAccountBillingInfo.has("emailAddress")){
+                                            billingInfo.setEmailAddress(sourceCustomerAccountBillingAccountBillingInfo.getString("emailAddress"));
+                                        }
+                                    }
+
+                                    // billing address
+                                    if (inputSourceCustomerAccountAddress.has("building")){
+                                        billingAddress.setBuilding(inputSourceCustomerAccountAddress.getString("building"));
+                                    }
+                                    
+                                    if (inputSourceCustomerAccountAddress.has("country")){
+                                        billingAddress.setCountry(inputSourceCustomerAccountAddress.getString("country"));
+                                    }
+
+                                    if (inputSourceCustomerAccountAddress.has("houseNumber")){
+                                        billingAddress.setHouseNumber(inputSourceCustomerAccountAddress.getString("houseNumber"));
+                                    }
+
+                                    if (inputSourceCustomerAccountAddress.has("khetAmphur")){
+                                        billingAddress.setKhetAmphur(inputSourceCustomerAccountAddress.getString("khetAmphur"));
+                                    }
+
+                                    if (inputSourceCustomerAccountAddress.has("kwangTambon")){
+                                        billingAddress.setKwangTambon(inputSourceCustomerAccountAddress.getString("kwangTambon"));
+                                    }
+
+                                    if (inputSourceCustomerAccountAddress.has("moo")){
+                                        billingAddress.setMoo(inputSourceCustomerAccountAddress.getString("moo"));
+                                    }
+            
+                                    if (inputSourceCustomerAccountAddress.has("postCode")){
+                                        billingAddress.setPostCode(inputSourceCustomerAccountAddress.getString("postCode"));
+                                    }
+                                    
+                                    if (inputSourceCustomerAccountAddress.has("province")){
+                                        billingAddress.setProvince(inputSourceCustomerAccountAddress.getString("province"));
+                                    }
+                                    
+                                    if (inputSourceCustomerAccountAddress.has("road")){
+                                        billingAddress.setRoad(inputSourceCustomerAccountAddress.getString("road"));
+                                    }
+                                    
+                                    if (inputSourceCustomerAccountAddress.has("troksoi")){
+                                        billingAddress.setTroksoi(inputSourceCustomerAccountAddress.getString("troksoi"));
+                                    }
+            
+                                    if (inputSourceCustomerAccountAddress.has("village")){
+                                        billingAddress.setVillage(inputSourceCustomerAccountAddress.getString("village"));
+                                    }
+                                }
+                            }
+
+    
+                        }
+    
+                        
+                        
+                        // billing delivery address
+                        if (inputSourceCustomerAccount.has("billDeliveryAddress")){
+                            sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
+
+                            
+                            if (sourceCustomerAccountBillDeliveryAddress.has("building")){
+                                billDeliveryAddress.setBuilding(sourceCustomerAccountBillDeliveryAddress.getString("building"));
+                            }else{
+                                billDeliveryAddress.setBuilding(address.getBuilding());
+                            }
+
+                            if (sourceCustomerAccountBillDeliveryAddress.has("country")){
+                                billDeliveryAddress.setCountry(sourceCustomerAccountBillDeliveryAddress.getString("country"));
+                            }else{
+                                billDeliveryAddress.setCountry(address.getCountry());
+                            }
+
+                            if (sourceCustomerAccountBillDeliveryAddress.has("houseNumber")){
+                                billDeliveryAddress.setHouseNumber(sourceCustomerAccountBillDeliveryAddress.getString("houseNumber"));
+                            }else{
+                                billDeliveryAddress.setHouseNumber(address.getHouseNumber());
+                            }
+
+                            if (sourceCustomerAccountBillDeliveryAddress.has("khetAmphur")){
+                                billDeliveryAddress.setKhetAmphur(sourceCustomerAccountBillDeliveryAddress.getString("khetAmphur"));
+                            }else{
+                                billDeliveryAddress.setKhetAmphur(address.getKhetAmphur());
+                            }
+
+                            if (sourceCustomerAccountBillDeliveryAddress.has("kwangTambon")){
+                                billDeliveryAddress.setKwangTambon(sourceCustomerAccountBillDeliveryAddress.getString("kwangTambon"));
+                            }else{
+                                billDeliveryAddress.setKwangTambon(address.getKwangTambon());
+                            }
+
+                            if (sourceCustomerAccountBillDeliveryAddress.has("moo")){
+                                billDeliveryAddress.setMoo(sourceCustomerAccountBillDeliveryAddress.getString("moo"));
+                            }else{
+                                billDeliveryAddress.setMoo(address.getMoo());
+                            }
+
+                            if (sourceCustomerAccountBillDeliveryAddress.has("postCode")){
+                                billDeliveryAddress.setPostCode(sourceCustomerAccountBillDeliveryAddress.getString("postCode"));
+                            }else{
+                                billDeliveryAddress.setPostCode(address.getPostCode());
+                            }
+
+                            if (sourceCustomerAccountBillDeliveryAddress.has("province")){
+                                billDeliveryAddress.setProvince(sourceCustomerAccountBillDeliveryAddress.getString("province"));
+                            }else{
+                                billDeliveryAddress.setProvince(address.getProvince());
+                            }
+
+                            if (sourceCustomerAccountBillDeliveryAddress.has("road")){
+                                billDeliveryAddress.setRoad(sourceCustomerAccountBillDeliveryAddress.getString("road"));
+                            }else{
+                                billDeliveryAddress.setRoad(address.getRoad());
+                            }
+
+                            if (sourceCustomerAccountBillDeliveryAddress.has("troksoi")){
+                                billDeliveryAddress.setTroksoi(sourceCustomerAccountBillDeliveryAddress.getString("troksoi"));
+                            }else{
+                                billDeliveryAddress.setTroksoi(address.getTroksoi());
+                            }
+
+                            if (sourceCustomerAccountBillDeliveryAddress.has("village")){
+                                billDeliveryAddress.setVillage(sourceCustomerAccountBillDeliveryAddress.getString("village"));
+                            }else{
+                                billDeliveryAddress.setVillage(address.getVillage());
+                            }
+                        }
+
+                        // vat address
+                        if (inputSourceCustomerAccount.has("vatAddress")){
+                            sourceCustomerAccountVatAddress = inputSourceCustomerAccount.getJSONObject("vatAddress");
+
+                            
+                            if (sourceCustomerAccountVatAddress.has("building")){
+                                vatAddress.setBuilding(sourceCustomerAccountVatAddress.getString("building"));
+                            }else{
+                                vatAddress.setBuilding(address.getBuilding());
+                            }
+
+                            if (sourceCustomerAccountVatAddress.has("country")){
+                                vatAddress.setCountry(sourceCustomerAccountVatAddress.getString("country"));
+                            }else{
+                                vatAddress.setCountry(address.getCountry());
+                            }
+
+                            if (sourceCustomerAccountVatAddress.has("houseNumber")){
+                                vatAddress.setHouseNumber(sourceCustomerAccountVatAddress.getString("houseNumber"));
+                            }else{
+                                vatAddress.setHouseNumber(address.getHouseNumber());
+                            }
+
+                            if (sourceCustomerAccountVatAddress.has("khetAmphur")){
+                                vatAddress.setKhetAmphur(sourceCustomerAccountVatAddress.getString("khetAmphur"));
+                            }else{
+                                vatAddress.setKhetAmphur(address.getKhetAmphur());
+                            }
+
+                            if (sourceCustomerAccountVatAddress.has("kwangTambon")){
+                                vatAddress.setKwangTambon(sourceCustomerAccountVatAddress.getString("kwangTambon"));
+                            }else{
+                                vatAddress.setKwangTambon(address.getKwangTambon());
+                            }
+
+                            if (sourceCustomerAccountVatAddress.has("moo")){
+                                vatAddress.setMoo(sourceCustomerAccountVatAddress.getString("moo"));
+                            }else{
+                                vatAddress.setMoo(address.getMoo());
+                            }
+
+                            if (sourceCustomerAccountVatAddress.has("postCode")){
+                                vatAddress.setPostCode(sourceCustomerAccountVatAddress.getString("postCode"));
+                            }else{
+                                vatAddress.setPostCode(address.getPostCode());
+                            }
+
+                            if (sourceCustomerAccountVatAddress.has("province")){
+                                vatAddress.setProvince(sourceCustomerAccountVatAddress.getString("province"));
+                            }else{
+                                vatAddress.setProvince(address.getProvince());
+                            }
+
+                            if (sourceCustomerAccountVatAddress.has("road")){
+                                vatAddress.setRoad(sourceCustomerAccountVatAddress.getString("road"));
+                            }else{
+                                vatAddress.setRoad(address.getRoad());
+                            }
+
+                            if (sourceCustomerAccountVatAddress.has("troksoi")){
+                                vatAddress.setTroksoi(sourceCustomerAccountVatAddress.getString("troksoi"));
+                            }else{
+                                vatAddress.setTroksoi(address.getTroksoi());
+                            }
+
+                            if (sourceCustomerAccountVatAddress.has("village")){
+                                vatAddress.setVillage(sourceCustomerAccountVatAddress.getString("village"));
+                            }else{
+                                vatAddress.setVillage(address.getVillage());
+                            }
+                        }
+
+                        // vat delivery address
+                        if (inputSourceCustomerAccount.has("vatDeliveryAddress")){
+                            sourceCustomerAccountVatDeliveryAddress = inputSourceCustomerAccount.getJSONObject("vatDeliveryAddress");
+
+                            
+                            if (sourceCustomerAccountVatDeliveryAddress.has("building")){
+                                vatDeliveryAddress.setBuilding(sourceCustomerAccountVatDeliveryAddress.getString("building"));
+                            }else{
+                                vatDeliveryAddress.setBuilding(address.getBuilding());
+                            }
+
+                            if (sourceCustomerAccountVatDeliveryAddress.has("country")){
+                                vatDeliveryAddress.setCountry(sourceCustomerAccountVatDeliveryAddress.getString("country"));
+                            }else{
+                                vatDeliveryAddress.setCountry(address.getCountry());
+                            }
+
+                            if (sourceCustomerAccountVatDeliveryAddress.has("houseNumber")){
+                                vatDeliveryAddress.setHouseNumber(sourceCustomerAccountVatDeliveryAddress.getString("houseNumber"));
+                            }else{
+                                vatDeliveryAddress.setHouseNumber(address.getHouseNumber());
+                            }
+
+                            if (sourceCustomerAccountVatDeliveryAddress.has("khetAmphur")){
+                                vatDeliveryAddress.setKhetAmphur(sourceCustomerAccountVatDeliveryAddress.getString("khetAmphur"));
+                            }else{
+                                vatDeliveryAddress.setKhetAmphur(address.getKhetAmphur());
+                            }
+
+                            if (sourceCustomerAccountVatDeliveryAddress.has("kwangTambon")){
+                                vatDeliveryAddress.setKwangTambon(sourceCustomerAccountVatDeliveryAddress.getString("kwangTambon"));
+                            }else{
+                                vatDeliveryAddress.setKwangTambon(address.getKwangTambon());
+                            }
+
+                            if (sourceCustomerAccountVatDeliveryAddress.has("moo")){
+                                vatDeliveryAddress.setMoo(sourceCustomerAccountVatDeliveryAddress.getString("moo"));
+                            }else{
+                                vatDeliveryAddress.setMoo(address.getMoo());
+                            }
+
+                            if (sourceCustomerAccountVatDeliveryAddress.has("postCode")){
+                                vatDeliveryAddress.setPostCode(sourceCustomerAccountVatDeliveryAddress.getString("postCode"));
+                            }else{
+                                vatDeliveryAddress.setPostCode(address.getPostCode());
+                            }
+
+                            if (sourceCustomerAccountVatDeliveryAddress.has("province")){
+                                vatDeliveryAddress.setProvince(sourceCustomerAccountVatDeliveryAddress.getString("province"));
+                            }else{
+                                vatDeliveryAddress.setProvince(address.getProvince());
+                            }
+
+                            if (sourceCustomerAccountVatDeliveryAddress.has("road")){
+                                vatDeliveryAddress.setRoad(sourceCustomerAccountVatDeliveryAddress.getString("road"));
+                            }else{
+                                vatDeliveryAddress.setRoad(address.getRoad());
+                            }
+
+                            if (sourceCustomerAccountVatDeliveryAddress.has("troksoi")){
+                                vatDeliveryAddress.setTroksoi(sourceCustomerAccountVatDeliveryAddress.getString("troksoi"));
+                            }else{
+                                vatDeliveryAddress.setTroksoi(address.getTroksoi());
+                            }
+
+                            if (sourceCustomerAccountVatDeliveryAddress.has("village")){
+                                vatDeliveryAddress.setVillage(sourceCustomerAccountVatDeliveryAddress.getString("village"));
+                            }else{
+                                vatDeliveryAddress.setVillage(address.getVillage());
+                            }
+                        }
+    
+                        // billing account
+                        if (inputSourceCustomerAccount.has("existingFlag")){
+                            billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+                        }
+    
+                        if (inputSourceCustomerAccount.has("billingAccountId")){
+                            billingAccount.setBillingAccountId(inputSourceCustomerAccount.getString("billingAccountId")); // must validate
+                        }
+    
+                        if (inputSourceCustomerAccount.has("paymentProfile")){
+                            billingAccount.setPaymentProfile(inputSourceCustomerAccount.getString("paymentProfile")); // must validate
+                        }
+                        
+                        billingAccount.setBillingInfo(billingInfo);
+                        billingAccount.setBillingAddress(billingAddress);
+                        billingAccount.setBillDeliveryAddress(billDeliveryAddress);
+                        billingAccount.setVatAddress(vatAddress);
+                        billingAccount.setVatDeliveryAddress(vatDeliveryAddress);
+    
+    
+                    }
+                    
+                }
+
+                
+
+                // destinationCustomerAccount
+                if (inputSourceCustomerAccount != null){
+
+                    if (inputSourceCustomerAccount.has("cardNumber")){
+                        destinationCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("cardType")){
+                        destinationCustomerAccount.setCardType(inputSourceCustomerAccount.getInt("cardType"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("catEmployeeFlag")){
+                        destinationCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getInt("catEmployeeFlag"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("companyBranchId")){
+                        destinationCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("companyName")){
+                        destinationCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("companyType")){
+                        destinationCustomerAccount.setCompanyType(inputSourceCustomerAccount.getInt("companyType"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("contactNumber")){
+                        destinationCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("custAccountId")){
+                        destinationCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custAccountId"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("customerFocus")){
+                        destinationCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("customerGroup")){
+                        destinationCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getInt("customerGroup"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("customerId")){
+                        destinationCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("customerInfoType")){
+                        destinationCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getInt("customerInfoType"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("customerSegment")){
+                        destinationCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getInt("customerSegment"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("customerType")){
+                        destinationCustomerAccount.setCustomerType(inputSourceCustomerAccount.getInt("customerType"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("dob")){
+                        destinationCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("documentNumber")){
+                        destinationCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("documentType")){
+                        destinationCustomerAccount.setDocumentType(inputSourceCustomerAccount.getInt("documentType"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("emailAddress")){
+                        destinationCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("existingFlag")){
+                        destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("firstName")){
+                        destinationCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("gender")){
+                        destinationCustomerAccount.setGender(inputSourceCustomerAccount.getInt("gender"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("ivrLanguage")){
+                        destinationCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("lastName")){
+                        destinationCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("nationality")){
+                        destinationCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("taxRegisterNumber")){
+                        destinationCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("title")){
+                        destinationCustomerAccount.setTitle(inputSourceCustomerAccount.getInt("title"));
+                    }
+
+                    if (inputSourceCustomerAccount.has("writtenLanguage")){
+                        destinationCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
+                    }
+                }
+
+                destinationCustomerAccount.setAddress(address);
+                destinationCustomerAccount.setBillingAccount(billingAccount);
+                evenItem.setDestinationCustomerAccount(destinationCustomerAccount);
+
+
+
+                /*
+                *  TopUp
+                */
+                if (inputData.has("topUp")){
+                    JSONObject inputTopUp = inputData.getJSONObject("topUp");
+
+                    if (inputData.has("serialNumber")){
+                        topUp.setSerialNumber(inputTopUp.getString("serialNumber"));
+                    }
+
+                    if (inputData.has("topupType")){
+                        topUp.setTopupType(inputTopUp.getInt("topupType"));
+                    }
+
+                    if (inputData.has("rechargeAmount")){
+                        topUp.setRechargeAmount(inputTopUp.getString("rechargeAmount"));
+                    }
+
+                    if (inputData.has("currencyId")){
+                        topUp.setCurrencyId(inputTopUp.getInt("currencyId"));
+                    }
+
+                    if (inputData.has("channelId")){
+                        topUp.setChannelId(inputTopUp.getInt("channelId"));
+                    }
+                    evenItem.setTopUp(topUp);
+                }
+
+                /*
+                *  Credit Limit
+                */
+                JSONObject inputCreditLimit = null;
+                if (inputData.has("creditLimit")){
+                    inputCreditLimit = inputData.getJSONObject("creditLimit");
+
+                    if (inputCreditLimit.has("type")){
+                        creditLimit.setType(inputCreditLimit.getString("type"));
+                    }
+
+                    if (inputCreditLimit.has("value")){
+                        creditLimit.setValue(inputCreditLimit.getString("value"));
+                    }
+
+                    if (inputCreditLimit.has("actionType")){
+                        creditLimit.setActionType(inputCreditLimit.getString("actionType"));
+                    }
+                    evenItem.setCreditLimit(creditLimit);
                 }
 
                 if (inputData.has("southernContactAddress")){
@@ -457,444 +1045,7 @@ public class RabbitMqConsumerService {
                     if (inputSouthernContactAddress.has("village")){
                         southernContactAddress.setVillage(inputSouthernContactAddress.getString("village"));
                     }
-                }
-
-                if (inputSourceCustomerAccount != null){
-                    if (inputSourceCustomerAccount.has("address")){
-                        inputSourceCustomerAccountAddress = inputSourceCustomerAccount.getJSONObject("address");
-
-                        // Destination Address
-                        address.setBuilding(inputSourceCustomerAccountAddress.getString("building"));
-
-                        address.setCountry(inputSourceCustomerAccountAddress.getString("country"));
-
-                        address.setHouseNumber(inputSourceCustomerAccountAddress.getString("houseNumber"));
-
-                        address.setKhetAmphur(inputSourceCustomerAccountAddress.getString("khetAmphur"));
-
-                        address.setKwangTambon(inputSourceCustomerAccountAddress.getString("kwangTambon"));
-
-                        address.setMoo(inputSourceCustomerAccountAddress.getString("moo"));
-
-                        address.setPostCode(inputSourceCustomerAccountAddress.getString("postCode"));
-
-                        address.setProvince(inputSourceCustomerAccountAddress.getString("province"));
-
-                        address.setRoad(inputSourceCustomerAccountAddress.getString("road"));
-
-                        address.setTroksoi(inputSourceCustomerAccountAddress.getString("troksoi"));
-
-                        address.setVillage(inputSourceCustomerAccountAddress.getString("village"));
-
-                        // billing address
-                        billingAddress.setBuilding(inputSourceCustomerAccountAddress.getString("building"));
-
-                        billingAddress.setCountry(inputSourceCustomerAccountAddress.getString("country"));
-
-                        billingAddress.setHouseNumber(inputSourceCustomerAccountAddress.getString("houseNumber"));
-
-                        billingAddress.setKhetAmphur(inputSourceCustomerAccountAddress.getString("khetAmphur"));
-
-                        billingAddress.setKwangTambon(inputSourceCustomerAccountAddress.getString("kwangTambon"));
-
-                        billingAddress.setMoo(inputSourceCustomerAccountAddress.getString("moo"));
-
-                        billingAddress.setPostCode(inputSourceCustomerAccountAddress.getString("postCode"));
-
-                        billingAddress.setProvince(inputSourceCustomerAccountAddress.getString("province"));
-
-                        billingAddress.setRoad(inputSourceCustomerAccountAddress.getString("road"));
-
-                        billingAddress.setTroksoi(inputSourceCustomerAccountAddress.getString("troksoi"));
-
-                        billingAddress.setVillage(inputSourceCustomerAccountAddress.getString("village"));
-
-                    }
-
-                    if (inputSourceCustomerAccount.has("billingAccount")){
-                        sourceCustomerAccountBillingAccount = inputSourceCustomerAccount.getJSONObject("billingAccount");
-                    }
-
-                    if (inputSourceCustomerAccount.has("billDeliveryAddress")){
-                        sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
-                    }
-
-                    if (inputSourceCustomerAccount.has("vatAddress")){
-                        sourceCustomerAccountVatAddress = inputSourceCustomerAccount.getJSONObject("vatAddress");
-
-                        // vat address
-                        if (sourceCustomerAccountVatAddress.has("building")){
-                            vatAddress.setBuilding(sourceCustomerAccountVatAddress.getString("building"));
-                        }
-
-                        if (sourceCustomerAccountVatAddress.has("country")){
-                            vatAddress.setCountry(sourceCustomerAccountVatAddress.getString("country"));
-                        }
-
-                        if (sourceCustomerAccountVatAddress.has("houseNumber")){
-                            vatAddress.setHouseNumber(sourceCustomerAccountVatAddress.getString("houseNumber"));
-                        }
-
-                        if (sourceCustomerAccountVatAddress.has("khetAmphur")){
-                            vatAddress.setKhetAmphur(sourceCustomerAccountVatAddress.getString("khetAmphur"));
-                        }
-
-                        if (sourceCustomerAccountVatAddress.has("kwangTambon")){
-                            vatAddress.setKwangTambon(sourceCustomerAccountVatAddress.getString("kwangTambon"));
-                        }
-
-                        if (sourceCustomerAccountVatAddress.has("moo")){
-                            vatAddress.setMoo(sourceCustomerAccountVatAddress.getString("moo"));
-                        }
-
-                        if (sourceCustomerAccountVatAddress.has("postCode")){
-                            vatAddress.setPostCode(sourceCustomerAccountVatAddress.getString("postCode"));
-                        }
-
-                        if (sourceCustomerAccountVatAddress.has("province")){
-                            vatAddress.setProvince(sourceCustomerAccountVatAddress.getString("province"));
-                        }
-
-                        if (sourceCustomerAccountVatAddress.has("road")){
-                            vatAddress.setRoad(sourceCustomerAccountVatAddress.getString("road"));
-                        }
-
-                        if (sourceCustomerAccountVatAddress.has("troksoi")){
-                            vatAddress.setTroksoi(sourceCustomerAccountVatAddress.getString("troksoi"));
-                        }
-
-                        if (sourceCustomerAccountVatAddress.has("village")){
-                            vatAddress.setVillage(sourceCustomerAccountVatAddress.getString("village"));
-                        }
-                    }
-                    
-                    if (inputSourceCustomerAccount.has("vatDeliveryAddress")){
-                        sourceCustomerAccountVatDeliveryAddress = inputSourceCustomerAccount.getJSONObject("vatDeliveryAddress");
-
-                        // vat delivery address
-                        if (sourceCustomerAccountVatDeliveryAddress.has("building")){
-                            vatDeliveryAddress.setBuilding(sourceCustomerAccountVatDeliveryAddress.getString("building"));
-                        }
-
-                        if (sourceCustomerAccountVatDeliveryAddress.has("country")){
-                            vatDeliveryAddress.setCountry(sourceCustomerAccountVatDeliveryAddress.getString("country"));
-                        }
-
-                        if (sourceCustomerAccountVatDeliveryAddress.has("houseNumber")){
-                            vatDeliveryAddress.setHouseNumber(sourceCustomerAccountVatDeliveryAddress.getString("houseNumber"));
-                        }
-
-                        if (sourceCustomerAccountVatDeliveryAddress.has("khetAmphur")){
-                            vatDeliveryAddress.setKhetAmphur(sourceCustomerAccountVatDeliveryAddress.getString("khetAmphur"));
-                        }
-
-                        if (sourceCustomerAccountVatDeliveryAddress.has("kwangTambon")){
-                            vatDeliveryAddress.setKwangTambon(sourceCustomerAccountVatDeliveryAddress.getString("kwangTambon"));
-                        }
-
-                        if (sourceCustomerAccountVatDeliveryAddress.has("moo")){
-                            vatDeliveryAddress.setMoo(sourceCustomerAccountVatDeliveryAddress.getString("moo"));
-                        }
-
-                        if (sourceCustomerAccountVatDeliveryAddress.has("postCode")){
-                            vatDeliveryAddress.setPostCode(sourceCustomerAccountVatDeliveryAddress.getString("postCode"));
-                        }
-
-                        if (sourceCustomerAccountVatDeliveryAddress.has("province")){
-                            vatDeliveryAddress.setProvince(sourceCustomerAccountVatDeliveryAddress.getString("province"));
-                        }
-
-                        if (sourceCustomerAccountVatDeliveryAddress.has("road")){
-                            vatDeliveryAddress.setRoad(sourceCustomerAccountVatDeliveryAddress.getString("road"));
-                        }
-
-                        if (sourceCustomerAccountVatDeliveryAddress.has("troksoi")){
-                            vatDeliveryAddress.setTroksoi(sourceCustomerAccountVatDeliveryAddress.getString("troksoi"));
-                        }
-
-                        if (sourceCustomerAccountVatDeliveryAddress.has("village")){
-                            vatDeliveryAddress.setVillage(sourceCustomerAccountVatDeliveryAddress.getString("village"));
-                        }
-                    }
-
-                    // billing account
-                    if (inputSourceCustomerAccount.has("existingFlag")){
-                        billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("billingAccountId")){
-                        billingAccount.setBillingAccountId(inputSourceCustomerAccount.getString("billingAccountId")); // must validate
-                    }
-
-                    if (inputSourceCustomerAccount.has("paymentProfile")){
-                        billingAccount.setPaymentProfile(inputSourceCustomerAccount.getString("paymentProfile")); // must validate
-                    }
-
-
-                }
-
-                
-                if (sourceCustomerAccountBillingAccount != null){
-                    if (sourceCustomerAccountBillingAccount.has("billingInfo")){
-                        sourceCustomerAccountBillingAccountBillingInfo = sourceCustomerAccountBillingAccount.getJSONObject("billingInfo");
-
-                        // billing info
-                        if (sourceCustomerAccountBillingAccountBillingInfo.has("collectionUnit")){
-                            billingInfo.setCollectionUnit(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionUnit"));
-                        }
-
-                        if (sourceCustomerAccountBillingAccountBillingInfo.has("vat")){
-                            billingInfo.setVat(sourceCustomerAccountBillingAccountBillingInfo.getString("vat"));
-                        }
-
-                        if (sourceCustomerAccountBillingAccountBillingInfo.has("billingPeriod")){
-                            billingInfo.setBillingPeriod(sourceCustomerAccountBillingAccountBillingInfo.getString("billingPeriod"));
-                        }
-
-                        if (sourceCustomerAccountBillingAccountBillingInfo.has("billable")){
-                            billingInfo.setBillable(sourceCustomerAccountBillingAccountBillingInfo.getString("billable"));
-                        }
-
-                        if (sourceCustomerAccountBillingAccountBillingInfo.has("billingGroup")){
-                            billingInfo.setBillingGroup(sourceCustomerAccountBillingAccountBillingInfo.getString("billingGroup"));
-                        }
-
-                        if (sourceCustomerAccountBillingAccountBillingInfo.has("collectionTreatment")){
-                            billingInfo.setCollectionTreatment(sourceCustomerAccountBillingAccountBillingInfo.getString("collectionTreatment"));
-                        }
-
-                        if (sourceCustomerAccountBillingAccountBillingInfo.has("dispatchMethod")){
-                            billingInfo.setDispatchMethod(sourceCustomerAccountBillingAccountBillingInfo.getString("dispatchMethod"));
-                        }
-
-                        if (sourceCustomerAccountBillingAccountBillingInfo.has("emailAddress")){
-                            billingInfo.setEmailAddress(sourceCustomerAccountBillingAccountBillingInfo.getString("emailAddress"));
-                        }
-                    }
-                }
-
-
-                // billing delivery address
-                if (sourceCustomerAccountBillDeliveryAddress != null){
-                    if (sourceCustomerAccountBillDeliveryAddress.has("building")){
-                        billDeliveryAddress.setBuilding(sourceCustomerAccountBillDeliveryAddress.getString("building"));
-                    }
-
-                    if (sourceCustomerAccountBillDeliveryAddress.has("country")){
-                        billDeliveryAddress.setCountry(sourceCustomerAccountBillDeliveryAddress.getString("country"));
-                    }
-
-                    if (sourceCustomerAccountBillDeliveryAddress.has("houseNumber")){
-                        billDeliveryAddress.setHouseNumber(sourceCustomerAccountBillDeliveryAddress.getString("houseNumber"));
-                    }
-
-                    if (sourceCustomerAccountBillDeliveryAddress.has("khetAmphur")){
-                        billDeliveryAddress.setKhetAmphur(sourceCustomerAccountBillDeliveryAddress.getString("khetAmphur"));
-                    }
-
-                    if (sourceCustomerAccountBillDeliveryAddress.has("kwangTambon")){
-                        billDeliveryAddress.setKwangTambon(sourceCustomerAccountBillDeliveryAddress.getString("kwangTambon"));
-                    }
-
-                    if (sourceCustomerAccountBillDeliveryAddress.has("moo")){
-                        billDeliveryAddress.setMoo(sourceCustomerAccountBillDeliveryAddress.getString("moo"));
-                    }
-
-                    if (sourceCustomerAccountBillDeliveryAddress.has("postCode")){
-                        billDeliveryAddress.setPostCode(sourceCustomerAccountBillDeliveryAddress.getString("postCode"));
-                    }
-
-                    if (sourceCustomerAccountBillDeliveryAddress.has("province")){
-                        billDeliveryAddress.setProvince(sourceCustomerAccountBillDeliveryAddress.getString("province"));
-                    }
-
-                    if (sourceCustomerAccountBillDeliveryAddress.has("road")){
-                        billDeliveryAddress.setRoad(sourceCustomerAccountBillDeliveryAddress.getString("road"));
-                    }
-
-                    if (sourceCustomerAccountBillDeliveryAddress.has("troksoi")){
-                        billDeliveryAddress.setTroksoi(sourceCustomerAccountBillDeliveryAddress.getString("troksoi"));
-                    }
-
-                    if (sourceCustomerAccountBillDeliveryAddress.has("village")){
-                        billDeliveryAddress.setVillage(sourceCustomerAccountBillDeliveryAddress.getString("village"));
-                    }
-                }
-                
-
-                // destinationCustomerAccount
-                if (inputSourceCustomerAccount != null){
-
-                    if (inputSourceCustomerAccount.has("cardNumber")){
-                        destinationCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("cardType")){
-                        destinationCustomerAccount.setCardType(inputSourceCustomerAccount.getString("cardType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("catEmployeeFlag")){
-                        destinationCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getString("catEmployeeFlag"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("companyBranchId")){
-                        destinationCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("companyName")){
-                        destinationCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("companyType")){
-                        destinationCustomerAccount.setCompanyType(inputSourceCustomerAccount.getString("companyType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("contactNumber")){
-                        destinationCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("custAccountId")){
-                        destinationCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custAccountId"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerFocus")){
-                        destinationCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerGroup")){
-                        destinationCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getString("customerGroup"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerId")){
-                        destinationCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerInfoType")){
-                        destinationCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getString("customerInfoType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerSegment")){
-                        destinationCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getString("customerSegment"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerType")){
-                        destinationCustomerAccount.setCustomerType(inputSourceCustomerAccount.getString("customerType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("dob")){
-                        destinationCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("documentNumber")){
-                        destinationCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("documentType")){
-                        destinationCustomerAccount.setDocumentType(inputSourceCustomerAccount.getString("documentType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("emailAddress")){
-                        destinationCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("existingFlag")){
-                        destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("firstName")){
-                        destinationCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("gender")){
-                        destinationCustomerAccount.setGender(inputSourceCustomerAccount.getString("gender"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("ivrLanguage")){
-                        destinationCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("lastName")){
-                        destinationCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("nationality")){
-                        destinationCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("taxRegisterNumber")){
-                        destinationCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("title")){
-                        destinationCustomerAccount.setTitle(inputSourceCustomerAccount.getString("title"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("writtenLanguage")){
-                        destinationCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
-                    }
-                }
-
-                billingAccount.setBillingAccountId(offeringId);
-                billingAccount.setExistingFlag(null);
-                billingAccount.setPaymentProfile(externalId);
-                billingAccount.setBillingAccountId("");
-                billingAccount.setBillingInfo(billingInfo);
-                billingAccount.setVatAddress(vatAddress);
-                billingAccount.setVatDeliveryAddress(vatDeliveryAddress);
-                billingAccount.setBillDeliveryAddress(billDeliveryAddress);
-                destinationCustomerAccount.setAddress(address);
-                destinationCustomerAccount.setBillingAccount(billingAccount);
-                evenItem.setDestinationCustomerAccount(destinationCustomerAccount);
-
-
-
-                /*
-                *  TopUp
-                */
-                if (inputData.has("topUp")){
-                    JSONObject inputTopUp = inputData.getJSONObject("topUp");
-
-                    if (inputData.has("serialNumber")){
-                        topUp.setSerialNumber(inputTopUp.getString("serialNumber"));
-                    }
-
-                    if (inputData.has("topupType")){
-                        topUp.setTopupType(inputTopUp.getString("topupType"));
-                    }
-
-                    if (inputData.has("rechargeAmount")){
-                        topUp.setRechargeAmount(inputTopUp.getInt("rechargeAmount"));
-                    }
-
-                    if (inputData.has("currencyId")){
-                        topUp.setCurrencyId(inputTopUp.getInt("currencyId"));
-                    }
-
-                    if (inputData.has("channelId")){
-                        topUp.setChannelId(inputTopUp.getInt("channelId"));
-                    }
-                    evenItem.setTopUp(topUp);
-                }
-
-                /*
-                *  Credit Limit
-                */
-                JSONObject inputCreditLimit = null;
-                if (inputData.has("creditLimit")){
-                    inputCreditLimit = inputData.getJSONObject("creditLimit");
-
-                    if (inputCreditLimit.has("type")){
-                        creditLimit.setType(inputCreditLimit.getString("type"));
-                    }
-
-                    if (inputCreditLimit.has("value")){
-                        creditLimit.setValue(inputCreditLimit.getString("value"));
-                    }
-
-                    if (inputCreditLimit.has("actionType")){
-                        creditLimit.setActionType(inputCreditLimit.getString("actionType"));
-                    }
-                    evenItem.setCreditLimit(creditLimit);
+                    evenItem.setSouthernContactAddress(southernContactAddress);
                 }
                 
 
@@ -907,6 +1058,14 @@ public class RabbitMqConsumerService {
                 if (inputData.has("subscriberInfo")){
                     inputSubscriberInfo = inputData.getJSONObject("subscriberInfo");
 
+                    if (inputSubscriberInfo.has("msisdn")){
+                        destinationSubscriberInfo.setMsisdn(inputSubscriberInfo.getString("msisdn"));
+                    }
+
+                    if (inputSubscriberInfo.has("serviceType")){
+                        destinationSubscriberInfo.setServiceType(inputSubscriberInfo.getString("serviceType"));
+                    }
+
                     JSONObject inputSourceSimInfo = null;
                     if (inputData.has("sourceSimInfo")){
                         inputSourceSimInfo = inputSubscriberInfo.getJSONObject("sourceSimInfo");
@@ -915,9 +1074,9 @@ public class RabbitMqConsumerService {
                         List<SourceSimInfo> sourceSimInfoList = new ArrayList<SourceSimInfo>();
                         SourceSimInfo sourceSimInfo = new SourceSimInfo();
                         sourceSimInfo.setIccid(inputSourceSimInfo.getString("iccid"));
-                        sourceSimInfo.setImsi("query from db"); // your code here query
+                        sourceSimInfo.setImsi(imsiConfigData.getImsiPrefix()); // query imsi prefix
                         sourceSimInfo.setSimType(inputSourceSimInfo.getString("simType"));
-                        sourceSimInfo.setFrequency("query from db"); // your code here query
+                        sourceSimInfo.setFrequency(imsiConfigData.getFrequency()); // query frequency
                         sourceSimInfoList.add(sourceSimInfo);
 
                         JSONObject inputDestinationSimInfo = null;
@@ -929,16 +1088,18 @@ public class RabbitMqConsumerService {
                             DestinationSimInfo destinationSimInfo = new DestinationSimInfo();
                             
                             if (inputDestinationSimInfo.has("iccid")){
-                                destinationSimInfo.setIccid(inputDestinationSimInfo.getString("iccid"));
-                                destinationSimInfo.setImsi("imsi"); // search and query
+                                String iccid = inputDestinationSimInfo.getString("iccid");
+                                destinationSimInfo.setIccid(iccid);
+
+                                OrderHeaderData destinationOdheader = ommyfrontService.getOrderHeaderDataByICCID(iccid);
+                                if (destinationOdheader != null){
+                                    destinationSimInfo.setImsi(destinationOdheader.getImsi()); // search from iccid
+                                }
                             }                            
-                            destinationSimInfo.setSimType(null);
+                            destinationSimInfo.setSimType(null); // Fix null
 
                             destinationSimInfo.setFrequency(null); // Fix null
                             destinationSimInfoList.add(destinationSimInfo);
-
-                            destinationSubscriberInfo.setDestinationSimInfo(destinationSimInfoList);
-                            destinationSubscriberInfo.setSourceSimInfo(sourceSimInfoList);
 
                             if (inputDestinationSimInfo.has("itouristSimFlag")){
                                 destinationSubscriberInfo.setTouristSimFlag(inputDestinationSimInfo.getString("itouristSimFlag"));
@@ -948,24 +1109,13 @@ public class RabbitMqConsumerService {
                                 destinationSubscriberInfo.setSubscriberNumber(inputDestinationSimInfo.getString("subscriberNumber"));
                             }
 
+                            destinationSubscriberInfo.setDestinationSimInfo(destinationSimInfoList);
                         }
-                        evenItem.setDestinationSubscriberInfo(destinationSubscriberInfo);
+                        destinationSubscriberInfo.setSourceSimInfo(sourceSimInfoList);
                     }
-    
+                    evenItem.setDestinationSubscriberInfo(destinationSubscriberInfo);
                     
-                    
-                    if (inputSubscriberInfo.has("msisdn")){
-                        destinationSubscriberInfo.setMsisdn(inputSubscriberInfo.getString("msisdn"));
-                    }
-
-                    if (inputSubscriberInfo.has("serviceType")){
-                        destinationSubscriberInfo.setServiceType(inputSubscriberInfo.getString("serviceType"));
-                    }
                 }
-                
-                
-
-
                 
 
 
@@ -982,8 +1132,8 @@ public class RabbitMqConsumerService {
                 varietyServices.add(varietyService);
                 evenItem.setVarietyServices(varietyServices);
 
+
                 // Balance transfer info
-                
                 JSONObject orderItemBalanceTransferInfo = null;
                 if (orderItem.has("balanceTransferInfo")){
                     orderItemBalanceTransferInfo = orderItem.getJSONObject("balanceTransferInfo");
@@ -1020,7 +1170,6 @@ public class RabbitMqConsumerService {
                 }
 
                 // contractInfo
-
                 TransManageContractDTLData tMCDTLData = new TransManageContractDTLData();
                 ContractInfo contractInfo = new ContractInfo();
                 contractInfo.setSubscrNo(tMCDTLData.getSubscrNo());
@@ -1060,32 +1209,43 @@ public class RabbitMqConsumerService {
         }
 
         // saleInfo
-        JSONObject inputSaleInfo = inputData.getJSONObject("saleInfo");
-        SaleInfo saleInfo = new SaleInfo();
-        saleInfo.setSaleEmpId(inputSaleInfo.getString("saleEmpId"));
-        saleInfo.setSapCode(inputSaleInfo.getString("sapCode"));
-        saleInfo.setDealerCode(inputSaleInfo.getString("dealerCode"));
-        saleInfo.setRegisterBySellerName(inputSaleInfo.getString("registerBySellerName"));
-        saleInfo.setSaleRole(inputSaleInfo.getString("saleRole"));
-        saleInfo.setRegisterProvince(inputSaleInfo.getString("registerProvince"));
-        saleInfo.setTerritoryName(inputSaleInfo.getString("territoryName"));
-        saleInfo.setSaleRepEmpId(inputSaleInfo.getString("saleRepEmpId"));
-        saleInfo.setSaleRepSapCode(inputSaleInfo.getString("saleRepSapCode"));
+        if(inputData.has("saleInfo")){
+            JSONObject inputSaleInfo = inputData.getJSONObject("saleInfo");
+            SaleInfo saleInfo = new SaleInfo();
+            saleInfo.setSaleEmpId(inputSaleInfo.getString("saleEmpId"));
+            saleInfo.setSapCode(inputSaleInfo.getString("sapCode"));
+            saleInfo.setDealerCode(inputSaleInfo.getString("dealerCode"));
+            saleInfo.setRegisterBySellerName(inputSaleInfo.getString("registerBySellerName"));
+            saleInfo.setSaleRole(inputSaleInfo.getString("saleRole"));
+            saleInfo.setRegisterProvince(inputSaleInfo.getString("registerProvince"));
+            saleInfo.setTerritoryName(inputSaleInfo.getString("territoryName"));
+            saleInfo.setSaleRepEmpId(inputSaleInfo.getString("saleRepEmpId"));
+            saleInfo.setSaleRepSapCode(inputSaleInfo.getString("saleRepSapCode"));
+            omEv.setSaleInfo(saleInfo);
+        }
 
-        omEv.setSaleInfo(saleInfo);
-        omEv.setWrittenLanguage(inputData.getString("writtenLanguage"));
-        omEv.setIvrLanguage(inputData.getString("ivrLanguage"));
+        // writtenLanguage
+        if(inputData.has("writtenLanguage")){
+            omEv.setWrittenLanguage(inputData.getString("writtenLanguage"));
+        }
 
-        // Order Header
-        JSONObject orderHeader = inputData.getJSONObject("orderHeader");
-        omEv.setOrderStatus(orderHeader.getString("orderStatus"));
+        // ivrLanguage
+        if(inputData.has("ivrLanguage")){
+            omEv.setIvrLanguage(inputData.getString("ivrLanguage"));
+        }
 
-        
+        // orderStatus
+        if(inputData.has("orderHeader")){
+            JSONObject orderHeader = inputData.getJSONObject("orderHeader");
+            if(orderHeader.has("orderStatus")){
+                omEv.setOrderStatus(orderHeader.getString("orderStatus"));
+            }
+        }
 
         sendData.setTriggerDate(triggerDate);
         sendData.setPublishChannel("OM-MFE");
         sendData.setOrderType(receivedData.getOrderType().toUpperCase());
-        sendData.setMsisdn(String.format("0", "query")); // your code here
+        sendData.setMsisdn(String.format("0", odheader.getMsisdn())); // your code here
         sendData.setEventData(omEv);
 
         return sendData;
@@ -1110,8 +1270,8 @@ public class RabbitMqConsumerService {
 
         // EventItem TopUp 
         TopUp topUp = new TopUp();
-        topUp.setTopupType(String.valueOf(receivedData.getRechargeType()));
-        topUp.setRechargeAmount(receivedData.getRechargeAmount());
+        topUp.setTopupType(receivedData.getRechargeType());
+        topUp.setRechargeAmount(String.valueOf(receivedData.getRechargeAmount()));
         topUp.setCurrencyId(receivedData.getCurrencyId());
         topUp.setChannelId(receivedData.getChannelId());
         topUp.setRechargeDate(receivedData.getRechargeDate());
@@ -1178,5 +1338,28 @@ public class RabbitMqConsumerService {
         sendData.setEventData(expiredEv);
 
         return sendData;
+    }
+
+    private String getImsiFrequencyValue(String imsi, List<IMSIOfferingConfig> imsiConfigs){
+        String imsiFrequency = "";
+        for (IMSIOfferingConfig config : imsiConfigs) {
+            String prefix = config.getImsiPrefix();
+            if (imsi.startsWith(prefix)) {
+                imsiFrequency = config.getFrequency();
+                return imsiFrequency;
+            }
+        }
+        return imsiFrequency;
+    }
+
+
+    private IMSIOfferingConfig getImsiConfigByImsi(String imsi, List<IMSIOfferingConfig> imsiConfigs){
+        for (IMSIOfferingConfig config : imsiConfigs) {
+            String prefix = config.getImsiPrefix();
+            if (imsi.startsWith(prefix)) {
+                return config;
+            }
+        }
+        return null;
     }
 }

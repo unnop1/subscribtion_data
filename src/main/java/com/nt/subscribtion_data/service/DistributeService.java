@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import com.nt.subscribtion_data.model.dao.DataModel.Data;
 import com.nt.subscribtion_data.model.dao.DataModel.TriggerMessageData;
-import com.nt.subscribtion_data.model.dto.ReceiveOMDataType;
 
 @Component
 public class DistributeService {

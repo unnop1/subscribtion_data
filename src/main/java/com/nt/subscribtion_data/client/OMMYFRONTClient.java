@@ -24,7 +24,7 @@ public class OMMYFRONTClient {
         this.context = context;
     }
 
-    public OrderHeaderData GetOfferingSpecById(String orderID){
+    public OrderHeaderData GetOfferHeaderById(String orderID){
         OrderHeaderData respData = null;
         try {
             URL url = new URL(String.format(
@@ -33,6 +33,42 @@ public class OMMYFRONTClient {
                     port,
                     context,
                     orderID
+                )
+            );
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                // Parse JSON response into MetricsResp object using ObjectMapper
+                ObjectMapper objectMapper = new ObjectMapper();
+                respData = objectMapper.readValue(response.toString(), OrderHeaderData.class);
+            } else {
+                System.out.println("GET request failed.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return respData;
+    }
+
+    public OrderHeaderData GetOfferHeaderByIccid(String iccid){
+        OrderHeaderData respData = null;
+        try {
+            URL url = new URL(String.format(
+                    "http://%s:%s%s/order_header/by_id?iccid=%s",
+                    host,
+                    port,
+                    context,
+                    iccid
                 )
             );
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();

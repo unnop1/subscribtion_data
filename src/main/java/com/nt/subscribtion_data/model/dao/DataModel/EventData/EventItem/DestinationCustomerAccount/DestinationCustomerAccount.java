@@ -54,10 +54,10 @@ public class DestinationCustomerAccount {
     private String cardNumber;
 
     @JsonProperty("cardType")
-    private String cardType;
+    private Integer cardType;
 
     @JsonProperty("catEmployeeFlag")
-    private String catEmployeeFlag;
+    private Integer catEmployeeFlag;
 
     @JsonProperty("companyBranchId")
     private String companyBranchId;
@@ -66,7 +66,7 @@ public class DestinationCustomerAccount {
     private String companyName;
 
     @JsonProperty("companyType")
-    private String companyType;
+    private Integer companyType;
 
     @JsonProperty("contactNumber")
     private String contactNumber;
@@ -79,20 +79,20 @@ public class DestinationCustomerAccount {
     private String customerFocus;
 
     @JsonProperty("customerGroup")
-    private String customerGroup;
+    private Integer customerGroup;
 
 
     @JsonProperty("customerId")
     private String customerId;
 
     @JsonProperty("customerInfoType")
-    private String customerInfoType;
+    private Integer customerInfoType;
 
     @JsonProperty("customerSegment")
-    private String customerSegment;
+    private Integer customerSegment;
 
     @JsonProperty("customerType")
-    private String customerType;
+    private Integer customerType;
 
     @JsonProperty("dob")
     private String dob;
@@ -102,7 +102,7 @@ public class DestinationCustomerAccount {
 
 
     @JsonProperty("documentType")
-    private String documentType;
+    private Integer documentType;
 
     @JsonProperty("emailAddress")
     private String emailAddress;
@@ -115,7 +115,7 @@ public class DestinationCustomerAccount {
     private String firstName;
 
     @JsonProperty("gender")
-    private String gender;
+    private Integer gender;
 
     @JsonProperty("ivrLanguage")
     private String ivrLanguage;
@@ -130,7 +130,7 @@ public class DestinationCustomerAccount {
     private String taxRegisterNumber;
 
     @JsonProperty("title")
-    private String title;
+    private Integer title;
 
     @JsonProperty("writtenLanguage")
     private String writtenLanguage;

@@ -19,7 +19,7 @@ public class Photo {
     private String photoId;
 
     @JsonProperty("photoType")
-    private String photoType;
+    private Integer photoType;
 
     @JsonProperty("dummyPhotoFlag")
     private Boolean dummyPhotoFlag;

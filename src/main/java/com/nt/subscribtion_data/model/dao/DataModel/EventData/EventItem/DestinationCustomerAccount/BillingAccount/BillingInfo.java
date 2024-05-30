@@ -26,22 +26,22 @@ public class BillingInfo {
     private String collectionUnit;
 
     @JsonProperty("vat")
-    private String vat;
+    private Integer vat;
 
     @JsonProperty("billingPeriod")
     private String billingPeriod;
 
     @JsonProperty("billable")
-    private String billable;
+    private Integer billable;
 
     @JsonProperty("billingGroup")
     private String billingGroup;
 
     @JsonProperty("collectionTreatment")
-    private String collectionTreatment;
+    private Integer collectionTreatment;
 
     @JsonProperty("dispatchMethod")
-    private String dispatchMethod;
+    private Integer dispatchMethod;
 
     @JsonProperty("emailAddress")
     private String emailAddress;

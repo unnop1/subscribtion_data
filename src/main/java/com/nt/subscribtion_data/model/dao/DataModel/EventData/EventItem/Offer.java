@@ -1,5 +1,7 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
@@ -78,10 +80,10 @@ public class Offer {
     private String ocsOfferingName;
 
     @JsonProperty("rcAmount")
-    private Long rcAmount;
+    private BigDecimal rcAmount;
 
     @JsonProperty("rcVatAmount")
-    private Long rcVatAmount;
+    private BigDecimal rcVatAmount;
 
     @JsonProperty("period")
     private Integer period;
@@ -96,19 +98,19 @@ public class Offer {
     private String saleEndDate;
 
     @JsonProperty("maxDayAfterActiveDate")
-    private String maxDayAfterActiveDate;
+    private BigDecimal maxDayAfterActiveDate;
 
     @JsonProperty("niceNumberFlag")
     private String niceNumberFlag;
 
     @JsonProperty("niceNumberLevel")
-    private Long niceNumberLevel;
+    private BigDecimal niceNumberLevel;
 
     @JsonProperty("conTractFlag")
     private String conTractFlag;
 
     @JsonProperty("contractUnitPeriod")
-    private String contractUnitPeriod;
+    private BigDecimal contractUnitPeriod;
 
     @JsonProperty("catEmpFlag")
     private String catEmpFlag;

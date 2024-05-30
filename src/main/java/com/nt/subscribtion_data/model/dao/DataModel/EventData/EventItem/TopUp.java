@@ -24,10 +24,10 @@ public class TopUp {
     private String serialNumber;
 
     @JsonProperty("topupType")
-    private String topupType;
+    private Integer topupType;
 
     @JsonProperty("rechargeAmount")
-    private Integer rechargeAmount;
+    private String rechargeAmount;
     
     @JsonProperty("currencyId")
     private Integer currencyId;
