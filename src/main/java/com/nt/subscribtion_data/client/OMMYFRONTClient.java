@@ -100,12 +100,13 @@ public class OMMYFRONTClient {
         List<IMSIOfferingConfig> respData = new ArrayList<IMSIOfferingConfig>();
         try {
             URL url = new URL(String.format(
-                    "http://%s:%s%sommyfront/imsi_offering_configs",
+                    "http://%s:%s%s/imsi_offering_config/list",
                     host,
                     port,
                     context
                 )
             );
+            System.out.println("ommyfront url: " + url);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
@@ -118,12 +119,16 @@ public class OMMYFRONTClient {
                     response.append(inputLine);
                 }
                 in.close();
+                if (response.toString().isEmpty()){
+                    return null;
+                }
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
                 respData = objectMapper.readValue(response.toString(),new TypeReference<List<IMSIOfferingConfig>>() {});
             } else {
                 System.out.println("GET request failed.");
+                System.out.println(connection.getResponseMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();

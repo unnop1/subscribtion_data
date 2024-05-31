@@ -34,6 +34,7 @@ public class INVUSERClient {
                     externalId
                 )
             );
+            System.out.println("inv url: " + url);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
@@ -46,6 +47,9 @@ public class INVUSERClient {
                     response.append(inputLine);
                 }
                 in.close();
+                if (response.toString().isEmpty()){
+                    return null;
+                }
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();

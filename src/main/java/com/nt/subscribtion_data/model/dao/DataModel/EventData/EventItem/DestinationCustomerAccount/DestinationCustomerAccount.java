@@ -1,5 +1,6 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.BillingAccount.BillingAccount;
 
@@ -9,6 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DestinationCustomerAccount {
     /*
     {

@@ -3,6 +3,9 @@ package com.nt.subscribtion_data.model.dao.DataModel.EventData;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.json.JSONObject;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.EventItem;
 
@@ -11,6 +14,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventData {
     /*
     "eventData": {
@@ -57,8 +61,8 @@ public class EventData {
     @JsonProperty("eventItem")
     private List<EventItem> eventItems;
 
-    @JsonProperty("subscriberInfo")
-    private SubscriberInfo subscriberInfo;
+    // @JsonProperty("subscriberInfo")
+    // private SubscriberInfo subscriberInfo=new SubscriberInfo();
 
     @JsonProperty("saleInfo")
     private SaleInfo saleInfo;

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.nt.subscribtion_data.client.CATMFEClient;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
 import com.nt.subscribtion_data.model.dao.DataModel.Data;
@@ -109,49 +110,119 @@ public class RabbitMqConsumerService {
 
     private Data processOMType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
         // Process for new_order_type
-        ObjectMapper objectMapper = new ObjectMapper();
-        ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
-        
-        // Mapping DataType
-        Data sendData = MappingOMData(receivedData);
+        Data sendData = null;
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
+            
 
-        
-        TriggerMessageData triggerMsg = new TriggerMessageData();
-        distributeService.CreateTriggerMessage(triggerMsg);
+            // Mapping DataType
+            sendData = MappingOMData(receivedData);
 
-        return sendData;
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
+            String jsonString = mapper.writeValueAsString(sendData);
+
+            System.out.println("sendData:"+jsonString);
+            TriggerMessageData triggerMsg = new TriggerMessageData();
+            /* Not finish */
+            triggerMsg.setMESSAGE_IN(message);
+            triggerMsg.setDATE_MODEL(message);
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setORDERID("");
+            triggerMsg.setOrderType_Name("");
+            triggerMsg.setOrderType_id(1L);
+            triggerMsg.setPHONENUMBER("");
+            triggerMsg.setPUBLISH_CHANNEL("");
+            triggerMsg.setRECEIVE_DATE(DateTime.getTimestampNowUTC());
+            triggerMsg.setSA_CHANNEL_CONNECT_ID(1L);
+            triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
+            distributeService.CreateTriggerMessage(triggerMsg);
+
+            distributeService.CreateTriggerMessage(triggerMsg);
+
+            return sendData;
+        }catch (Exception e){
+            return sendData;
+        }
     }
 
     private Data processTopUpType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
         // Process for new_order_type
-        ObjectMapper objectMapper = new ObjectMapper();
-        ReceiveTopUpDataType receivedData = objectMapper.readValue(message, ReceiveTopUpDataType.class);
-        
-        // Mapping DataType
-        Data sendData = MappingTopUpData(receivedData);
+        Data sendData = null;
+        // try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            ReceiveTopUpDataType receivedData = objectMapper.readValue(message, ReceiveTopUpDataType.class);
+            
+            // Mapping DataType
+            sendData = MappingTopUpData(receivedData);
 
-        
-        TriggerMessageData triggerMsg = new TriggerMessageData();
-        distributeService.CreateTriggerMessage(triggerMsg);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
+            String jsonString = mapper.writeValueAsString(sendData);
 
-        System.out.println("sendData:"+sendData.toString());
+            System.out.println("sendData:"+jsonString);
 
-        return sendData;
+            
+            TriggerMessageData triggerMsg = new TriggerMessageData();
+            /* Not finish */
+            triggerMsg.setMESSAGE_IN(message);
+            triggerMsg.setDATE_MODEL(message);
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setORDERID("");
+            triggerMsg.setOrderType_Name("");
+            triggerMsg.setOrderType_id(1L);
+            triggerMsg.setPHONENUMBER("");
+            triggerMsg.setPUBLISH_CHANNEL("");
+            triggerMsg.setRECEIVE_DATE(DateTime.getTimestampNowUTC());
+            triggerMsg.setSA_CHANNEL_CONNECT_ID(1L);
+            triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
+            distributeService.CreateTriggerMessage(triggerMsg);
+
+            return sendData;
+        // }catch (Exception e){
+        //     return sendData;
+        // }
     }
 
     private Data processExpiredType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
         // Process for new_order_type
-        ObjectMapper objectMapper = new ObjectMapper();
-        ReceiveExpiredDataType receivedData = objectMapper.readValue(message, ReceiveExpiredDataType.class);
-        
-        // Mapping DataType
-        Data sendData = MappingExpiredData(receivedData);
+        Data sendData = null;
+        // try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            ReceiveExpiredDataType receivedData = objectMapper.readValue(message, ReceiveExpiredDataType.class);
+            
+            // Mapping DataType
+            sendData = MappingExpiredData(receivedData);
 
-        
-        TriggerMessageData triggerMsg = new TriggerMessageData();
-        distributeService.CreateTriggerMessage(triggerMsg);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
+            String jsonString = mapper.writeValueAsString(sendData);
 
-        return sendData;
+            System.out.println("sendData:"+jsonString);
+
+            
+            TriggerMessageData triggerMsg = new TriggerMessageData();
+            /* Not finish */
+            triggerMsg.setMESSAGE_IN(message);
+            triggerMsg.setDATE_MODEL(message);
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setORDERID("");
+            triggerMsg.setOrderType_Name("");
+            triggerMsg.setOrderType_id(1L);
+            triggerMsg.setPHONENUMBER("");
+            triggerMsg.setPUBLISH_CHANNEL("");
+            triggerMsg.setRECEIVE_DATE(DateTime.getTimestampNowUTC());
+            triggerMsg.setSA_CHANNEL_CONNECT_ID(1L);
+            triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
+            distributeService.CreateTriggerMessage(triggerMsg);
+
+            distributeService.CreateTriggerMessage(triggerMsg);
+
+            return sendData;
+        // }catch (Exception e){
+        //     return sendData;
+        // }
     }
 
     private Data MappingOMData(ReceiveOMDataType receivedData ){
@@ -167,8 +238,9 @@ public class RabbitMqConsumerService {
         OrderHeaderData odheader = ommyfrontService.getOrderHeaderDataByOrderID(receivedData.getOrderId());
         
         String externalId = odheader.getMsisdn();
+        System.out.println("externalId: "+externalId);
         INVMappingData invMappingData = invuserService.getInvMappingData(externalId);
-
+        System.out.println("inv getImsi: "+invMappingData.getImsi());
         List<IMSIOfferingConfig> imsiOfferConfigList = ommyfrontService.getImsiOfferingConfigList();
 
         IMSIOfferingConfig imsiConfigData = getImsiConfigByImsi(invMappingData.getImsi(), imsiOfferConfigList);
@@ -207,6 +279,7 @@ public class RabbitMqConsumerService {
             omEv.setRerunRevisionNumber(inputData.getInt("rerunRevisionNumber"));
         }
 
+        // eventItem
         if (inputData.has("orderItem")){
             List<EventItem> evenItems = new ArrayList<>();
             JSONArray orderItems = inputData.getJSONArray("orderItem");
@@ -236,12 +309,12 @@ public class RabbitMqConsumerService {
                 }
 
                 // OrderItem
-                JSONObject productOffering = null;
+                JSONArray productOfferingList = new JSONArray();
                 if (orderItem.has("productOffering")){
-                    productOffering = orderItem.getJSONObject("productOffering");
+                    productOfferingList = orderItem.getJSONArray("productOffering");
                 }
 
-                JSONObject subscriberInfo = null;
+                JSONObject subscriberInfo = new JSONObject();
                 if (orderItem.has("subscriberInfo")){
                     subscriberInfo = orderItem.getJSONObject("subscriberInfo");
                 }
@@ -251,19 +324,24 @@ public class RabbitMqConsumerService {
                  */
                 List<Offer> offers = new ArrayList<Offer>();
                 Offer offer = new Offer();
-                String offeringId = "";
                 
 
-
-                if (productOffering != null ){
-                    if (productOffering.has("offeringId")){
-                        offeringId = productOffering.getString("offeringId");
+                List<String> offeringIdList = new ArrayList<>();
+                if (productOfferingList.length() > 0){
+                    for(int j=0;j<productOfferingList.length();j++){
+                        JSONObject productOffering = productOfferingList.getJSONObject(j);
+                        if (productOffering.has("offeringId")){
+                            String offeringId = productOffering.getString("offeringId");
+                            offeringIdList.add(offeringId);
+                        }
                     }
                 }
-                
-                OfferingSpecData ofrspec = catmfeService.getOfferingSpecByOfferingId(offeringId);
+                    
+                for(int j=0;j<offeringIdList.size();j++){
+                    JSONObject productOffering = productOfferingList.getJSONObject(j);
+                    String offeringId = offeringIdList.get(j);
 
-                if (ofrspec != null){
+                    OfferingSpecData ofrspec = catmfeService.getOfferingSpecByOfferingId(offeringId);
 
                     offer.setOfferingId(offeringId);
 
@@ -277,94 +355,97 @@ public class RabbitMqConsumerService {
                         }
                     }
                     
+                    if (ofrspec != null){
 
-                    offer.setOfferingNameTh(ofrspec.getOfferingnameTH());
+                        offer.setOfferingNameTh(ofrspec.getOfferingnameTH());
 
-                    offer.setOfferingNameEn(ofrspec.getOfferingnameEN());
+                        offer.setOfferingNameEn(ofrspec.getOfferingnameEN());
 
-                    offer.setPackageId(ofrspec.getPackageID());
+                        offer.setPackageId(ofrspec.getPackageID());
 
-                    offer.setPackageName(ofrspec.getPackageName());
+                        offer.setPackageName(ofrspec.getPackageName());
 
-                    offer.setDescriptionTh(ofrspec.getDescTH());
+                        offer.setDescriptionTh(ofrspec.getDescTH());
 
-                    offer.setDescriptionEn(ofrspec.getDescEN());
+                        offer.setDescriptionEn(ofrspec.getDescEN());
 
-                    if (subscriberInfo != null){
-                        if (subscriberInfo.has("serviceType")){
-                            offer.setServiceType(subscriberInfo.getInt("serviceType"));
+                        if (subscriberInfo != null){
+                            if (subscriberInfo.has("serviceType")){
+                                offer.setServiceType(subscriberInfo.getInt("serviceType"));
+                            }
+                        }    
+
+                        offer.setOcsOfferingName(ofrspec.getOcsofferingname());
+
+                        BigDecimal rcamount = new BigDecimal(ofrspec.getRcamount());
+                        offer.setRcAmount(rcamount);
+
+                        BigDecimal rcvatamount = new BigDecimal(ofrspec.getRcvatamount());
+                        offer.setRcVatAmount(rcvatamount);
+
+                        offer.setPeriod(ofrspec.getPeriod());
+
+                        offer.setUnitPeriod(ofrspec.getUnitperiod());
+
+                        offer.setSaleStartDate(ofrspec.getSalestartdate());
+
+                        offer.setSaleEndDate(ofrspec.getSaleenddate());
+
+                        BigDecimal maxdayafteractivedate = new BigDecimal(ofrspec.getMaxdayafteractivedate());
+                        offer.setMaxDayAfterActiveDate(maxdayafteractivedate);
+
+                        offer.setNiceNumberFlag(ofrspec.getNicenumberflag());
+
+                        BigDecimal nicenumberlevel = new BigDecimal(ofrspec.getNicenumberlevel());
+                        offer.setNiceNumberLevel(nicenumberlevel);
+
+                        offer.setConTractFlag(ofrspec.getContractflag());
+
+                        BigDecimal contractunitperiod = new BigDecimal(ofrspec.getContractunitperiod());
+                        offer.setContractUnitPeriod(contractunitperiod);
+
+                        offer.setCatEmpFlag(ofrspec.getCatempflag());
+
+                        offer.setCatRetireEmpFlag(ofrspec.getRetiredcatempflag());
+
+                        // offer.multisimFlag your code here with logic
+                        offer.setMultisimFlag(String.valueOf(invMappingData.getMultisimFlag()));
+
+                        offer.setTopupSimFlag(ofrspec.getTopupsimflag());
+
+                        offer.setTouristSimFlag(ofrspec.getTouristsimflag());
+
+                        offer.setChangePoUssdCode(ofrspec.getChangepoussdcode());
+
+                        offer.setAddSoUssdCode(ofrspec.getAddsoussdcode());
+
+                        offer.setDeleteSoUssdCode(ofrspec.getDeletesoussdcode());
+
+                        // offer.frequency your code here with logic
+                        String imsiMapping = invMappingData.getImsi();
+                        String imsiFrequency = "";
+                        for (IMSIOfferingConfig config : imsiOfferConfigList) {
+                            String prefix = config.getImsiPrefix();
+                            if (imsiMapping.startsWith(prefix)) {
+                                imsiMapping = prefix;
+                                imsiFrequency = config.getFrequency();
+                                break;
+                            }
                         }
-                    }    
 
-                    offer.setOcsOfferingName(ofrspec.getOcsofferingname());
+                        offer.setFrequency(imsiFrequency);
 
-                    BigDecimal rcamount = new BigDecimal(ofrspec.getRcamount());
-                    offer.setRcAmount(rcamount);
+                        offer.setCanSwapPoFlag(ofrspec.getCanswappoflag());
 
-                    BigDecimal rcvatamount = new BigDecimal(ofrspec.getRcvatamount());
-                    offer.setRcVatAmount(rcvatamount);
-
-                    offer.setPeriod(ofrspec.getPeriod());
-
-                    offer.setUnitPeriod(ofrspec.getUnitperiod());
-
-                    offer.setSaleStartDate(ofrspec.getSalestartdate());
-
-                    offer.setSaleEndDate(ofrspec.getSaleenddate());
-
-                    BigDecimal maxdayafteractivedate = new BigDecimal(ofrspec.getMaxdayafteractivedate());
-                    offer.setMaxDayAfterActiveDate(maxdayafteractivedate);
-
-                    offer.setNiceNumberFlag(ofrspec.getNicenumberflag());
-
-                    BigDecimal nicenumberlevel = new BigDecimal(ofrspec.getNicenumberlevel());
-                    offer.setNiceNumberLevel(nicenumberlevel);
-
-                    offer.setConTractFlag(ofrspec.getContractflag());
-
-                    BigDecimal contractunitperiod = new BigDecimal(ofrspec.getContractunitperiod());
-                    offer.setContractUnitPeriod(contractunitperiod);
-
-                    offer.setCatEmpFlag(ofrspec.getCatempflag());
-
-                    offer.setCatRetireEmpFlag(ofrspec.getRetiredcatempflag());
-
-                    // offer.multisimFlag your code here with logic
-                    offer.setMultisimFlag(String.valueOf(invMappingData.getMultisimFlag()));
-
-                    offer.setTopupSimFlag(ofrspec.getTopupsimflag());
-
-                    offer.setTouristSimFlag(ofrspec.getTouristsimflag());
-
-                    offer.setChangePoUssdCode(ofrspec.getChangepoussdcode());
-
-                    offer.setAddSoUssdCode(ofrspec.getAddsoussdcode());
-
-                    offer.setDeleteSoUssdCode(ofrspec.getDeletesoussdcode());
-
-                    // offer.frequency your code here with logic
-                    String imsiMapping = invMappingData.getImsi();
-                    String imsiFrequency = "";
-                    for (IMSIOfferingConfig config : imsiOfferConfigList) {
-                        String prefix = config.getImsiPrefix();
-                        if (imsiMapping.startsWith(prefix)) {
-                            imsiMapping = prefix;
-                            imsiFrequency = config.getFrequency();
-                            break;
-                        }
+                        offers.add(offer);
                     }
-
-                    offer.setFrequency(imsiFrequency);
-
-                    offer.setCanSwapPoFlag(ofrspec.getCanswappoflag());
-
-                    offers.add(offer);
-
-                    evenItem.setOffer(offers);
-                    /*  
-                    * End offer
-                    */
                 }
+
+                evenItem.setOffer(offers);
+                /*  
+                * End offer
+                */
+                
                 
 
                 
@@ -980,7 +1061,7 @@ public class RabbitMqConsumerService {
                 /*
                 *  Credit Limit
                 */
-                JSONObject inputCreditLimit = null;
+                JSONObject inputCreditLimit = new JSONObject();
                 if (inputData.has("creditLimit")){
                     inputCreditLimit = inputData.getJSONObject("creditLimit");
 
@@ -1056,7 +1137,7 @@ public class RabbitMqConsumerService {
                 /*
                 *  destinationSubscriberInfo
                 */
-                JSONObject inputSubscriberInfo = null;
+                JSONObject inputSubscriberInfo = new JSONObject();
                 if (inputData.has("subscriberInfo")){
                     inputSubscriberInfo = inputData.getJSONObject("subscriberInfo");
 
@@ -1068,7 +1149,7 @@ public class RabbitMqConsumerService {
                         destinationSubscriberInfo.setServiceType(inputSubscriberInfo.getString("serviceType"));
                     }
 
-                    JSONObject inputSourceSimInfo = null;
+                    JSONObject inputSourceSimInfo = new JSONObject();
                     if (inputData.has("sourceSimInfo")){
                         inputSourceSimInfo = inputSubscriberInfo.getJSONObject("sourceSimInfo");
 
@@ -1081,7 +1162,7 @@ public class RabbitMqConsumerService {
                         sourceSimInfo.setFrequency(imsiConfigData.getFrequency()); // query frequency
                         sourceSimInfoList.add(sourceSimInfo);
 
-                        JSONObject inputDestinationSimInfo = null;
+                        JSONObject inputDestinationSimInfo = new JSONObject();
                         if (inputData.has("destinationSimInfo")){
                             inputDestinationSimInfo = inputSubscriberInfo.getJSONObject("destinationSimInfo");
                             
@@ -1136,7 +1217,7 @@ public class RabbitMqConsumerService {
 
 
                 // Balance transfer info
-                JSONObject orderItemBalanceTransferInfo = null;
+                JSONObject orderItemBalanceTransferInfo = new JSONObject();
                 if (orderItem.has("balanceTransferInfo")){
                     orderItemBalanceTransferInfo = orderItem.getJSONObject("balanceTransferInfo");
                 
@@ -1156,7 +1237,7 @@ public class RabbitMqConsumerService {
                 }
 
                 // ExtendExpireInfo
-                JSONObject orderItemExtendExpireInfo = null;
+                JSONObject orderItemExtendExpireInfo = new JSONObject();
                 if (orderItem.has("extendExpireInfo")){
                     orderItemExtendExpireInfo = orderItem.getJSONObject("extendExpireInfo");
                     ExtendExpireInfo extendExpireInfo = new ExtendExpireInfo();
@@ -1209,7 +1290,12 @@ public class RabbitMqConsumerService {
                 
                 
             }
+            // EventItem
+            omEv.setEventItems(evenItems);
         }
+
+        
+        
 
         // saleInfo
         if(inputData.has("saleInfo")){
@@ -1282,11 +1368,13 @@ public class RabbitMqConsumerService {
         topUp.setRechargeLogId(receivedData.getRechargeLogId());
         eventItem.setTopUp(topUp);
         eventItems.add(eventItem);
+        
+        topUpEv.setEventItems(eventItems);
 
         sendData.setTriggerDate(triggerDate);
         sendData.setPublishChannel("Topup-GW");
         sendData.setOrderType("TOPUP_RECHARGE");
-        sendData.setMsisdn(String.format("0", receivedData.getMsisdn()));
+        sendData.setMsisdn(String.format("0%s", receivedData.getMsisdn()));
         sendData.setEventData(topUpEv);
 
         return sendData;
@@ -1324,6 +1412,8 @@ public class RabbitMqConsumerService {
         expire.setBrandName(receivedData.getBrandName());
         eventItem.setExpire(expire);
 
+        expiredEv.setEventItems(eventItems);
+
 
         // Offer data
         List<Offer> offers = new ArrayList<Offer>();
@@ -1337,22 +1427,10 @@ public class RabbitMqConsumerService {
         sendData.setTriggerDate(triggerDate);
         sendData.setPublishChannel("OM-MFE");
         sendData.setOrderType("PACKAGE_EXPIRE");
-        sendData.setMsisdn(String.format("0", receivedData.getMsisdn()));
+        sendData.setMsisdn(String.format("0%s", receivedData.getMsisdn()));
         sendData.setEventData(expiredEv);
 
         return sendData;
-    }
-
-    private String getImsiFrequencyValue(String imsi, List<IMSIOfferingConfig> imsiConfigs){
-        String imsiFrequency = "";
-        for (IMSIOfferingConfig config : imsiConfigs) {
-            String prefix = config.getImsiPrefix();
-            if (imsi.startsWith(prefix)) {
-                imsiFrequency = config.getFrequency();
-                return imsiFrequency;
-            }
-        }
-        return imsiFrequency;
     }
 
 
