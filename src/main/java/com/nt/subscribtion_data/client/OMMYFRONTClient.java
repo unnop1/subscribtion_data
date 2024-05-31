@@ -107,6 +107,7 @@ public class OMMYFRONTClient {
                     poid
                 )
             );
+            System.out.println("ommyfront url: " + url);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
