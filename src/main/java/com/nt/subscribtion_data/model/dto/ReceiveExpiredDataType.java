@@ -32,7 +32,7 @@ public class ReceiveExpiredDataType {
     private String notiMsgSeq;
 
     @JsonProperty("poId")
-    private String poId;
+    private Long poId;
 
     @JsonProperty("poName")
     private String poName;

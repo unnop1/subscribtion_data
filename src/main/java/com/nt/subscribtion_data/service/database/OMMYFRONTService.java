@@ -33,6 +33,11 @@ public class OMMYFRONTService {
         return client.GetOfferHeaderByIccid(iccid);
     }
 
+    public OrderHeaderData getOrderHeaderDataByPoID(Long poId){
+        client = new OMMYFRONTClient(host, port, context);
+        return client.GetOfferHeaderByPoId(poId);
+    }
+
     public List<IMSIOfferingConfig> getImsiOfferingConfigList(){
         client = new OMMYFRONTClient(host, port, context);
         return client.GetListIMSIOfferingConfig();

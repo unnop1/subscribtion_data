@@ -1389,6 +1389,23 @@ public class RabbitMqConsumerService {
         Data sendData = new Data();
 
         EventData expiredEv = new EventData();
+
+        OrderHeaderData odheader = ommyfrontService.getOrderHeaderDataByPoID(receivedData.getPoId());
+        
+        String externalId = odheader.getMsisdn();
+        System.out.println("externalId: "+externalId);
+        INVMappingData invMappingData = invuserService.getInvMappingData(externalId);
+        System.out.println("inv getImsi: "+invMappingData.getImsi());
+        List<IMSIOfferingConfig> imsiOfferConfigList = ommyfrontService.getImsiOfferingConfigList();
+
+        IMSIOfferingConfig imsiConfigData = getImsiConfigByImsi(invMappingData.getImsi(), imsiOfferConfigList);
+
+        // TransManageContractDTLData transmanageData = omuserService.getTransManageContractDTLData("");
+
+        
+        // System.out.println(odheader.getInputData());
+        JSONObject inputData = new JSONObject(odheader.getInputData().toString());
+
         expiredEv.setEventType("PACKAGE_EXPIRE");
 
         List<EventItem> eventItems = new ArrayList<EventItem>();
@@ -1397,32 +1414,174 @@ public class RabbitMqConsumerService {
         eventItem.setExecutionType("Now");
         eventItem.setEffectiveDate(effectiveDate);
 
-        // Expire data
-        Expire expire = new Expire();
-        expire.setMsisdn(receivedData.getMsisdn());
-        expire.setExpireOfferId(receivedData.getExpireOfferId());
-        expire.setExpireOfferInstId(receivedData.getExpireOfferInstId());
-        expire.setExpireOfferName(receivedData.getExpireOfferName());
-        expire.setExpireDate(receivedData.getExpireDate());
-        expire.setOfferPerchaseSeq(receivedData.getOfferPerchaseSeq());
-        expire.setNotiMsgSeq(receivedData.getNotiMsgSeq());
-        expire.setPoId(receivedData.getPoId());
-        expire.setPoName(receivedData.getPoName());
-        expire.setBrandId(receivedData.getBrandId());
-        expire.setBrandName(receivedData.getBrandName());
-        eventItem.setExpire(expire);
+        
+        // eventItem
+        if (inputData.has("orderItem")){
+            JSONArray orderItems = inputData.getJSONArray("orderItem");
+            for (int i = 0; i < orderItems.length(); i++){
+                JSONObject orderItem = orderItems.getJSONObject(i);
+                EventItem evenItem = new EventItem();
+
+                // Expire data
+                Expire expire = new Expire();
+                expire.setMsisdn(receivedData.getMsisdn());
+                expire.setExpireOfferId(receivedData.getExpireOfferId());
+                expire.setExpireOfferInstId(receivedData.getExpireOfferInstId());
+                expire.setExpireOfferName(receivedData.getExpireOfferName());
+                expire.setExpireDate(receivedData.getExpireDate());
+                expire.setOfferPerchaseSeq(receivedData.getOfferPerchaseSeq());
+                expire.setNotiMsgSeq(receivedData.getNotiMsgSeq());
+                expire.setPoId(receivedData.getPoId());
+                expire.setPoName(receivedData.getPoName());
+                expire.setBrandId(receivedData.getBrandId());
+                expire.setBrandName(receivedData.getBrandName());
+                eventItem.setExpire(expire);
+
+
+                /*  
+                * Offer 
+                */
+
+                // OrderItem
+                JSONArray productOfferingList = new JSONArray();
+                if (orderItem.has("productOffering")){
+                    productOfferingList = orderItem.getJSONArray("productOffering");
+                }
+
+                JSONObject subscriberInfo = new JSONObject();
+                if (orderItem.has("subscriberInfo")){
+                    subscriberInfo = orderItem.getJSONObject("subscriberInfo");
+                }
+
+                List<Offer> offers = new ArrayList<Offer>();
+                Offer offer = new Offer();
+                
+                List<String> offeringIdList = new ArrayList<>();
+                if (productOfferingList.length() > 0){
+                    for(int j=0;j<productOfferingList.length();j++){
+                        JSONObject productOffering = productOfferingList.getJSONObject(j);
+                        if (productOffering.has("offeringId")){
+                            String offeringId = productOffering.getString("offeringId");
+                            offeringIdList.add(offeringId);
+                        }
+                    }
+                }
+                    
+                for(int j=0;j<offeringIdList.size();j++){
+                    JSONObject productOffering = productOfferingList.getJSONObject(j);
+                    String offeringId = offeringIdList.get(j);
+
+                    OfferingSpecData ofrspec = catmfeService.getOfferingSpecByOfferingId(offeringId);
+
+                    offer.setOfferingId(offeringId);
+
+                    if (productOffering != null ){
+                        if (productOffering.has("offeringType")){
+                            offer.setOfferingType(productOffering.getString("offeringType"));
+                        }
+                        
+                        if (productOffering.has("actionFlag")){
+                            offer.setActionFlag(productOffering.getString("actionFlag"));
+                        }
+                    }
+                    
+                    if (ofrspec != null){
+
+                        offer.setOfferingNameTh(ofrspec.getOfferingnameTH());
+
+                        offer.setOfferingNameEn(ofrspec.getOfferingnameEN());
+
+                        offer.setPackageId(ofrspec.getPackageID());
+
+                        offer.setPackageName(ofrspec.getPackageName());
+
+                        offer.setDescriptionTh(ofrspec.getDescTH());
+
+                        offer.setDescriptionEn(ofrspec.getDescEN());
+
+                        if (subscriberInfo != null){
+                            if (subscriberInfo.has("serviceType")){
+                                offer.setServiceType(subscriberInfo.getInt("serviceType"));
+                            }
+                        }    
+
+                        offer.setOcsOfferingName(ofrspec.getOcsofferingname());
+
+                        BigDecimal rcamount = new BigDecimal(ofrspec.getRcamount());
+                        offer.setRcAmount(rcamount);
+
+                        BigDecimal rcvatamount = new BigDecimal(ofrspec.getRcvatamount());
+                        offer.setRcVatAmount(rcvatamount);
+
+                        offer.setPeriod(ofrspec.getPeriod());
+
+                        offer.setUnitPeriod(ofrspec.getUnitperiod());
+
+                        offer.setSaleStartDate(ofrspec.getSalestartdate());
+
+                        offer.setSaleEndDate(ofrspec.getSaleenddate());
+
+                        BigDecimal maxdayafteractivedate = new BigDecimal(ofrspec.getMaxdayafteractivedate());
+                        offer.setMaxDayAfterActiveDate(maxdayafteractivedate);
+
+                        offer.setNiceNumberFlag(ofrspec.getNicenumberflag());
+
+                        BigDecimal nicenumberlevel = new BigDecimal(ofrspec.getNicenumberlevel());
+                        offer.setNiceNumberLevel(nicenumberlevel);
+
+                        offer.setConTractFlag(ofrspec.getContractflag());
+
+                        BigDecimal contractunitperiod = new BigDecimal(ofrspec.getContractunitperiod());
+                        offer.setContractUnitPeriod(contractunitperiod);
+
+                        offer.setCatEmpFlag(ofrspec.getCatempflag());
+
+                        offer.setCatRetireEmpFlag(ofrspec.getRetiredcatempflag());
+
+                        // offer.multisimFlag your code here with logic
+                        offer.setMultisimFlag(String.valueOf(invMappingData.getMultisimFlag()));
+
+                        offer.setTopupSimFlag(ofrspec.getTopupsimflag());
+
+                        offer.setTouristSimFlag(ofrspec.getTouristsimflag());
+
+                        offer.setChangePoUssdCode(ofrspec.getChangepoussdcode());
+
+                        offer.setAddSoUssdCode(ofrspec.getAddsoussdcode());
+
+                        offer.setDeleteSoUssdCode(ofrspec.getDeletesoussdcode());
+
+                        // offer.frequency your code here with logic
+                        String imsiMapping = invMappingData.getImsi();
+                        String imsiFrequency = "";
+                        for (IMSIOfferingConfig config : imsiOfferConfigList) {
+                            String prefix = config.getImsiPrefix();
+                            if (imsiMapping.startsWith(prefix)) {
+                                imsiMapping = prefix;
+                                imsiFrequency = config.getFrequency();
+                                break;
+                            }
+                        }
+
+                        offer.setFrequency(imsiFrequency);
+
+                        offer.setCanSwapPoFlag(ofrspec.getCanswappoflag());
+
+                        offers.add(offer);
+                    }
+                }
+
+                evenItem.setOffer(offers);
+                /*  
+                * End offer
+                */
+            }
+            eventItems.add(eventItem);
+        }
 
         expiredEv.setEventItems(eventItems);
 
-
-        // Offer data
-        List<Offer> offers = new ArrayList<Offer>();
-        Offer offer = new Offer();
-        offer.setOfferingId(receivedData.getPoId());
-        eventItem.setOffer(offers);
-
-
-        eventItems.add(eventItem);
+        
 
         sendData.setTriggerDate(triggerDate);
         sendData.setPublishChannel("OM-MFE");
