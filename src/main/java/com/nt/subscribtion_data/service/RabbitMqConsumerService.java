@@ -1324,7 +1324,7 @@ public class RabbitMqConsumerService {
         sendData.setTriggerDate(triggerDate);
         sendData.setPublishChannel("OM-MFE");
         sendData.setOrderType(receivedData.getOrderType().toUpperCase());
-        sendData.setMsisdn(String.format("0", odheader.getMsisdn())); // your code here
+        sendData.setMsisdn(String.format("0%s", odheader.getMsisdn())); // your code here
         sendData.setEventData(omEv);
 
         return sendData;
