@@ -22,6 +22,6 @@ public class OMUSERService {
 
     public TransManageContractDTLData getTransManageContractDTLData(String id){
         client = new OMUSERClient(host, port, context);
-        return client.GetTransManageContractById(id);
+        return client.GetTransManageContractByTMasterId(id);
     }
 }

@@ -45,13 +45,11 @@ public class CATMFEClient {
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
-                System.out.println("offerings: " + response.toString());
-                if (response.toString().isEmpty()){
+                System.out.println("offerings: \"" + response.toString()+"\"");
+                if (response.toString().isBlank()){
                     return null;
                 }
                 respData = objectMapper.readValue(response.toString(), OfferingSpecData.class);
-            } else {
-                System.out.println("GET request failed.");
             }
         } catch (Exception e) {
             e.printStackTrace();

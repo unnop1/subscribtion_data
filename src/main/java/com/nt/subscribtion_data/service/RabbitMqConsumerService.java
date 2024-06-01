@@ -64,6 +64,7 @@ import com.nt.subscribtion_data.service.database.INVUSERService;
 import com.nt.subscribtion_data.service.database.OMMYFRONTService;
 import com.nt.subscribtion_data.service.database.OMUSERService;
 import com.nt.subscribtion_data.util.DateTime;
+import com.nt.subscribtion_data.component.CacheUpdater;
 
 @Service
 public class RabbitMqConsumerService {
@@ -82,6 +83,9 @@ public class RabbitMqConsumerService {
 
     @Autowired
     private CATMFEService catmfeService;
+
+    @Autowired
+    private CacheUpdater cacheUpdater;
 
     @RabbitListener(queues = {"RedsRechargeQ", "RedsOrderQ", "RedsPackageExpireQ"})
     public void receiveMessage(@Payload String message, @Headers Map<String, Object> headers) throws JsonMappingException, JsonProcessingException {
@@ -241,11 +245,19 @@ public class RabbitMqConsumerService {
         System.out.println("externalId: "+externalId);
         INVMappingData invMappingData = invuserService.getInvMappingData(externalId);
         System.out.println("inv getImsi: "+invMappingData.getImsi());
-        List<IMSIOfferingConfig> imsiOfferConfigList = ommyfrontService.getImsiOfferingConfigList();
+        
+        List<IMSIOfferingConfig> imsiOfferConfigList = cacheUpdater.getIMSIOfferConfigListCache();
+        if (imsiOfferConfigList == null){
+            System.out.println("not found cache");
+        
+            imsiOfferConfigList = ommyfrontService.getImsiOfferingConfigList();
+            cacheUpdater.setIMSIOfferConfigListCache(imsiOfferConfigList);
+        }
 
         IMSIOfferingConfig imsiConfigData = getImsiConfigByImsi(invMappingData.getImsi(), imsiOfferConfigList);
 
-        // TransManageContractDTLData transmanageData = omuserService.getTransManageContractDTLData("");
+        String transMasterID = odheader.getOrderId();
+        TransManageContractDTLData tMCDTLData = omuserService.getTransManageContractDTLData(transMasterID);
 
         
         // System.out.println(odheader.getInputData());
@@ -329,10 +341,16 @@ public class RabbitMqConsumerService {
                     for(int j=0;j<productOfferingList.length();j++){
                         JSONObject productOffering = productOfferingList.getJSONObject(j);
                         String offeringId = productOffering.getString("offeringId");
-
-                        OfferingSpecData ofrspec = catmfeService.getOfferingSpecByOfferingId(offeringId);
-
                         offer.setOfferingId(offeringId);
+
+                        OfferingSpecData ofrspec = null;
+                        
+                        if (!offeringId.isEmpty()){
+                            System.out.println("offeringId:"+offeringId);
+                            ofrspec = catmfeService.getOfferingSpecByOfferingId(offeringId);
+                            
+                        }
+                        
 
                         if (productOffering != null ){
                             if (productOffering.has("offeringType")){
@@ -1244,33 +1262,34 @@ public class RabbitMqConsumerService {
 
                 // contractInfo 
                 /* Not Query ???? Unknown field for query */
-                TransManageContractDTLData tMCDTLData = new TransManageContractDTLData();
-                ContractInfo contractInfo = new ContractInfo();
-                contractInfo.setSubscrNo(tMCDTLData.getSubscrNo());
-                contractInfo.setContractId(tMCDTLData.getContractId());
-                contractInfo.setRefDocumentId(tMCDTLData.getRefDocumentId());
-                contractInfo.setContractCode(tMCDTLData.getContractCode());
-                contractInfo.setRefDocumentId(tMCDTLData.getRefDocumentId());
-                contractInfo.setContractCode(tMCDTLData.getContractCode());
-                contractInfo.setContractType(tMCDTLData.getContractType());
-                contractInfo.setContractDesc(tMCDTLData.getContractDesc());
-                contractInfo.setContractMonth(tMCDTLData.getContractMonth());
-                contractInfo.setContractStart(tMCDTLData.getContractStart());
-                contractInfo.setContractEnd(tMCDTLData.getContractEnd());
-                contractInfo.setContractValue(tMCDTLData.getContractValue());
-                contractInfo.setBypassBy(tMCDTLData.getBypassBy());
-                contractInfo.setBypassApproveBy(tMCDTLData.getBypassApproveBy());
-                contractInfo.setBypassFee(tMCDTLData.getBypassFee());
-                contractInfo.setBypassReason(tMCDTLData.getBypassReason());
-                contractInfo.setBypassDate(tMCDTLData.getBypassDate());
-                contractInfo.setRequestBypassDate(tMCDTLData.getRequestBypassDate());
-                contractInfo.setApproveBypassDate(tMCDTLData.getApproveBypassDate());
-                contractInfo.setBillRefNo(tMCDTLData.getBillRefNo());
-                contractInfo.setBillRefDate(tMCDTLData.getBillRefDate());
-                contractInfo.setBillRefAmount(tMCDTLData.getBillRefAmount());
-                contractInfo.setManageContractType(tMCDTLData.getManageContractType());
-                contractInfo.setRemark(tMCDTLData.getRemark());
-                evenItem.setContractInfo(contractInfo);
+                if (tMCDTLData != null){
+                    ContractInfo contractInfo = new ContractInfo();
+                    contractInfo.setSubscrNo(tMCDTLData.getSubscrNo());
+                    contractInfo.setContractId(tMCDTLData.getContractId());
+                    contractInfo.setRefDocumentId(tMCDTLData.getRefDocumentId());
+                    contractInfo.setContractCode(tMCDTLData.getContractCode());
+                    contractInfo.setRefDocumentId(tMCDTLData.getRefDocumentId());
+                    contractInfo.setContractCode(tMCDTLData.getContractCode());
+                    contractInfo.setContractType(tMCDTLData.getContractType());
+                    contractInfo.setContractDesc(tMCDTLData.getContractDesc());
+                    contractInfo.setContractMonth(tMCDTLData.getContractMonth());
+                    contractInfo.setContractStart(tMCDTLData.getContractStart());
+                    contractInfo.setContractEnd(tMCDTLData.getContractEnd());
+                    contractInfo.setContractValue(tMCDTLData.getContractValue());
+                    contractInfo.setBypassBy(tMCDTLData.getBypassBy());
+                    contractInfo.setBypassApproveBy(tMCDTLData.getBypassApproveBy());
+                    contractInfo.setBypassFee(tMCDTLData.getBypassFee());
+                    contractInfo.setBypassReason(tMCDTLData.getBypassReason());
+                    contractInfo.setBypassDate(tMCDTLData.getBypassDate());
+                    contractInfo.setRequestBypassDate(tMCDTLData.getRequestBypassDate());
+                    contractInfo.setApproveBypassDate(tMCDTLData.getApproveBypassDate());
+                    contractInfo.setBillRefNo(tMCDTLData.getBillRefNo());
+                    contractInfo.setBillRefDate(tMCDTLData.getBillRefDate());
+                    contractInfo.setBillRefAmount(tMCDTLData.getBillRefAmount());
+                    contractInfo.setManageContractType(tMCDTLData.getManageContractType());
+                    contractInfo.setRemark(tMCDTLData.getRemark());
+                    evenItem.setContractInfo(contractInfo);
+                }
 
 
 

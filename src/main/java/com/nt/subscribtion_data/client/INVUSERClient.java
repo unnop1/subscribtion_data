@@ -54,8 +54,6 @@ public class INVUSERClient {
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
                 respData = objectMapper.readValue(response.toString(), INVMappingData.class);
-            } else {
-                System.out.println("GET request failed.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,8 +87,6 @@ public class INVUSERClient {
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
                 respDataList = objectMapper.readValue(response.toString(), new TypeReference<List<INVMasterData>>() {});
-            } else {
-                System.out.println("GET request failed.");
             }
         } catch (Exception e) {
             e.printStackTrace();

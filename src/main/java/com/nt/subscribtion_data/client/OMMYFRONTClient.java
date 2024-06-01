@@ -51,8 +51,6 @@ public class OMMYFRONTClient {
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
                 respData = objectMapper.readValue(response.toString(), OrderHeaderData.class);
-            } else {
-                System.out.println("GET request failed.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,8 +85,6 @@ public class OMMYFRONTClient {
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
                 respData = objectMapper.readValue(response.toString(), OrderHeaderData.class);
-            } else {
-                System.out.println("GET request failed.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -124,8 +120,6 @@ public class OMMYFRONTClient {
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
                 respData = objectMapper.readValue(response.toString(), OrderHeaderData.class);
-            } else {
-                System.out.println("GET request failed.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -163,9 +157,6 @@ public class OMMYFRONTClient {
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
                 respData = objectMapper.readValue(response.toString(),new TypeReference<List<IMSIOfferingConfig>>() {});
-            } else {
-                System.out.println("GET request failed.");
-                System.out.println(connection.getResponseMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -19,15 +19,15 @@ public class OMUSERClient {
         this.context = context;
     }
 
-    public TransManageContractDTLData GetTransManageContractById(String orderID){
+    public TransManageContractDTLData GetTransManageContractByTMasterId(String masterID){
         TransManageContractDTLData respData = null;
         try {
             URL url = new URL(String.format(
-                    "http://%s:%s%s/omuser/trans_manage_contract/by_id?id=81",
+                    "http://%s:%s%s/trans_manage_contract/by_trans_master_id?trans_master_id=%s",
                     host,
                     port,
                     context,
-                    orderID
+                    masterID
                 )
             );
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -46,8 +46,6 @@ public class OMUSERClient {
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
                 respData = objectMapper.readValue(response.toString(), TransManageContractDTLData.class);
-            } else {
-                System.out.println("GET request failed.");
             }
         } catch (Exception e) {
             e.printStackTrace();
