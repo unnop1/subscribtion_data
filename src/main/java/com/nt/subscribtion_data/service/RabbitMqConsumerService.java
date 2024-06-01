@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.print.attribute.standard.Destination;
 
+import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -16,6 +17,7 @@ import org.json.JSONObject;
 // import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.nt.subscribtion_data.client.CATMFEClient;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
 import com.nt.subscribtion_data.model.dao.DataModel.Data;
-import com.nt.subscribtion_data.model.dao.DataModel.TriggerMessageData;
+import com.nt.subscribtion_data.entity.TriggerMessageEntity;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventData;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.SaleInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.BalanceTransferInfo;
@@ -64,6 +66,8 @@ import com.nt.subscribtion_data.service.database.INVUSERService;
 import com.nt.subscribtion_data.service.database.OMMYFRONTService;
 import com.nt.subscribtion_data.service.database.OMUSERService;
 import com.nt.subscribtion_data.util.DateTime;
+
+
 import com.nt.subscribtion_data.component.CacheUpdater;
 
 @Service
@@ -85,6 +89,9 @@ public class RabbitMqConsumerService {
     private CATMFEService catmfeService;
 
     @Autowired
+    private KafkaProducerService kafkaProducerService;
+
+    @Autowired
     private CacheUpdater cacheUpdater;
 
     @RabbitListener(queues = {"RedsRechargeQ", "RedsOrderQ", "RedsPackageExpireQ"})
@@ -93,20 +100,32 @@ public class RabbitMqConsumerService {
             String queueName = (String) headers.get("amqp_receivedRoutingKey");
             System.out.println("Received message from queue " + queueName + ": " + message);
             // Process the message based on the queue name
+            Data sendData = null;
             switch (queueName) {
                 case "RedsRechargeQ":
-                    processTopUpType(message);
+                    sendData = processTopUpType(message);
                     break;
                 case "RedsOrderQ":
-                    processOMType(message);
+                    sendData = processOMType(message);
                     break;
                 case "RedsPackageExpireQ":
-                    processExpiredType(message);
+                    sendData = processExpiredType(message);
                     break;
                 default:
                     System.out.println("Unknown queue: " + queueName);
                     break;
             }
+
+            if (sendData != null){
+                try{
+                    kafkaProducerService.sendMessage(sendData.getOrderType(),"", sendData);
+                    System.out.println("sending to kafka");
+                
+                }catch (Exception e){
+                    System.out.println("sending to kafka fail");
+                }
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -119,30 +138,45 @@ public class RabbitMqConsumerService {
             ObjectMapper objectMapper = new ObjectMapper();
             ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
             
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+            triggerMsg.setMESSAGE_IN(message);
+            triggerMsg.setOrderType_Name(sendData.getOrderType());
+            triggerMsg.setOrderType_id(Long.valueOf(receivedData.getOrderId()));
+            triggerMsg.setPHONENUMBER(sendData.getMsisdn());
+            triggerMsg.setRECEIVE_DATE(DateTime.getTimestampNowUTC());
+            // triggerMsg.setSA_CHANNEL_CONNECT_ID();
+            distributeService.CreateTriggerMessage(triggerMsg);
+
+            OrderHeaderData odheader = ommyfrontService.getOrderHeaderDataByOrderID(receivedData.getOrderId());
+
+            if (odheader == null){
+                triggerMsg.setIS_STATUS(0);
+                triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
+            }
+
+            String externalId = odheader.getMsisdn();
+            // System.out.println("externalId: "+externalId);
+            INVMappingData invMappingData = invuserService.getInvMappingData(externalId);
 
             // Mapping DataType
-            sendData = MappingOMData(receivedData);
+            sendData = MappingOMData(odheader, invMappingData, receivedData.getOrderType().toUpperCase());
 
             ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
+            // mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
             String jsonString = mapper.writeValueAsString(sendData);
 
-            System.out.println("sendData:"+jsonString);
-            TriggerMessageData triggerMsg = new TriggerMessageData();
-            /* Not finish */
+            // System.out.println("sendData:"+jsonString);
             triggerMsg.setMESSAGE_IN(message);
-            triggerMsg.setDATE_MODEL(message);
+            triggerMsg.setDATE_MODEL(jsonString);
             triggerMsg.setIS_STATUS(0);
-            triggerMsg.setORDERID("");
-            triggerMsg.setOrderType_Name("");
-            triggerMsg.setOrderType_id(1L);
-            triggerMsg.setPHONENUMBER("");
+            // triggerMsg.setORDERID();
+            triggerMsg.setOrderType_Name(sendData.getOrderType());
+            triggerMsg.setOrderType_id(Long.valueOf(receivedData.getOrderId()));
+            triggerMsg.setPHONENUMBER(sendData.getMsisdn());
             triggerMsg.setPUBLISH_CHANNEL("");
             triggerMsg.setRECEIVE_DATE(DateTime.getTimestampNowUTC());
             triggerMsg.setSA_CHANNEL_CONNECT_ID(1L);
             triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
-            distributeService.CreateTriggerMessage(triggerMsg);
-
             distributeService.CreateTriggerMessage(triggerMsg);
 
             return sendData;
@@ -161,14 +195,14 @@ public class RabbitMqConsumerService {
             // Mapping DataType
             sendData = MappingTopUpData(receivedData);
 
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
-            String jsonString = mapper.writeValueAsString(sendData);
+            // ObjectMapper mapper = new ObjectMapper();
+            // mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
+            // String jsonString = mapper.writeValueAsString(sendData);
 
-            System.out.println("sendData:"+jsonString);
+            // System.out.println("sendData:"+jsonString);
 
             
-            TriggerMessageData triggerMsg = new TriggerMessageData();
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
             /* Not finish */
             triggerMsg.setMESSAGE_IN(message);
             triggerMsg.setDATE_MODEL(message);
@@ -206,7 +240,7 @@ public class RabbitMqConsumerService {
             System.out.println("sendData:"+jsonString);
 
             
-            TriggerMessageData triggerMsg = new TriggerMessageData();
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
             /* Not finish */
             triggerMsg.setMESSAGE_IN(message);
             triggerMsg.setDATE_MODEL(message);
@@ -229,22 +263,15 @@ public class RabbitMqConsumerService {
         // }
     }
 
-    private Data MappingOMData(ReceiveOMDataType receivedData ){
-        System.out.println(receivedData.toString());
-
+    private Data MappingOMData(OrderHeaderData odheader, INVMappingData invMappingData , String orderTypeName){
         String triggerDate = DateTime.getTimeStampNowStr();
 
         Data sendData = new Data();
         
         EventData omEv = new EventData();
         // Get orderid from database OMMYFRONT at table order_header
-        System.out.println("Get header from database OMMYFRONT");
-        OrderHeaderData odheader = ommyfrontService.getOrderHeaderDataByOrderID(receivedData.getOrderId());
-        
-        String externalId = odheader.getMsisdn();
-        System.out.println("externalId: "+externalId);
-        INVMappingData invMappingData = invuserService.getInvMappingData(externalId);
-        System.out.println("inv getImsi: "+invMappingData.getImsi());
+        // System.out.println("Get header from database OMMYFRONT");
+        // System.out.println("inv getImsi: "+invMappingData.getImsi());
         
         List<IMSIOfferingConfig> imsiOfferConfigList = cacheUpdater.getIMSIOfferConfigListCache();
         if (imsiOfferConfigList == null){
@@ -1342,7 +1369,7 @@ public class RabbitMqConsumerService {
 
         sendData.setTriggerDate(triggerDate);
         sendData.setPublishChannel("OM-MFE");
-        sendData.setOrderType(receivedData.getOrderType().toUpperCase());
+        sendData.setOrderType(orderTypeName);
         sendData.setMsisdn(String.format("0%s", odheader.getMsisdn())); // your code here
         sendData.setEventData(omEv);
 
