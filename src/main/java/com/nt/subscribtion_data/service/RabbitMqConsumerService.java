@@ -28,6 +28,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.nt.subscribtion_data.client.CATMFEClient;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
 import com.nt.subscribtion_data.model.dao.DataModel.Data;
+import com.nt.subscribtion_data.entity.OrderTypeEntity;
+import com.nt.subscribtion_data.entity.SaChannelConEntity;
 import com.nt.subscribtion_data.entity.TriggerMessageEntity;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventData;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.SaleInfo;
@@ -134,133 +136,253 @@ public class RabbitMqConsumerService {
     private Data processOMType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
         // Process for new_order_type
         Data sendData = null;
-        try{
-            ObjectMapper objectMapper = new ObjectMapper();
-            ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
-            
-            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-            triggerMsg.setMESSAGE_IN(message);
-            triggerMsg.setOrderType_Name(sendData.getOrderType());
-            triggerMsg.setOrderType_id(Long.valueOf(receivedData.getOrderId()));
-            triggerMsg.setPHONENUMBER(sendData.getMsisdn());
-            triggerMsg.setRECEIVE_DATE(DateTime.getTimestampNowUTC());
-            // triggerMsg.setSA_CHANNEL_CONNECT_ID();
-            distributeService.CreateTriggerMessage(triggerMsg);
+        Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
+        ObjectMapper objectMapper = new ObjectMapper();
+        ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
+        String orderType = receivedData.getOrderType().toUpperCase();
 
+        List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
+        if (orderTypes == null){
+            orderTypes = distributeService.LisOrderTypes();
+        }
+
+        OrderTypeEntity orderTypeInfo = getOrderTypeInfoFromList(orderType, orderTypes);
+
+        List<SaChannelConEntity> saChannels = cacheUpdater.getSaChannelConnectListCache();
+        if (saChannels == null){
+            saChannels = distributeService.ListChannelConnect();
+        } 
+        
+        SaChannelConEntity saChannelConInfo = getSaChannelInfoFromList("OM", saChannels);
+
+        try{
+            
             OrderHeaderData odheader = ommyfrontService.getOrderHeaderDataByOrderID(receivedData.getOrderId());
 
             if (odheader == null){
+                TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                triggerMsg.setMESSAGE_IN(message);
+                triggerMsg.setOrderType_Name(orderType);
+                triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+                triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
                 triggerMsg.setIS_STATUS(0);
-                triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
+                distributeService.CreateTriggerMessage(triggerMsg);
+                return null;
+            }else{
+                String externalId = odheader.getMsisdn();
+                // System.out.println("externalId: "+externalId);
+
+                INVMappingData invMappingData = invuserService.getInvMappingData(externalId);
+
+                // Mapping DataType
+                sendData = MappingOMData(odheader, invMappingData, orderType);
+
+                ObjectMapper mapper = new ObjectMapper();
+                // mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
+                String jsonString = mapper.writeValueAsString(sendData);
+
+                // System.out.println("sendData:"+jsonString);
+                if(orderTypeInfo.getIs_Enable().equals(1)){
+                    // Send to kafka server
+                    TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                    triggerMsg.setMESSAGE_IN(message);
+                    triggerMsg.setDATE_MODEL(jsonString);
+                    triggerMsg.setIS_STATUS(1);
+                    triggerMsg.setORDERID(receivedData.getOrderId());
+                    triggerMsg.setOrderType_Name(sendData.getOrderType());
+                    triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                    triggerMsg.setPHONENUMBER(sendData.getMsisdn());
+                    triggerMsg.setPUBLISH_CHANNEL("OM-MFE");
+                    triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+                    triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+                    triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
+                    distributeService.CreateTriggerMessage(triggerMsg);
+
+                    return sendData;
+                }else{
+                    // UnSend to kafka server
+                    TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                    triggerMsg.setMESSAGE_IN(message);
+                    triggerMsg.setDATE_MODEL(jsonString);
+                    triggerMsg.setIS_STATUS(0);
+                    triggerMsg.setORDERID(receivedData.getOrderId());
+                    triggerMsg.setOrderType_Name(sendData.getOrderType());
+                    triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                    triggerMsg.setPHONENUMBER(sendData.getMsisdn());
+                    triggerMsg.setPUBLISH_CHANNEL("OM-MFE");
+                    triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+                    triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+                    distributeService.CreateTriggerMessage(triggerMsg);
+
+                    return null;
+                }
             }
-
-            String externalId = odheader.getMsisdn();
-            // System.out.println("externalId: "+externalId);
-            INVMappingData invMappingData = invuserService.getInvMappingData(externalId);
-
-            // Mapping DataType
-            sendData = MappingOMData(odheader, invMappingData, receivedData.getOrderType().toUpperCase());
-
-            ObjectMapper mapper = new ObjectMapper();
-            // mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
-            String jsonString = mapper.writeValueAsString(sendData);
-
-            // System.out.println("sendData:"+jsonString);
-            triggerMsg.setMESSAGE_IN(message);
-            triggerMsg.setDATE_MODEL(jsonString);
-            triggerMsg.setIS_STATUS(0);
-            // triggerMsg.setORDERID();
-            triggerMsg.setOrderType_Name(sendData.getOrderType());
-            triggerMsg.setOrderType_id(Long.valueOf(receivedData.getOrderId()));
-            triggerMsg.setPHONENUMBER(sendData.getMsisdn());
-            triggerMsg.setPUBLISH_CHANNEL("");
-            triggerMsg.setRECEIVE_DATE(DateTime.getTimestampNowUTC());
-            triggerMsg.setSA_CHANNEL_CONNECT_ID(1L);
-            triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
-            distributeService.CreateTriggerMessage(triggerMsg);
-
-            return sendData;
         }catch (Exception e){
-            return sendData;
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+            triggerMsg.setMESSAGE_IN(message);
+            triggerMsg.setOrderType_Name(orderType);
+            triggerMsg.setOrderType_id(orderTypeInfo.getID());
+            triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+            triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+            triggerMsg.setIS_STATUS(0);
+            distributeService.CreateTriggerMessage(triggerMsg);
+            return null;
         }
     }
 
     private Data processTopUpType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
         // Process for new_order_type
+        Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
         Data sendData = null;
-        // try{
-            ObjectMapper objectMapper = new ObjectMapper();
-            ReceiveTopUpDataType receivedData = objectMapper.readValue(message, ReceiveTopUpDataType.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ReceiveTopUpDataType receivedData = objectMapper.readValue(message, ReceiveTopUpDataType.class);
+        String orderTypeName = "TOPUP_RECHARGE";
+        String channelType = "TOPUP";
+        String publishChannelType = "Topup-GW";
+        List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
+        if (orderTypes == null){
+            orderTypes = distributeService.LisOrderTypes();
+        }
+
+        OrderTypeEntity orderTypeInfo = getOrderTypeInfoFromList(orderTypeName, orderTypes);
+
+        List<SaChannelConEntity> saChannels = cacheUpdater.getSaChannelConnectListCache();
+        if (saChannels == null){
+            saChannels = distributeService.ListChannelConnect();
+        } 
+        
+        SaChannelConEntity saChannelConInfo = getSaChannelInfoFromList(channelType, saChannels);
+
+        try{
             
             // Mapping DataType
-            sendData = MappingTopUpData(receivedData);
+            sendData = MappingTopUpData(receivedData, orderTypeName);
 
-            // ObjectMapper mapper = new ObjectMapper();
-            // mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
-            // String jsonString = mapper.writeValueAsString(sendData);
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonString = mapper.writeValueAsString(sendData);
 
-            // System.out.println("sendData:"+jsonString);
+            if (orderTypeInfo.getIs_Enable().equals(1)){
+                // Send to kafka server
+                TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                triggerMsg.setMESSAGE_IN(message);
+                triggerMsg.setDATE_MODEL(jsonString);
+                triggerMsg.setIS_STATUS(1);
+                triggerMsg.setOrderType_Name(orderTypeName);
+                triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                triggerMsg.setPHONENUMBER(sendData.getMsisdn());
+                triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
+                triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+                triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+                triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
+                distributeService.CreateTriggerMessage(triggerMsg);
+                return sendData;
+            }else{
+                // UnSend to kafka server
+                TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                triggerMsg.setMESSAGE_IN(message);
+                triggerMsg.setDATE_MODEL(jsonString);
+                triggerMsg.setIS_STATUS(0);
+                triggerMsg.setOrderType_Name(orderTypeName);
+                triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                triggerMsg.setPHONENUMBER(sendData.getMsisdn());
+                triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
+                triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+                triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+                distributeService.CreateTriggerMessage(triggerMsg);
 
-            
+                return null;
+            }
+        }catch (Exception e){
             TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-            /* Not finish */
             triggerMsg.setMESSAGE_IN(message);
-            triggerMsg.setDATE_MODEL(message);
+            triggerMsg.setOrderType_Name(orderTypeName);
+            triggerMsg.setOrderType_id(orderTypeInfo.getID());
+            triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+            triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+            triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
             triggerMsg.setIS_STATUS(0);
-            triggerMsg.setORDERID("");
-            triggerMsg.setOrderType_Name("");
-            triggerMsg.setOrderType_id(1L);
-            triggerMsg.setPHONENUMBER("");
-            triggerMsg.setPUBLISH_CHANNEL("");
-            triggerMsg.setRECEIVE_DATE(DateTime.getTimestampNowUTC());
-            triggerMsg.setSA_CHANNEL_CONNECT_ID(1L);
-            triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
             distributeService.CreateTriggerMessage(triggerMsg);
-
-            return sendData;
-        // }catch (Exception e){
-        //     return sendData;
-        // }
+            return null;
+        }
     }
 
     private Data processExpiredType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
         // Process for new_order_type
+        Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
         Data sendData = null;
-        // try{
-            ObjectMapper objectMapper = new ObjectMapper();
-            ReceiveExpiredDataType receivedData = objectMapper.readValue(message, ReceiveExpiredDataType.class);
-            
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ReceiveExpiredDataType receivedData = objectMapper.readValue(message, ReceiveExpiredDataType.class);
+        String orderTypeName = "PACKAGE_EXPIRE";
+        String channelType = "OM";
+        String publishChannelType = "OM-MFE";
+        List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
+        if (orderTypes == null){
+            orderTypes = distributeService.LisOrderTypes();
+        }
+
+        OrderTypeEntity orderTypeInfo = getOrderTypeInfoFromList(orderTypeName, orderTypes);
+
+        List<SaChannelConEntity> saChannels = cacheUpdater.getSaChannelConnectListCache();
+        if (saChannels == null){
+            saChannels = distributeService.ListChannelConnect();
+        } 
+        
+        SaChannelConEntity saChannelConInfo = getSaChannelInfoFromList(channelType, saChannels);
+        try{
             // Mapping DataType
-            sendData = MappingExpiredData(receivedData);
+            sendData = MappingExpiredData(receivedData, orderTypeName);
 
             ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
             String jsonString = mapper.writeValueAsString(sendData);
-
-            System.out.println("sendData:"+jsonString);
-
             
+            if (orderTypeInfo.getIs_Enable().equals(1)){
+                // Send to kafka server
+                TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                triggerMsg.setMESSAGE_IN(message);
+                triggerMsg.setDATE_MODEL(jsonString);
+                triggerMsg.setIS_STATUS(1);
+                triggerMsg.setOrderType_Name(orderTypeName);
+                triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                triggerMsg.setPHONENUMBER(sendData.getMsisdn());
+                triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
+                triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+                triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+                triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
+                distributeService.CreateTriggerMessage(triggerMsg);
+                return sendData;
+            }else{
+                // UnSend to kafka server
+                TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                triggerMsg.setMESSAGE_IN(message);
+                triggerMsg.setDATE_MODEL(jsonString);
+                triggerMsg.setIS_STATUS(0);
+                triggerMsg.setOrderType_Name(orderTypeName);
+                triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                triggerMsg.setPHONENUMBER(sendData.getMsisdn());
+                triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
+                triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+                triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+                distributeService.CreateTriggerMessage(triggerMsg);
+
+                return null;
+            }
+        }catch (Exception e){
+            // UnSend to kafka server
             TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-            /* Not finish */
             triggerMsg.setMESSAGE_IN(message);
-            triggerMsg.setDATE_MODEL(message);
             triggerMsg.setIS_STATUS(0);
-            triggerMsg.setORDERID("");
-            triggerMsg.setOrderType_Name("");
-            triggerMsg.setOrderType_id(1L);
-            triggerMsg.setPHONENUMBER("");
-            triggerMsg.setPUBLISH_CHANNEL("");
-            triggerMsg.setRECEIVE_DATE(DateTime.getTimestampNowUTC());
-            triggerMsg.setSA_CHANNEL_CONNECT_ID(1L);
-            triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
+            triggerMsg.setOrderType_Name(orderTypeName);
+            triggerMsg.setOrderType_id(orderTypeInfo.getID());
+            triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
+            triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+            triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
             distributeService.CreateTriggerMessage(triggerMsg);
 
-            distributeService.CreateTriggerMessage(triggerMsg);
-
-            return sendData;
-        // }catch (Exception e){
-        //     return sendData;
-        // }
+            return null;
+        }
     }
 
     private Data MappingOMData(OrderHeaderData odheader, INVMappingData invMappingData , String orderTypeName){
@@ -1377,15 +1499,14 @@ public class RabbitMqConsumerService {
         
     }
 
-    private Data MappingTopUpData(ReceiveTopUpDataType receivedData ){
-        System.out.println(receivedData.toString());
+    private Data MappingTopUpData(ReceiveTopUpDataType receivedData, String orderTypeName){
         String effectiveDate = DateTime.getTriggerTimeStampNow();
         String triggerDate = DateTime.getTimeStampNowStr();
 
         Data sendData = new Data();
 
         EventData topUpEv = new EventData();
-        topUpEv.setEventType("TOPUP_RECHARGE");
+        topUpEv.setEventType(orderTypeName);
 
         List<EventItem> eventItems = new ArrayList<EventItem>();
         EventItem eventItem = new EventItem();
@@ -1416,7 +1537,7 @@ public class RabbitMqConsumerService {
         return sendData;
     }
 
-    private Data MappingExpiredData(ReceiveExpiredDataType receivedData ){
+    private Data MappingExpiredData(ReceiveExpiredDataType receivedData, String orderTypeName ){
         System.out.println(receivedData.toString());
 
         String effectiveDate = DateTime.getTriggerTimeStampNow();
@@ -1434,15 +1555,10 @@ public class RabbitMqConsumerService {
         System.out.println("inv getImsi: "+invMappingData.getImsi());
         List<IMSIOfferingConfig> imsiOfferConfigList = ommyfrontService.getImsiOfferingConfigList();
 
-        IMSIOfferingConfig imsiConfigData = getImsiConfigByImsi(invMappingData.getImsi(), imsiOfferConfigList);
-
-        // TransManageContractDTLData transmanageData = omuserService.getTransManageContractDTLData("");
-
-        
         // System.out.println(odheader.getInputData());
         JSONObject inputData = new JSONObject(odheader.getInputData().toString());
 
-        expiredEv.setEventType("PACKAGE_EXPIRE");
+        expiredEv.setEventType(orderTypeName);
 
         List<EventItem> eventItems = new ArrayList<>();
         EventItem eventItem = new EventItem();
@@ -1579,17 +1695,8 @@ public class RabbitMqConsumerService {
 
                             // offer.frequency your code here with logic
                             String imsiMapping = invMappingData.getImsi();
-                            String imsiFrequency = "";
-                            for (IMSIOfferingConfig config : imsiOfferConfigList) {
-                                String prefix = config.getImsiPrefix();
-                                if (imsiMapping.startsWith(prefix)) {
-                                    imsiMapping = prefix;
-                                    imsiFrequency = config.getFrequency();
-                                    break;
-                                }
-                            }
-
-                            offer.setFrequency(imsiFrequency);
+                            IMSIOfferingConfig imsiConfigData = getImsiConfigByImsi(imsiMapping, imsiOfferConfigList);
+                            offer.setFrequency(imsiConfigData.getFrequency());
 
                             offer.setCanSwapPoFlag(ofrspec.getCanswappoflag());
 
@@ -1629,4 +1736,23 @@ public class RabbitMqConsumerService {
         }
         return null;
     }
+
+    private OrderTypeEntity getOrderTypeInfoFromList(String orderType, List<OrderTypeEntity> orderTypes){
+        for (OrderTypeEntity orderTypeEntity : orderTypes) {
+            if (orderTypeEntity.getOrderTypeName().toUpperCase().equals(orderType.toUpperCase())){
+                return orderTypeEntity;
+            }
+        }
+        return null;
+    }
+
+    private SaChannelConEntity getSaChannelInfoFromList(String channelType, List<SaChannelConEntity> saChannels){
+        for ( SaChannelConEntity saChannelConEntity : saChannels) {
+            if (saChannelConEntity.getCHANNEL_Name().toUpperCase().equals(channelType.toUpperCase())){
+                return saChannelConEntity;
+            }
+        }
+        return null;
+    }
+
 }
