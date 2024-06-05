@@ -103,7 +103,7 @@ public class OMMYFRONTClient {
                     poid
                 )
             );
-            System.out.println("ommyfront url: " + url);
+            // System.out.println("ommyfront url: " + url);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
@@ -137,7 +137,7 @@ public class OMMYFRONTClient {
                     context
                 )
             );
-            System.out.println("ommyfront url: " + url);
+            // System.out.println("ommyfront url: " + url);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();

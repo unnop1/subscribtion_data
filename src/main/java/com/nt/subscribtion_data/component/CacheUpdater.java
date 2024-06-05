@@ -33,7 +33,7 @@ public class CacheUpdater {
 
     // Getter for the cache variable
     public List<IMSIOfferingConfig> getIMSIOfferConfigListCache() {
-        System.out.println("len cache = " + imsiOfferConfigList.size());
+        // System.out.println("len cache = " + imsiOfferConfigList.size());
         return imsiOfferConfigList;
     }
 
@@ -48,7 +48,7 @@ public class CacheUpdater {
     }
 
     public List<OrderTypeEntity> getOrderTypeListCache() {
-        System.out.println("len cache = " + orderTypes.size());
+        // System.out.println("len cache = " + orderTypes.size());
         return orderTypes;
     }
 
@@ -63,7 +63,7 @@ public class CacheUpdater {
     }
 
     public List<SaChannelConEntity> getSaChannelConnectListCache() {
-        System.out.println("len cache = " + orderTypes.size());
+        // System.out.println("len cache = " + orderTypes.size());
         return saChannelConnects;
     }
 

@@ -34,7 +34,7 @@ public class INVUSERClient {
                     externalId
                 )
             );
-            System.out.println("inv url: " + url);
+            // System.out.println("inv url: " + url);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
