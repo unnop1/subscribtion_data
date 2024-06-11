@@ -1,5 +1,6 @@
 package com.nt.subscribtion_data.controller;
 
+import java.sql.Clob;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -69,7 +70,13 @@ public class JmeterController {
                     if (orderTypeInfo != null){
                         saChannelConInfo = mappingService.getSaChannelInfoFromList("OM", saChannels);
                         if (saChannelConInfo != null){
-                            triggerMsg.setMESSAGE_IN(bodyMessage);
+                            Clob bodyMessageClob;
+                            try{
+                                bodyMessageClob = new javax.sql.rowset.serial.SerialClob(bodyMessage.toCharArray());
+                                triggerMsg.setMESSAGE_IN(bodyMessageClob);
+                            } catch (Exception e){
+                                e.printStackTrace();
+                            }
                             triggerMsg.setIS_STATUS(1);
                             triggerMsg.setORDERID(receivedOMData.getOrderId());
                             triggerMsg.setOrderType_Name(orderType);
@@ -92,7 +99,13 @@ public class JmeterController {
                     saChannelConInfo = mappingService.getSaChannelInfoFromList("OM", saChannels);
                     if (orderTypeInfo != null){
                         if (saChannelConInfo != null){
-                            triggerMsg.setMESSAGE_IN(bodyMessage);
+                            Clob bodyMessageClob;
+                            try{
+                                bodyMessageClob = new javax.sql.rowset.serial.SerialClob(bodyMessage.toCharArray());
+                                triggerMsg.setMESSAGE_IN(bodyMessageClob);
+                            } catch (Exception e){
+                                e.printStackTrace();
+                            }
                             triggerMsg.setIS_STATUS(1);
                             triggerMsg.setOrderType_Name(orderTypeName);
                             triggerMsg.setOrderType_id(orderTypeInfo.getID());

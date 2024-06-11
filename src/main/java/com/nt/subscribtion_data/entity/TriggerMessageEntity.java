@@ -1,6 +1,7 @@
 package com.nt.subscribtion_data.entity;
 
 
+import java.sql.Clob;
 import java.sql.Timestamp;
 
 import jakarta.persistence.*;
@@ -44,10 +45,10 @@ public class TriggerMessageEntity {
         private Integer IS_STATUS = null;
 
         @Column(name = "MESSAGE_IN", unique = false,nullable = true)
-        private String MESSAGE_IN = null;
+        private Clob MESSAGE_IN = null;
 
         @Column(name = "DATE_MODEL", unique = false,nullable = true)
-        private String DATE_MODEL = null;
+        private Clob DATE_MODEL = null;
 
         @Column(name = "RECEIVE_DATE", unique = false,nullable = true)
         private Timestamp RECEIVE_DATE = null;

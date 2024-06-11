@@ -1,6 +1,8 @@
 package com.nt.subscribtion_data.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -59,6 +61,7 @@ import com.nt.subscribtion_data.service.database.CATMFEService;
 import com.nt.subscribtion_data.service.database.INVUSERService;
 import com.nt.subscribtion_data.service.database.OMMYFRONTService;
 import com.nt.subscribtion_data.service.database.OMUSERService;
+import com.nt.subscribtion_data.util.Convert;
 import com.nt.subscribtion_data.util.DateTime;
 
 @Service
@@ -109,7 +112,7 @@ public class MappingService {
 
             if (odheader == null){
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-                triggerMsg.setMESSAGE_IN(message);
+                triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
                 triggerMsg.setOrderType_Name(orderType);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
                 triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
@@ -134,8 +137,8 @@ public class MappingService {
                 if(orderTypeInfo.getIs_Enable().equals(1)){
                     // Send to kafka server
                     TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-                    triggerMsg.setMESSAGE_IN(message);
-                    triggerMsg.setDATE_MODEL(jsonString);
+                    triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
+                    triggerMsg.setDATE_MODEL(Convert.stringToClob(jsonString));
                     triggerMsg.setIS_STATUS(1);
                     triggerMsg.setORDERID(receivedData.getOrderId());
                     triggerMsg.setOrderType_Name(sendData.getOrderType());
@@ -151,8 +154,8 @@ public class MappingService {
                 }else{
                     // UnSend to kafka server
                     TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-                    triggerMsg.setMESSAGE_IN(message);
-                    triggerMsg.setDATE_MODEL(jsonString);
+                    triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
+                    triggerMsg.setDATE_MODEL(Convert.stringToClob(jsonString));
                     triggerMsg.setIS_STATUS(0);
                     triggerMsg.setORDERID(receivedData.getOrderId());
                     triggerMsg.setOrderType_Name(sendData.getOrderType());
@@ -168,7 +171,13 @@ public class MappingService {
             }
         }catch (Exception e){
             TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-            triggerMsg.setMESSAGE_IN(message);
+            Clob bodyMessageClob;
+            try{
+                bodyMessageClob = new javax.sql.rowset.serial.SerialClob(message.toCharArray());
+                triggerMsg.setMESSAGE_IN(bodyMessageClob);
+            } catch (Exception clobE){
+                clobE.printStackTrace();
+            }
             triggerMsg.setOrderType_Name(orderType);
             triggerMsg.setOrderType_id(orderTypeInfo.getID());
             triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
@@ -179,7 +188,7 @@ public class MappingService {
         }
     }
 
-    public Data processTopUpType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
+    public Data processTopUpType(String message) throws SQLException, IOException {
         // Process for new_order_type
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
         Data sendData = null;
@@ -214,8 +223,8 @@ public class MappingService {
             if (orderTypeInfo.getIs_Enable().equals(1)){
                 // Send to kafka server
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-                triggerMsg.setMESSAGE_IN(message);
-                triggerMsg.setDATE_MODEL(jsonString);
+                triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
+                triggerMsg.setDATE_MODEL(Convert.stringToClob(jsonString));
                 triggerMsg.setIS_STATUS(1);
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
@@ -229,8 +238,8 @@ public class MappingService {
             }else{
                 // UnSend to kafka server
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-                triggerMsg.setMESSAGE_IN(message);
-                triggerMsg.setDATE_MODEL(jsonString);
+                triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
+                triggerMsg.setDATE_MODEL(Convert.stringToClob(jsonString));
                 triggerMsg.setIS_STATUS(0);
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
@@ -244,7 +253,7 @@ public class MappingService {
             }
         }catch (Exception e){
             TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-            triggerMsg.setMESSAGE_IN(message);
+            triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
             triggerMsg.setOrderType_Name(orderTypeName);
             triggerMsg.setOrderType_id(orderTypeInfo.getID());
             triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
@@ -256,7 +265,7 @@ public class MappingService {
         }
     }
 
-    public Data processExpiredType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
+    public Data processExpiredType(String message) throws SQLException, IOException {
         // Process for new_order_type
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
         Data sendData = null;
@@ -289,8 +298,8 @@ public class MappingService {
             if (orderTypeInfo.getIs_Enable().equals(1)){
                 // Send to kafka server
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-                triggerMsg.setMESSAGE_IN(message);
-                triggerMsg.setDATE_MODEL(jsonString);
+                triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
+                triggerMsg.setDATE_MODEL(Convert.stringToClob(jsonString));
                 triggerMsg.setIS_STATUS(1);
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
@@ -304,8 +313,8 @@ public class MappingService {
             }else{
                 // UnSend to kafka server
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-                triggerMsg.setMESSAGE_IN(message);
-                triggerMsg.setDATE_MODEL(jsonString);
+                triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
+                triggerMsg.setDATE_MODEL(Convert.stringToClob(jsonString));
                 triggerMsg.setIS_STATUS(0);
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
@@ -320,7 +329,7 @@ public class MappingService {
         }catch (Exception e){
             // UnSend to kafka server
             TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-            triggerMsg.setMESSAGE_IN(message);
+            triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
             triggerMsg.setIS_STATUS(0);
             triggerMsg.setOrderType_Name(orderTypeName);
             triggerMsg.setOrderType_id(orderTypeInfo.getID());
