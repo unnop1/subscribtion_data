@@ -253,7 +253,7 @@ public class MappingService {
             // triggerMsg.setOrderType_id(orderTypeInfo.getID());
             triggerMsg.setREMARK(e.getMessage());
             triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
-            triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+            // triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
             triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
             triggerMsg.setIS_STATUS(0);
             distributeService.CreateTriggerMessage(triggerMsg);
