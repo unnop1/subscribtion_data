@@ -17,7 +17,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Table (name = "trigger_message")
+@Table (name = "TRIGGER_MESSAGE", schema="${replace_schema}")
 public class TriggerMessageEntity {
     @Id
         @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "trigger_message_seq")
@@ -25,10 +25,10 @@ public class TriggerMessageEntity {
         @Column(name = "ID")
         private Long id = null;
 
-        @Column(name = "OrderType_id", unique = false,nullable = true)
+        @Column(name = "ORDERTYPE_ID", unique = false,nullable = true)
         private Long OrderType_id = null;
 
-        @Column(name = "OrderType_Name", unique = false,nullable = true)
+        @Column(name = "ORDERTYPE_NAME", unique = false,nullable = true)
         private String OrderType_Name = null;
 
         @Column(name = "SA_CHANNEL_CONNECT_ID", unique = false,nullable = true)

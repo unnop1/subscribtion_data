@@ -15,7 +15,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Table (name = "sa_channel_connect")
+@Table (name = "SA_CHANNEL_CONNECT", schema="${replace_schema}")
 public class SaChannelConEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sa_channel_connect_seq")
@@ -23,7 +23,7 @@ public class SaChannelConEntity {
     @Column(name = "ID")
     private Long ID = null;
 
-    @Column(name = "CHANNEL_Name", unique = false,nullable = true)
+    @Column(name = "CHANNEL_NAME", unique = false,nullable = true)
     private String CHANNEL_Name = null;
 
 }
