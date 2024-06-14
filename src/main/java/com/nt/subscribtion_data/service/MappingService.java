@@ -250,7 +250,8 @@ public class MappingService {
             TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
             triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
             triggerMsg.setOrderType_Name(orderTypeName);
-            triggerMsg.setOrderType_id(orderTypeInfo.getID());
+            // triggerMsg.setOrderType_id(orderTypeInfo.getID());
+            triggerMsg.setREMARK(e.getMessage());
             triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
             triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
             triggerMsg.setPUBLISH_CHANNEL(publishChannelType);

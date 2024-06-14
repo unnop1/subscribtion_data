@@ -59,4 +59,7 @@ public class TriggerMessageEntity {
         @Column(name = "ORDERID", unique = false,nullable = true)
         private String ORDERID = null;
 
+        @Column(name = "REMARK", unique = false,nullable = true)
+        private String REMARK = null;
+
 }
