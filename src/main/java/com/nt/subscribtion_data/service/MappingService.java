@@ -102,7 +102,7 @@ public class MappingService {
             triggerMsg.setOrderType_Name(orderType);
             triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
             triggerMsg.setIS_STATUS(0);
-            triggerMsg.setREMARK("NOT FOUND OrderType data");
+            triggerMsg.setREMARK("NOT FOUND OrderType data : "+orderType);
             distributeService.CreateTriggerMessage(triggerMsg);
             return null;
         }
@@ -178,7 +178,7 @@ public class MappingService {
                     // Send to kafka server
                     TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                     triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
-                    triggerMsg.setDATE_MODEL(Convert.stringToClob(jsonString));
+                    triggerMsg.setDATA_MODEL(Convert.stringToClob(jsonString));
                     triggerMsg.setIS_STATUS(1);
                     triggerMsg.setORDERID(receivedData.getOrderId());
                     triggerMsg.setOrderType_Name(sendData.getOrderType());
@@ -195,7 +195,7 @@ public class MappingService {
                     // UnSend to kafka server
                     TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                     triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
-                    triggerMsg.setDATE_MODEL(Convert.stringToClob(jsonString));
+                    triggerMsg.setDATA_MODEL(Convert.stringToClob(jsonString));
                     triggerMsg.setIS_STATUS(0);
                     triggerMsg.setORDERID(receivedData.getOrderId());
                     triggerMsg.setOrderType_Name(sendData.getOrderType());
@@ -244,16 +244,6 @@ public class MappingService {
         }
 
         OrderTypeEntity orderTypeInfo = getOrderTypeInfoFromList(orderTypeName, orderTypes);
-        if(orderTypeInfo == null){
-            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-            triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
-            triggerMsg.setOrderType_Name(orderTypeName);
-            triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
-            triggerMsg.setIS_STATUS(0);
-            triggerMsg.setREMARK("NOT FOUND saChannelConnect : OM");
-            distributeService.CreateTriggerMessage(triggerMsg);
-            return null;
-        }
 
         List<SaChannelConEntity> saChannels = cacheUpdater.getSaChannelConnectListCache();
         if (saChannels == null){
@@ -272,11 +262,23 @@ public class MappingService {
             return null;
         }
 
+        if (orderTypeInfo == null){
+            // UnSend to kafka server
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+            triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setOrderType_Name(orderTypeName);
+            triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
+            triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+            triggerMsg.setREMARK("NOT FOUND orderTypeInfo : TOPUP");
+            distributeService.CreateTriggerMessage(triggerMsg);
+        }
+
         try{
             
             // Mapping DataType
             sendData = MappingTopUpData(receivedData, orderTypeName);
-
+            
             ObjectMapper mapper = new ObjectMapper();
             String jsonString = mapper.writeValueAsString(sendData);
 
@@ -284,7 +286,7 @@ public class MappingService {
                 // Send to kafka server
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                 triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
-                triggerMsg.setDATE_MODEL(Convert.stringToClob(jsonString));
+                triggerMsg.setDATA_MODEL(Convert.stringToClob(jsonString));
                 triggerMsg.setIS_STATUS(1);
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
@@ -299,7 +301,7 @@ public class MappingService {
                 // UnSend to kafka server
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                 triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
-                triggerMsg.setDATE_MODEL(Convert.stringToClob(jsonString));
+                triggerMsg.setDATA_MODEL(Convert.stringToClob(jsonString));
                 triggerMsg.setIS_STATUS(0);
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
@@ -360,7 +362,7 @@ public class MappingService {
                 // Send to kafka server
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                 triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
-                triggerMsg.setDATE_MODEL(Convert.stringToClob(jsonString));
+                triggerMsg.setDATA_MODEL(Convert.stringToClob(jsonString));
                 triggerMsg.setIS_STATUS(1);
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
@@ -375,7 +377,7 @@ public class MappingService {
                 // UnSend to kafka server
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                 triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
-                triggerMsg.setDATE_MODEL(Convert.stringToClob(jsonString));
+                triggerMsg.setDATA_MODEL(Convert.stringToClob(jsonString));
                 triggerMsg.setIS_STATUS(0);
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
