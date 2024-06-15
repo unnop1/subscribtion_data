@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nt.subscribtion_data.model.dao.INVUSER.INVMasterData;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.IMSIOfferingConfig;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.ListIMSIOfferingConfigClientResp;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderClientResp;
@@ -17,12 +16,10 @@ import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderData;
 
 public class OMMYFRONTClient {
     private String host;
-    private String port;
     private String context;
 
-    public OMMYFRONTClient(String host, String port, String context){
+    public OMMYFRONTClient(String host, String context){
         this.host = host;
-        this.port = port;
         this.context = context;
     }
 
@@ -30,9 +27,8 @@ public class OMMYFRONTClient {
         OrderHeaderClientResp respData = new OrderHeaderClientResp();
         try {
             URL url = new URL(String.format(
-                    "http://%s:%s%s/order_header/by_order_id?order_id=%s",
+                    "http://%s%s/order_header/by_order_id?order_id=%s",
                     host,
-                    port,
                     context,
                     orderID
                 )
@@ -66,9 +62,8 @@ public class OMMYFRONTClient {
         OrderHeaderClientResp respData = new OrderHeaderClientResp();
         try {
             URL url = new URL(String.format(
-                    "http://%s:%s%s/order_header/by_iccid?iccid=%s",
+                    "http://%s%s/order_header/by_iccid?iccid=%s",
                     host,
-                    port,
                     context,
                     iccid
                 )
@@ -103,9 +98,8 @@ public class OMMYFRONTClient {
         OrderHeaderClientResp respData = new OrderHeaderClientResp();
         try {
             URL url = new URL(String.format(
-                    "http://%s:%s%s/order_header/by_poid?poid=%s",
+                    "http://%s%s/order_header/by_poid?poid=%s",
                     host,
-                    port,
                     context,
                     poid
                 )
@@ -140,9 +134,8 @@ public class OMMYFRONTClient {
         ListIMSIOfferingConfigClientResp respData = new ListIMSIOfferingConfigClientResp();
         try {
             URL url = new URL(String.format(
-                    "http://%s:%s%s/imsi_offering_config/list",
+                    "http://%s%s/imsi_offering_config/list",
                     host,
-                    port,
                     context
                 )
             );
@@ -170,7 +163,12 @@ public class OMMYFRONTClient {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            respData.setErr(e.getMessage());
+            String urltest = String.format(
+                "http://%s%s/imsi_offering_config/list",
+                host,
+                context
+            );
+            respData.setErr(e.getMessage() + "urltest:"+urltest);
         }
         return respData;
     }

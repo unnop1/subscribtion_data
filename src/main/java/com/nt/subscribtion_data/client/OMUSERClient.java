@@ -51,7 +51,14 @@ public class OMUSERClient {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            respData.setErr(e.getMessage());
+            String urltest = String.format(
+                "http://%s:%s%s/trans_manage_contract/by_trans_master_id?trans_master_id=%s",
+                host,
+                port,
+                context,
+                masterID
+            );
+            respData.setErr(e.getMessage()+" url:" +urltest);
         }
         return respData;
     }

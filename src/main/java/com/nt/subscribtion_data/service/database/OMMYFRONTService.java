@@ -17,31 +17,28 @@ public class OMMYFRONTService {
     @Value("${ommyfront.host}")
     private String host;
 
-    @Value("${ommyfront.port}")
-    private String port;
-
     @Value("${ommyfront.context}")
     private String context="/";
 
     private OMMYFRONTClient client;
 
     public OrderHeaderClientResp getOrderHeaderDataByOrderID(String orderId){
-        client = new OMMYFRONTClient(host, port, context);
+        client = new OMMYFRONTClient(host, context);
         return client.GetOfferHeaderById(orderId);
     }
 
     public OrderHeaderClientResp getOrderHeaderDataByICCID(String iccid){
-        client = new OMMYFRONTClient(host, port, context);
+        client = new OMMYFRONTClient(host, context);
         return client.GetOfferHeaderByIccid(iccid);
     }
 
     public OrderHeaderClientResp getOrderHeaderDataByPoID(Long poId){
-        client = new OMMYFRONTClient(host, port, context);
+        client = new OMMYFRONTClient(host, context);
         return client.GetOfferHeaderByPoId(poId);
     }
 
     public ListIMSIOfferingConfigClientResp getImsiOfferingConfigList(){
-        client = new OMMYFRONTClient(host, port, context);
+        client = new OMMYFRONTClient(host, context);
         return client.GetListIMSIOfferingConfig();
     }
 }

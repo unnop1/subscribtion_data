@@ -13,16 +13,13 @@ public class CATMFEService {
     @Value("${catmfe.host}")
     private String host;
 
-    @Value("${catmfe.port}")
-    private String port;
-
     @Value("${catmfe.context}")
     private String context="/";
 
     private CATMFEClient client;
 
     public OfferingSpecClientResp getOfferingSpecByOfferingId(String offeringId){
-        client = new CATMFEClient(host, port, context);
+        client = new CATMFEClient(host, context);
         OfferingSpecClientResp  resp = client.GetOfferingSpecByOfferingId(offeringId);
         return resp;
     }

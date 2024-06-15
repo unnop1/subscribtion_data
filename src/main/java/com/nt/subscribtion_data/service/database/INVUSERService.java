@@ -13,16 +13,13 @@ public class INVUSERService {
     @Value("${invuser.host}")
     private String host;
 
-    @Value("${invuser.port}")
-    private String port;
-
     @Value("${invuser.context}")
     private String context="/";
 
     private INVUSERClient client;
 
     public INVMappingClientResp getInvMappingData(String id){
-        client = new INVUSERClient(host, port, context);
+        client = new INVUSERClient(host, context);
         return client.GetINVMappingByExternalId(id);
     }
 

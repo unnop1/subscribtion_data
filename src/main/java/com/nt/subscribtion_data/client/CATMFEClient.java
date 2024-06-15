@@ -11,12 +11,10 @@ import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
 
 public class CATMFEClient {
     private String host;
-    private String port;
     private String context="/";
 
-    public CATMFEClient(String host, String port, String context){
+    public CATMFEClient(String host, String context){
         this.host = host;
-        this.port = port;
         this.context = context;
     }
 
@@ -24,9 +22,8 @@ public class CATMFEClient {
         OfferingSpecClientResp respData = new OfferingSpecClientResp();
         try {
             URL url = new URL(String.format(
-                    "http://%s:%s%s/offering/by_offering_id?offering_id=%s",
+                    "http://%s%s/offering/by_offering_id?offering_id=%s",
                     host,
-                    port,
                     context,
                     offeringId
                 )
@@ -55,7 +52,13 @@ public class CATMFEClient {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            respData.setErr(e.getMessage());
+            String urltest = String.format(
+                "http://%s%s/offering/by_offering_id?offering_id=%s",
+                host,
+                context,
+                offeringId
+            );
+            respData.setErr(e.getMessage() + "url : "+urltest);
         }
         return respData;
     }

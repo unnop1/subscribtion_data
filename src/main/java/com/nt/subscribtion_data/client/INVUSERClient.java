@@ -15,12 +15,10 @@ import com.nt.subscribtion_data.model.dao.INVUSER.INVMasterData;
 
 public class INVUSERClient {
     private String host;
-    private String port;
     private String context="/";
 
-    public INVUSERClient(String host, String port, String context){
+    public INVUSERClient(String host, String context){
         this.host = host;
-        this.port = port;
         this.context = context;
     }
 
@@ -28,9 +26,8 @@ public class INVUSERClient {
         INVMappingClientResp respData = new INVMappingClientResp();
         try {
             URL url = new URL(String.format(
-                    "http://%s:%s%s/inv_mapping/by_id?external_id=%s",
+                    "http://%s%s/inv_mapping/by_id?external_id=%s",
                     host,
-                    port,
                     context,
                     externalId
                 )
@@ -59,7 +56,13 @@ public class INVUSERClient {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            respData.setErr(e.getMessage());
+            String urltest = String.format(
+                "http://%s%s/inv_mapping/by_id?external_id=%s",
+                host,
+                context,
+                externalId
+            );
+            respData.setErr(e.getMessage()+" url :"+urltest);
         }
         return respData;
     }
@@ -68,9 +71,8 @@ public class INVUSERClient {
         List<INVMasterData> respDataList = new ArrayList<>();
         try {
             URL url = new URL(String.format(
-                    "http://%s:%s%s/inv_masters",
+                    "http://%s%s/inv_masters",
                     host,
-                    port,
                     context
                 )
             );

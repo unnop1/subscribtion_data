@@ -6,7 +6,10 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +91,7 @@ public class MappingService {
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
         ObjectMapper objectMapper = new ObjectMapper();
         ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
-        String orderType = receivedData.getOrderType().toUpperCase();
+        String orderType = getOrderTypeNamePattern(receivedData.getOrderType().toUpperCase());
 
         List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
         if (orderTypes == null){
@@ -1833,5 +1836,11 @@ public class MappingService {
             }
         }
         return null;
+    }
+
+    public String getOrderTypeNamePattern(String orderType){
+        String pattern = "_";
+        String result = Arrays.stream(orderType.split(" ")).collect(Collectors.joining(pattern));
+        return result;
     }
 }
