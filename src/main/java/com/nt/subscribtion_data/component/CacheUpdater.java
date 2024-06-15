@@ -8,12 +8,13 @@ import org.springframework.stereotype.Component;
 import com.nt.subscribtion_data.service.database.OMMYFRONTService;
 import com.nt.subscribtion_data.service.DistributeService;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.IMSIOfferingConfig;
+import com.nt.subscribtion_data.model.dao.OMMYFRONT.ListIMSIOfferingConfigClientResp;
 import com.nt.subscribtion_data.entity.OrderTypeEntity;
 import com.nt.subscribtion_data.entity.SaChannelConEntity;
 @Component
 public class CacheUpdater {
     // The cache variable
-    private List<IMSIOfferingConfig> imsiOfferConfigList;
+    private ListIMSIOfferingConfigClientResp imsiOfferConfigList;
 
     private List<OrderTypeEntity> orderTypes;
 
@@ -32,12 +33,12 @@ public class CacheUpdater {
     }
 
     // Getter for the cache variable
-    public List<IMSIOfferingConfig> getIMSIOfferConfigListCache() {
+    public ListIMSIOfferingConfigClientResp getIMSIOfferConfigListCache() {
         // System.out.println("len cache = " + imsiOfferConfigList.size());
         return imsiOfferConfigList;
     }
 
-    public void setIMSIOfferConfigListCache(List<IMSIOfferingConfig> cacheList) {
+    public void setIMSIOfferConfigListCache(ListIMSIOfferingConfigClientResp cacheList) {
         imsiOfferConfigList = cacheList;
     }
 

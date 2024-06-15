@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nt.subscribtion_data.model.dao.INVUSER.INVMappingClientResp;
 import com.nt.subscribtion_data.model.dao.INVUSER.INVMappingData;
 import com.nt.subscribtion_data.model.dao.INVUSER.INVMasterData;
 
@@ -23,8 +24,8 @@ public class INVUSERClient {
         this.context = context;
     }
 
-    public INVMappingData GetINVMappingByExternalId(String externalId){
-        INVMappingData respData = null;
+    public INVMappingClientResp GetINVMappingByExternalId(String externalId){
+        INVMappingClientResp respData = new INVMappingClientResp();
         try {
             URL url = new URL(String.format(
                     "http://%s:%s%s/inv_mapping/by_id?external_id=%s",
@@ -53,10 +54,12 @@ public class INVUSERClient {
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
-                respData = objectMapper.readValue(response.toString(), INVMappingData.class);
+                INVMappingData data = objectMapper.readValue(response.toString(), INVMappingData.class);
+                respData.setData(data);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            respData.setErr(e.getMessage());
         }
         return respData;
     }

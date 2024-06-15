@@ -12,13 +12,12 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.subscribtion_data.component.CacheUpdater;
 import com.nt.subscribtion_data.entity.OrderTypeEntity;
 import com.nt.subscribtion_data.entity.SaChannelConEntity;
 import com.nt.subscribtion_data.entity.TriggerMessageEntity;
+import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecClientResp;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
 import com.nt.subscribtion_data.model.dao.DataModel.Data;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventData;
@@ -45,9 +44,13 @@ import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Destinat
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSimInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSubscriberInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.SourceSimInfo;
+import com.nt.subscribtion_data.model.dao.INVUSER.INVMappingClientResp;
 import com.nt.subscribtion_data.model.dao.INVUSER.INVMappingData;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.IMSIOfferingConfig;
+import com.nt.subscribtion_data.model.dao.OMMYFRONT.ListIMSIOfferingConfigClientResp;
+import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderClientResp;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderData;
+import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLClientResp;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLData;
 import com.nt.subscribtion_data.model.dto.ReceiveExpiredDataType;
 import com.nt.subscribtion_data.model.dto.ReceiveOMDataType;
@@ -79,7 +82,7 @@ public class MappingService {
     @Autowired
     private CacheUpdater cacheUpdater;
 
-    public Data processOMType(String message) throws JsonMappingException, JsonProcessingException, SQLException {
+    public Data processOMType(String message) throws SQLException, IOException {
         // Process for new_order_type
         Data sendData = null;
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
@@ -93,6 +96,16 @@ public class MappingService {
         }
 
         OrderTypeEntity orderTypeInfo = getOrderTypeInfoFromList(orderType, orderTypes);
+        if(orderTypeInfo == null){
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+            triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
+            triggerMsg.setOrderType_Name(orderType);
+            triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setREMARK("NOT FOUND OrderType data");
+            distributeService.CreateTriggerMessage(triggerMsg);
+            return null;
+        }
 
         List<SaChannelConEntity> saChannels = cacheUpdater.getSaChannelConnectListCache();
         if (saChannels == null){
@@ -100,12 +113,23 @@ public class MappingService {
         } 
         
         SaChannelConEntity saChannelConInfo = getSaChannelInfoFromList("OM", saChannels);
+        if(saChannelConInfo == null){
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+            triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
+            triggerMsg.setOrderType_Name(orderType);
+            triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setREMARK("NOT FOUND saChannelConnect : OM");
+            distributeService.CreateTriggerMessage(triggerMsg);
+            return null;
+        }
 
         try{
             
-            OrderHeaderData odheader = ommyfrontService.getOrderHeaderDataByOrderID(receivedData.getOrderId());
+            OrderHeaderClientResp odheaderResp = ommyfrontService.getOrderHeaderDataByOrderID(receivedData.getOrderId());
 
-            if (odheader == null){
+
+            if (odheaderResp.getData() == null){
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                 triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
                 triggerMsg.setOrderType_Name(orderType);
@@ -113,16 +137,37 @@ public class MappingService {
                 triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
                 triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
                 triggerMsg.setIS_STATUS(0);
+                triggerMsg.setREMARK("NOT FOUND OrderHeader data");
+                if (odheaderResp.getErr() != null){
+                    triggerMsg.setREMARK(odheaderResp.getErr());
+                }
                 distributeService.CreateTriggerMessage(triggerMsg);
                 return null;
             }else{
+                OrderHeaderData odheader = odheaderResp.getData();
                 String externalId = odheader.getMsisdn();
                 // System.out.println("externalId: "+externalId);
 
-                INVMappingData invMappingData = invuserService.getInvMappingData(externalId);
+                INVMappingClientResp invMappingResp = invuserService.getInvMappingData(externalId);
 
                 // Mapping DataType
-                sendData = MappingOMData(odheader, invMappingData, orderType);
+                if (invMappingResp.getData() != null){
+                    sendData = MappingOMData(odheader, invMappingResp.getData(), orderType);
+                }else{
+                    TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                    triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
+                    triggerMsg.setOrderType_Name(orderType);
+                    triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                    triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+                    triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+                    triggerMsg.setIS_STATUS(0);
+                    triggerMsg.setREMARK("NOT FOUND invMapping data");
+                    if (invMappingResp.getErr() != null){
+                        triggerMsg.setREMARK(odheaderResp.getErr());
+                    }
+                    distributeService.CreateTriggerMessage(triggerMsg);
+                    return null;
+                }
 
                 ObjectMapper mapper = new ObjectMapper();
                 // mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
@@ -199,6 +244,16 @@ public class MappingService {
         }
 
         OrderTypeEntity orderTypeInfo = getOrderTypeInfoFromList(orderTypeName, orderTypes);
+        if(orderTypeInfo == null){
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+            triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
+            triggerMsg.setOrderType_Name(orderTypeName);
+            triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setREMARK("NOT FOUND saChannelConnect : OM");
+            distributeService.CreateTriggerMessage(triggerMsg);
+            return null;
+        }
 
         List<SaChannelConEntity> saChannels = cacheUpdater.getSaChannelConnectListCache();
         if (saChannels == null){
@@ -206,6 +261,16 @@ public class MappingService {
         } 
         
         SaChannelConEntity saChannelConInfo = getSaChannelInfoFromList(channelType, saChannels);
+        if(saChannelConInfo == null){
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+            triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
+            triggerMsg.setOrderType_Name(orderTypeName);
+            triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setREMARK("NOT FOUND saChannelConnect : OM");
+            distributeService.CreateTriggerMessage(triggerMsg);
+            return null;
+        }
 
         try{
             
@@ -328,17 +393,17 @@ public class MappingService {
             triggerMsg.setMESSAGE_IN(Convert.stringToClob(message));
             triggerMsg.setIS_STATUS(0);
             triggerMsg.setOrderType_Name(orderTypeName);
-            triggerMsg.setOrderType_id(orderTypeInfo.getID());
+            // triggerMsg.setOrderType_id(orderTypeInfo.getID());
             triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
             triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
-            triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+            // triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
             distributeService.CreateTriggerMessage(triggerMsg);
 
             return null;
         }
     }
 
-    private Data MappingOMData(OrderHeaderData odheader, INVMappingData invMappingData , String orderTypeName){
+    private Data MappingOMData(OrderHeaderData odheader, INVMappingData invMappingData , String orderTypeName) throws SQLException{
         String triggerDate = DateTime.getTimeStampNowStr();
 
         Data sendData = new Data();
@@ -348,19 +413,34 @@ public class MappingService {
         // System.out.println("Get header from database OMMYFRONT");
         // System.out.println("inv getImsi: "+invMappingData.getImsi());
         
-        List<IMSIOfferingConfig> imsiOfferConfigList = cacheUpdater.getIMSIOfferConfigListCache();
-        if (imsiOfferConfigList == null){
-            // System.out.println("not found cache");
-        
+        ListIMSIOfferingConfigClientResp imsiOfferConfigList = cacheUpdater.getIMSIOfferConfigListCache();
+        if (imsiOfferConfigList.getErr() == null){
             imsiOfferConfigList = ommyfrontService.getImsiOfferingConfigList();
             cacheUpdater.setIMSIOfferConfigListCache(imsiOfferConfigList);
+        }else{
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setOrderType_Name(orderTypeName);
+            triggerMsg.setREMARK("NOT FOUND imsiOfferConfigList data");
+            if (imsiOfferConfigList.getErr() != null){
+                triggerMsg.setREMARK(imsiOfferConfigList.getErr());
+            }
+            distributeService.CreateTriggerMessage(triggerMsg);
+            return null;
         }
 
-        IMSIOfferingConfig imsiConfigData = getImsiConfigByImsi(invMappingData.getImsi(), imsiOfferConfigList);
+        IMSIOfferingConfig imsiConfigData = getImsiConfigByImsi(invMappingData.getImsi(), imsiOfferConfigList.getData());
 
         String transMasterID = odheader.getOrderId();
-        TransManageContractDTLData tMCDTLData = omuserService.getTransManageContractDTLData(transMasterID);
-
+        TransManageContractDTLClientResp tMCDTLResp = omuserService.getTransManageContractDTLData(transMasterID);
+        if(tMCDTLResp.getErr()!= null){
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+            triggerMsg.setOrderType_Name(orderTypeName);
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setREMARK("NOT FOUND TransManageContractDTL");
+            distributeService.CreateTriggerMessage(triggerMsg);
+            return null;
+        }
         
         // System.out.println(odheader.getInputData());
         JSONObject inputData = new JSONObject(odheader.getInputData().toString());
@@ -449,8 +529,17 @@ public class MappingService {
                         
                         if (!offeringId.isEmpty()){
                             // System.out.println("offeringId:"+offeringId);
-                            ofrspec = catmfeService.getOfferingSpecByOfferingId(offeringId);
-                            
+                            OfferingSpecClientResp ofrspecResp = catmfeService.getOfferingSpecByOfferingId(offeringId);
+                            if(ofrspecResp.getErr() != null){
+                                // TEMPORARY LOG //
+                                TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                                triggerMsg.setOrderType_Name(orderTypeName);
+                                triggerMsg.setIS_STATUS(0);
+                                triggerMsg.setREMARK("NOT FOUND OfferingSpec id "+ offeringId + ", error : "+ofrspecResp.getErr());
+                                distributeService.CreateTriggerMessage(triggerMsg);
+                                // TEMPORARY LOG FOR TEST //
+                            }
+                            ofrspec = ofrspecResp.getData();
                         }
                         
 
@@ -533,7 +622,7 @@ public class MappingService {
                             // offer.frequency your code here with logic
                             String imsiMapping = invMappingData.getImsi();
                             String imsiFrequency = "";
-                            for (IMSIOfferingConfig config : imsiOfferConfigList) {
+                            for (IMSIOfferingConfig config : imsiOfferConfigList.getData()) {
                                 String prefix = config.getImsiPrefix();
                                 if (imsiMapping.startsWith(prefix)) {
                                     imsiMapping = prefix;
@@ -1284,9 +1373,11 @@ public class MappingService {
                                 String iccid = inputDestinationSimInfo.getString("iccid");
                                 destinationSimInfo.setIccid(iccid);
 
-                                OrderHeaderData destinationOdheader = ommyfrontService.getOrderHeaderDataByICCID(iccid);
-                                if (destinationOdheader != null){
-                                    destinationSimInfo.setImsi(destinationOdheader.getImsi()); // search from iccid
+                                OrderHeaderClientResp destinationOdheaderResp = ommyfrontService.getOrderHeaderDataByICCID(iccid);
+                                if (destinationOdheaderResp.getErr() == null){
+                                    if(destinationOdheaderResp.getData()!= null){
+                                        destinationSimInfo.setImsi(destinationOdheaderResp.getData().getImsi()); // search from iccid
+                                    }
                                 }
                             }                            
                             destinationSimInfo.setSimType(null); // Fix null
@@ -1364,7 +1455,8 @@ public class MappingService {
 
                 // contractInfo 
                 /* Not Query ???? Unknown field for query */
-                if (tMCDTLData != null){
+                if (tMCDTLResp.getData() != null){
+                    TransManageContractDTLData tMCDTLData = tMCDTLResp.getData();
                     ContractInfo contractInfo = new ContractInfo();
                     contractInfo.setSubscrNo(tMCDTLData.getSubscrNo());
                     contractInfo.setContractId(tMCDTLData.getContractId());
@@ -1490,7 +1582,7 @@ public class MappingService {
         return sendData;
     }
 
-    private Data MappingExpiredData(ReceiveExpiredDataType receivedData, String orderTypeName ){
+    private Data MappingExpiredData(ReceiveExpiredDataType receivedData, String orderTypeName ) throws SQLException{
         // System.out.println(receivedData.toString());
 
         String effectiveDate = DateTime.getTriggerTimeStampNow();
@@ -1500,13 +1592,43 @@ public class MappingService {
 
         EventData expiredEv = new EventData();
         // System.out.println("getPoId: "+receivedData.getPoId());
-        OrderHeaderData odheader = ommyfrontService.getOrderHeaderDataByPoID(receivedData.getPoId());
-        
+        OrderHeaderClientResp odheaderResp = ommyfrontService.getOrderHeaderDataByPoID(receivedData.getPoId());
+        if (odheaderResp.getErr() != null) {
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setOrderType_Name(orderTypeName);
+            triggerMsg.setREMARK("NOT Found odheaderResp error:"+odheaderResp.getErr());
+            distributeService.CreateTriggerMessage(triggerMsg);
+            return null;
+        }
+
+        OrderHeaderData odheader = odheaderResp.getData();
+
         String externalId = odheader.getMsisdn();
         // System.out.println("externalId: "+externalId);
-        INVMappingData invMappingData = invuserService.getInvMappingData(externalId);
+        INVMappingClientResp invMappingResp = invuserService.getInvMappingData(externalId);
+        if (invMappingResp.getErr() != null) {
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setOrderType_Name(orderTypeName);
+            triggerMsg.setREMARK("NOT Found invMappingResp error:"+invMappingResp.getErr());
+            distributeService.CreateTriggerMessage(triggerMsg);
+            return null;
+        }
+
+        INVMappingData invMappingData = invMappingResp.getData();
         // System.out.println("inv getImsi: "+invMappingData.getImsi());
-        List<IMSIOfferingConfig> imsiOfferConfigList = ommyfrontService.getImsiOfferingConfigList();
+        ListIMSIOfferingConfigClientResp imsiOfferConfigListResp = ommyfrontService.getImsiOfferingConfigList();
+
+        if (imsiOfferConfigListResp.getErr() != null) {
+            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+            triggerMsg.setIS_STATUS(0);
+            triggerMsg.setOrderType_Name(orderTypeName);
+            triggerMsg.setREMARK("NOT Found imsiOfferConfigListResp error:"+invMappingResp.getErr());
+            distributeService.CreateTriggerMessage(triggerMsg);
+            return null;
+        }
+        List<IMSIOfferingConfig> imsiOfferConfigList = imsiOfferConfigListResp.getData();
 
         // System.out.println(odheader.getInputData());
         JSONObject inputData = new JSONObject(odheader.getInputData().toString());
@@ -1566,7 +1688,9 @@ public class MappingService {
                         // System.out.println("productOffering:"+productOffering.toString());
                         String offeringId = productOffering.getString("offeringId");
 
-                        OfferingSpecData ofrspec = catmfeService.getOfferingSpecByOfferingId(offeringId);
+                        OfferingSpecClientResp ofrspecResp = catmfeService.getOfferingSpecByOfferingId(offeringId);
+                        OfferingSpecData ofrspec = ofrspecResp.getData();
+
 
                         offer.setOfferingId(offeringId);
                         // System.out.println("offeringId:"+offeringId);

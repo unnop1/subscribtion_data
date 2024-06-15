@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecClientResp;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
 
 public class CATMFEClient {
@@ -19,8 +20,8 @@ public class CATMFEClient {
         this.context = context;
     }
 
-    public OfferingSpecData GetOfferingSpecByOfferingId(String offeringId){
-        OfferingSpecData respData = null;
+    public OfferingSpecClientResp GetOfferingSpecByOfferingId(String offeringId){
+        OfferingSpecClientResp respData = new OfferingSpecClientResp();
         try {
             URL url = new URL(String.format(
                     "http://%s:%s%s/offering/by_offering_id?offering_id=%s",
@@ -49,10 +50,12 @@ public class CATMFEClient {
                 if (response.toString().isBlank()){
                     return null;
                 }
-                respData = objectMapper.readValue(response.toString(), OfferingSpecData.class);
+                OfferingSpecData data = objectMapper.readValue(response.toString(), OfferingSpecData.class);
+                respData.setData(data);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            respData.setErr(e.getMessage());
         }
         return respData;
     }

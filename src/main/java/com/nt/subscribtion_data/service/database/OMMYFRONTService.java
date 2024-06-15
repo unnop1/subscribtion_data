@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.nt.subscribtion_data.client.OMMYFRONTClient;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.IMSIOfferingConfig;
+import com.nt.subscribtion_data.model.dao.OMMYFRONT.ListIMSIOfferingConfigClientResp;
+import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderClientResp;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderData;
 
 @Service
@@ -23,22 +25,22 @@ public class OMMYFRONTService {
 
     private OMMYFRONTClient client;
 
-    public OrderHeaderData getOrderHeaderDataByOrderID(String orderId){
+    public OrderHeaderClientResp getOrderHeaderDataByOrderID(String orderId){
         client = new OMMYFRONTClient(host, port, context);
         return client.GetOfferHeaderById(orderId);
     }
 
-    public OrderHeaderData getOrderHeaderDataByICCID(String iccid){
+    public OrderHeaderClientResp getOrderHeaderDataByICCID(String iccid){
         client = new OMMYFRONTClient(host, port, context);
         return client.GetOfferHeaderByIccid(iccid);
     }
 
-    public OrderHeaderData getOrderHeaderDataByPoID(Long poId){
+    public OrderHeaderClientResp getOrderHeaderDataByPoID(Long poId){
         client = new OMMYFRONTClient(host, port, context);
         return client.GetOfferHeaderByPoId(poId);
     }
 
-    public List<IMSIOfferingConfig> getImsiOfferingConfigList(){
+    public ListIMSIOfferingConfigClientResp getImsiOfferingConfigList(){
         client = new OMMYFRONTClient(host, port, context);
         return client.GetListIMSIOfferingConfig();
     }

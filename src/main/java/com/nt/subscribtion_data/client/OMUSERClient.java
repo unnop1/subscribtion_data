@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLClientResp;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLData;
 
 public class OMUSERClient {
@@ -19,8 +20,8 @@ public class OMUSERClient {
         this.context = context;
     }
 
-    public TransManageContractDTLData GetTransManageContractByTMasterId(String masterID){
-        TransManageContractDTLData respData = null;
+    public TransManageContractDTLClientResp GetTransManageContractByTMasterId(String masterID){
+        TransManageContractDTLClientResp respData = new TransManageContractDTLClientResp();
         try {
             URL url = new URL(String.format(
                     "http://%s:%s%s/trans_manage_contract/by_trans_master_id?trans_master_id=%s",
@@ -45,10 +46,12 @@ public class OMUSERClient {
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
-                respData = objectMapper.readValue(response.toString(), TransManageContractDTLData.class);
+                TransManageContractDTLData data = objectMapper.readValue(response.toString(), TransManageContractDTLData.class);
+                respData.setData(data);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            respData.setErr(e.getMessage());
         }
         return respData;
     }

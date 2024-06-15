@@ -11,6 +11,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.subscribtion_data.model.dao.INVUSER.INVMasterData;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.IMSIOfferingConfig;
+import com.nt.subscribtion_data.model.dao.OMMYFRONT.ListIMSIOfferingConfigClientResp;
+import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderClientResp;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderData;
 
 public class OMMYFRONTClient {
@@ -24,8 +26,8 @@ public class OMMYFRONTClient {
         this.context = context;
     }
 
-    public OrderHeaderData GetOfferHeaderById(String orderID){
-        OrderHeaderData respData = null;
+    public OrderHeaderClientResp GetOfferHeaderById(String orderID){
+        OrderHeaderClientResp respData = new OrderHeaderClientResp();
         try {
             URL url = new URL(String.format(
                     "http://%s:%s%s/order_header/by_order_id?order_id=%s",
@@ -50,16 +52,18 @@ public class OMMYFRONTClient {
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
-                respData = objectMapper.readValue(response.toString(), OrderHeaderData.class);
+                OrderHeaderData data = objectMapper.readValue(response.toString(), OrderHeaderData.class);
+                respData.setData(data);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            respData.setErr(e.getMessage());
         }
         return respData;
     }
 
-    public OrderHeaderData GetOfferHeaderByIccid(String iccid){
-        OrderHeaderData respData = null;
+    public OrderHeaderClientResp GetOfferHeaderByIccid(String iccid){
+        OrderHeaderClientResp respData = new OrderHeaderClientResp();
         try {
             URL url = new URL(String.format(
                     "http://%s:%s%s/order_header/by_iccid?iccid=%s",
@@ -84,16 +88,19 @@ public class OMMYFRONTClient {
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
-                respData = objectMapper.readValue(response.toString(), OrderHeaderData.class);
+                OrderHeaderData data = objectMapper.readValue(response.toString(), OrderHeaderData.class);
+                respData.setData(data);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            respData.setErr(e.getMessage());
+
         }
         return respData;
     }
 
-    public OrderHeaderData GetOfferHeaderByPoId(Long poid){
-        OrderHeaderData respData = null;
+    public OrderHeaderClientResp GetOfferHeaderByPoId(Long poid){
+        OrderHeaderClientResp respData = new OrderHeaderClientResp();
         try {
             URL url = new URL(String.format(
                     "http://%s:%s%s/order_header/by_poid?poid=%s",
@@ -119,16 +126,18 @@ public class OMMYFRONTClient {
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
-                respData = objectMapper.readValue(response.toString(), OrderHeaderData.class);
+                OrderHeaderData data = objectMapper.readValue(response.toString(), OrderHeaderData.class);
+                respData.setData(data);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            respData.setErr(e.getMessage());
         }
         return respData;
     }
 
-    public List<IMSIOfferingConfig> GetListIMSIOfferingConfig(){
-        List<IMSIOfferingConfig> respData = new ArrayList<IMSIOfferingConfig>();
+    public ListIMSIOfferingConfigClientResp GetListIMSIOfferingConfig(){
+        ListIMSIOfferingConfigClientResp respData = new ListIMSIOfferingConfigClientResp();
         try {
             URL url = new URL(String.format(
                     "http://%s:%s%s/imsi_offering_config/list",
@@ -156,10 +165,12 @@ public class OMMYFRONTClient {
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
                 ObjectMapper objectMapper = new ObjectMapper();
-                respData = objectMapper.readValue(response.toString(),new TypeReference<List<IMSIOfferingConfig>>() {});
+                List<IMSIOfferingConfig> dataList = objectMapper.readValue(response.toString(),new TypeReference<List<IMSIOfferingConfig>>() {});
+                respData.setData(dataList);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            respData.setErr(e.getMessage());
         }
         return respData;
     }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.nt.subscribtion_data.client.CATMFEClient;
+import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecClientResp;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
 
 @Service
@@ -20,8 +21,9 @@ public class CATMFEService {
 
     private CATMFEClient client;
 
-    public OfferingSpecData getOfferingSpecByOfferingId(String offeringId){
+    public OfferingSpecClientResp getOfferingSpecByOfferingId(String offeringId){
         client = new CATMFEClient(host, port, context);
-        return client.GetOfferingSpecByOfferingId(offeringId);
+        OfferingSpecClientResp  resp = client.GetOfferingSpecByOfferingId(offeringId);
+        return resp;
     }
 }
