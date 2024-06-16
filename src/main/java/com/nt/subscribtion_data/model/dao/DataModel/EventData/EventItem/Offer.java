@@ -76,7 +76,7 @@ public class Offer {
     private String descriptionEn;
 
     @JsonProperty("ServiceType")
-    private Integer ServiceType;
+    private Long ServiceType;
 
     @JsonProperty("ocsOfferingName")
     private String ocsOfferingName;

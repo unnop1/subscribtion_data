@@ -23,6 +23,9 @@ public class Data {
     @JsonProperty("msisdn")
     private String msisdn;
 
+    @JsonProperty("orderID")
+    private String orderID;
+
     @JsonProperty("publishChannel")
     private String publishChannel;
 

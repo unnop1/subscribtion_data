@@ -151,6 +151,7 @@ public class MappingService {
                 OrderHeaderData odheader = odheaderResp.getData();
                 try{
                     sendData = MappingDefaultData(odheader, orderType);
+                    sendData.setOrderID(receivedData.getOrderId());
                 }catch(Exception e){
                     TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                     triggerMsg.setOrderType_Name(orderType);
@@ -267,24 +268,12 @@ public class MappingService {
             return null;
         }
 
-        if (orderTypeInfo == null){
-            // UnSend to kafka server
-            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-            triggerMsg.setMESSAGE_IN(message);
-            triggerMsg.setIS_STATUS(0);
-            triggerMsg.setOrderType_Name(orderTypeName);
-            triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
-            triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
-            triggerMsg.setREMARK("NOT FOUND orderTypeInfo "+channelConnectType);
-            distributeService.CreateTriggerMessage(triggerMsg);
-            return null;
-        }
 
         try{
             
             // Mapping DataType
             sendData = MappingTopUpData(receivedData, orderTypeName);
-            
+            sendData.setOrderID(receivedData.getNotiMsgSeq());
             ObjectMapper mapper = new ObjectMapper();
             String jsonString = mapper.writeValueAsString(sendData);
 
@@ -296,8 +285,9 @@ public class MappingService {
                 triggerMsg.setIS_STATUS(1);
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
-                triggerMsg.setPHONENUMBER(sendData.getMsisdn());
+                triggerMsg.setPHONENUMBER(String.format("0%s",receivedData.getMsisdn()));
                 triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
+                triggerMsg.setORDERID(receivedData.getNotiMsgSeq());
                 triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
                 triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
                 triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
@@ -311,7 +301,8 @@ public class MappingService {
                 triggerMsg.setIS_STATUS(0);
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
-                triggerMsg.setPHONENUMBER(sendData.getMsisdn());
+                triggerMsg.setORDERID(receivedData.getNotiMsgSeq());
+                triggerMsg.setPHONENUMBER(String.format("0%s",receivedData.getMsisdn()));
                 triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
                 triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
                 triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
@@ -323,10 +314,12 @@ public class MappingService {
             TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
             triggerMsg.setMESSAGE_IN(message);
             triggerMsg.setOrderType_Name(orderTypeName);
-            // triggerMsg.setOrderType_id(orderTypeInfo.getID());
+            triggerMsg.setPHONENUMBER(String.format("0%s",receivedData.getMsisdn()));
+            triggerMsg.setOrderType_id(orderTypeInfo.getID());
             triggerMsg.setREMARK(e.getMessage());
             triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
-            // triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+            triggerMsg.setORDERID(receivedData.getNotiMsgSeq());
+            triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
             triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
             triggerMsg.setIS_STATUS(0);
             distributeService.CreateTriggerMessage(triggerMsg);
@@ -342,7 +335,7 @@ public class MappingService {
         ObjectMapper objectMapper = new ObjectMapper();
         ReceiveExpiredDataType receivedData = objectMapper.readValue(message, ReceiveExpiredDataType.class);
         String orderTypeName = "PACKAGE_EXPIRE";
-        String channelType = "OM";
+        String channelType = "Expire";
         String publishChannelType = "PackageExpireEX";
         List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
         if (orderTypes == null){
@@ -379,9 +372,10 @@ public class MappingService {
                 triggerMsg.setMESSAGE_IN(message);
                 triggerMsg.setDATA_MODEL(jsonString);
                 triggerMsg.setIS_STATUS(1);
+                triggerMsg.setORDERID(receivedData.getNotiMsgSeq());
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
-                triggerMsg.setPHONENUMBER(sendData.getMsisdn());
+                triggerMsg.setPHONENUMBER(String.format("0%s",receivedData.getMsisdn()));
                 triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
                 triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
                 triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
@@ -394,9 +388,10 @@ public class MappingService {
                 triggerMsg.setMESSAGE_IN(message);
                 triggerMsg.setDATA_MODEL(jsonString);
                 triggerMsg.setIS_STATUS(0);
+                triggerMsg.setORDERID(receivedData.getNotiMsgSeq());
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
-                triggerMsg.setPHONENUMBER(sendData.getMsisdn());
+                triggerMsg.setPHONENUMBER(String.format("0%s",receivedData.getMsisdn()));
                 triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
                 triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
                 triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
@@ -410,6 +405,10 @@ public class MappingService {
             triggerMsg.setMESSAGE_IN(message);
             triggerMsg.setIS_STATUS(0);
             triggerMsg.setOrderType_Name(orderTypeName);
+            triggerMsg.setORDERID(receivedData.getNotiMsgSeq());
+            triggerMsg.setREMARK(e.getMessage());
+            triggerMsg.setPHONENUMBER(String.format("0%s",receivedData.getMsisdn()));
+                
             // triggerMsg.setOrderType_id(orderTypeInfo.getID());
             triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
             triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
@@ -621,7 +620,7 @@ public class MappingService {
 
                                                     if (subscriberInfo != null){
                                                         if (subscriberInfo.has("serviceType")){
-                                                            offer.setServiceType(subscriberInfo.getInt("serviceType"));
+                                                            offer.setServiceType(subscriberInfo.getLong("serviceType"));
                                                         }
                                                     }    
 
@@ -1670,6 +1669,7 @@ public class MappingService {
         topUpEv.setEventItems(eventItems);
 
         sendData.setTriggerDate(triggerDate);
+        sendData.setOrderID(receivedData.getNotiMsgSeq());
         sendData.setPublishChannel("Topup-GW");
         sendData.setOrderType("TOPUP_RECHARGE");
         sendData.setMsisdn(String.format("0%s", receivedData.getMsisdn()));
@@ -1688,32 +1688,32 @@ public class MappingService {
 
         EventData expiredEv = new EventData();
         // System.out.println("getPoId: "+receivedData.getPoId());
-        OrderHeaderClientResp odheaderResp = ommyfrontService.getOrderHeaderDataByPoID(receivedData.getPoId());
-        if (odheaderResp.getErr() != null) {
-            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-            triggerMsg.setIS_STATUS(0);
-            triggerMsg.setOrderType_Name(orderTypeName);
-            triggerMsg.setREMARK("NOT Found odheaderResp error:"+odheaderResp.getErr());
-            distributeService.CreateTriggerMessage(triggerMsg);
-            return null;
-        }
+        // OrderHeaderClientResp odheaderResp = ommyfrontService.getOrderHeaderDataByPoID(receivedData.getPoId());
+        // if (odheaderResp.getErr() != null) {
+        //     TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+        //     triggerMsg.setIS_STATUS(0);
+        //     triggerMsg.setOrderType_Name(orderTypeName);
+        //     triggerMsg.setREMARK("NOT Found odheaderResp error:"+odheaderResp.getErr());
+        //     distributeService.CreateTriggerMessage(triggerMsg);
+        //     return null;
+        // }
 
-        OrderHeaderData odheader = odheaderResp.getData();
+        // OrderHeaderData odheader = odheaderResp.getData();
 
-        String externalId = odheader.getMsisdn();
+        // String externalId = odheader.getMsisdn();
         // System.out.println("externalId: "+externalId);
-        INVMappingClientResp invMappingResp = invuserService.getInvMappingData(externalId);
+        // INVMappingClientResp invMappingResp = invuserService.getInvMappingData(externalId);
 
-        INVMappingData invMappingData = new INVMappingData();
-        if(invMappingResp.getErr() == null){
-            invMappingData = invMappingResp.getData();
-        }
+        // INVMappingData invMappingData = new INVMappingData();
+        // if(invMappingResp.getErr() == null){
+        //     invMappingData = invMappingResp.getData();
+        // }
         // System.out.println("inv getImsi: "+invMappingData.getImsi());
         ListIMSIOfferingConfigClientResp imsiOfferConfigListResp = ommyfrontService.getImsiOfferingConfigList();
         List<IMSIOfferingConfig> imsiOfferConfigList = imsiOfferConfigListResp.getData();
 
         // System.out.println(odheader.getInputData());
-        JSONObject inputData = new JSONObject(odheader.getInputData().toString());
+        // JSONObject inputData = new JSONObject(odheader.getInputData().toString());
 
         expiredEv.setEventType(orderTypeName);
 
@@ -1745,147 +1745,111 @@ public class MappingService {
         * Offer 
         */
         List<Offer> offers = new ArrayList<Offer>();
-        if (inputData.has("orderItem")){
-            JSONArray orderItems = inputData.getJSONArray("orderItem");
-            for (int i = 0; i < orderItems.length(); i++){
-                JSONObject orderItem = orderItems.getJSONObject(i);
+
+        Offer offer = new Offer();
+        String offeringId = receivedData.getPoId()+"";
+
+        OfferingSpecClientResp ofrspecResp = catmfeService.getOfferingSpecByOfferingId(offeringId);
+        OfferingSpecData ofrspec = ofrspecResp.getData();
+
+
+        
             
-                // OrderItem
-                JSONArray productOfferingList = new JSONArray();
-                if (orderItem.has("productOffering")){
-                    productOfferingList = orderItem.getJSONArray("productOffering");
-                }
+        
+        if (ofrspec != null){
+            offer.setOfferingId(offeringId);
+            // System.out.println("offeringId:"+offeringId);
 
-                JSONObject subscriberInfo = new JSONObject();
-                if (orderItem.has("subscriberInfo")){
-                    subscriberInfo = orderItem.getJSONObject("subscriberInfo");
-                }
+            offer.setOfferingType(ofrspec.getOfferingtype());
 
-                
-                Offer offer = new Offer();
-                
-                if (productOfferingList.length() > 0){
-                    for(int j=0;j<productOfferingList.length();j++){
-                        JSONObject productOffering = productOfferingList.getJSONObject(j);
-                        // System.out.println("productOffering:"+productOffering.toString());
-                        String offeringId = productOffering.getString("offeringId");
+            offer.setOfferingNameTh(ofrspec.getOfferingnameTH());
 
-                        OfferingSpecClientResp ofrspecResp = catmfeService.getOfferingSpecByOfferingId(offeringId);
-                        OfferingSpecData ofrspec = ofrspecResp.getData();
+            offer.setOfferingNameEn(ofrspec.getOfferingnameEN());
 
+            offer.setPackageId(ofrspec.getPackageID());
 
-                        offer.setOfferingId(offeringId);
-                        // System.out.println("offeringId:"+offeringId);
-                        if (productOffering != null ){
-                            if (productOffering.has("offeringType")){
-                                offer.setOfferingType(productOffering.getString("offeringType"));
-                            }
-                            
-                            if (productOffering.has("actionFlag")){
-                                offer.setActionFlag(productOffering.getString("actionFlag"));
-                            }
-                        }
-                        
-                        if (ofrspec != null){
+            offer.setPackageName(ofrspec.getPackageName());
 
-                            offer.setOfferingNameTh(ofrspec.getOfferingnameTH());
+            offer.setDescriptionTh(ofrspec.getDescTH());
 
-                            offer.setOfferingNameEn(ofrspec.getOfferingnameEN());
+            offer.setDescriptionEn(ofrspec.getDescEN());
 
-                            offer.setPackageId(ofrspec.getPackageID());
+            offer.setServiceType(ofrspec.getServiceType());
 
-                            offer.setPackageName(ofrspec.getPackageName());
+            offer.setOcsOfferingName(ofrspec.getOcsofferingname());
 
-                            offer.setDescriptionTh(ofrspec.getDescTH());
+            if(ofrspec.getRcamount() != null){
+                BigDecimal rcamount = new BigDecimal(ofrspec.getRcamount());
+                offer.setRcAmount(rcamount);
+            }
 
-                            offer.setDescriptionEn(ofrspec.getDescEN());
+            if(ofrspec.getRcvatamount() != null){
+                BigDecimal rcvatamount = new BigDecimal(ofrspec.getRcvatamount());
+                offer.setRcVatAmount(rcvatamount);
+            }
 
-                            if (subscriberInfo != null){
-                                if (subscriberInfo.has("serviceType")){
-                                    offer.setServiceType(subscriberInfo.getInt("serviceType"));
-                                }
-                            }    
+            offer.setPeriod(ofrspec.getPeriod());
 
-                            offer.setOcsOfferingName(ofrspec.getOcsofferingname());
+            offer.setUnitPeriod(ofrspec.getUnitperiod());
 
-                            if(ofrspec.getRcamount() != null){
-                                BigDecimal rcamount = new BigDecimal(ofrspec.getRcamount());
-                                offer.setRcAmount(rcamount);
-                            }
+            offer.setSaleStartDate(ofrspec.getSalestartdate());
 
-                            if(ofrspec.getRcvatamount() != null){
-                                BigDecimal rcvatamount = new BigDecimal(ofrspec.getRcvatamount());
-                                offer.setRcVatAmount(rcvatamount);
-                            }
+            offer.setSaleEndDate(ofrspec.getSaleenddate());
 
-                            offer.setPeriod(ofrspec.getPeriod());
+            if(ofrspec.getMaxdayafteractivedate()!=null){
+                BigDecimal maxdayafteractivedate = new BigDecimal(ofrspec.getMaxdayafteractivedate());
+                offer.setMaxDayAfterActiveDate(maxdayafteractivedate);
+            }
 
-                            offer.setUnitPeriod(ofrspec.getUnitperiod());
+            offer.setNiceNumberFlag(ofrspec.getNicenumberflag());
 
-                            offer.setSaleStartDate(ofrspec.getSalestartdate());
+            if(ofrspec.getNicenumberlevel()!= null){
+                BigDecimal nicenumberlevel = new BigDecimal(ofrspec.getNicenumberlevel());
+                offer.setNiceNumberLevel(nicenumberlevel);
+            }
 
-                            offer.setSaleEndDate(ofrspec.getSaleenddate());
+            offer.setConTractFlag(ofrspec.getContractflag());
 
-                            if(ofrspec.getMaxdayafteractivedate()!=null){
-                                BigDecimal maxdayafteractivedate = new BigDecimal(ofrspec.getMaxdayafteractivedate());
-                                offer.setMaxDayAfterActiveDate(maxdayafteractivedate);
-                            }
+            if(ofrspec.getContractunitperiod() != null){
+                BigDecimal contractunitperiod = new BigDecimal(ofrspec.getContractunitperiod());
+                offer.setContractUnitPeriod(contractunitperiod);
+            }
 
-                            offer.setNiceNumberFlag(ofrspec.getNicenumberflag());
+            offer.setCatEmpFlag(ofrspec.getCatempflag());
 
-                            if(ofrspec.getNicenumberlevel()!= null){
-                                BigDecimal nicenumberlevel = new BigDecimal(ofrspec.getNicenumberlevel());
-                                offer.setNiceNumberLevel(nicenumberlevel);
-                            }
+            offer.setCatRetireEmpFlag(ofrspec.getRetiredcatempflag());
 
-                            offer.setConTractFlag(ofrspec.getContractflag());
+            // offer.multisimFlag your code here with logic
+            offer.setMultisimFlag(ofrspec.getMultisimflag());
 
-                            if(ofrspec.getContractunitperiod() != null){
-                                BigDecimal contractunitperiod = new BigDecimal(ofrspec.getContractunitperiod());
-                                offer.setContractUnitPeriod(contractunitperiod);
-                            }
+            offer.setTopupSimFlag(ofrspec.getTopupsimflag());
 
-                            offer.setCatEmpFlag(ofrspec.getCatempflag());
+            offer.setTouristSimFlag(ofrspec.getTouristsimflag());
 
-                            offer.setCatRetireEmpFlag(ofrspec.getRetiredcatempflag());
+            offer.setChangePoUssdCode(ofrspec.getChangepoussdcode());
 
-                            // offer.multisimFlag your code here with logic
-                            offer.setMultisimFlag(String.valueOf(invMappingData.getMultisimFlag()));
+            offer.setAddSoUssdCode(ofrspec.getAddsoussdcode());
 
-                            offer.setTopupSimFlag(ofrspec.getTopupsimflag());
+            offer.setDeleteSoUssdCode(ofrspec.getDeletesoussdcode());
 
-                            offer.setTouristSimFlag(ofrspec.getTouristsimflag());
+            offer.setFrequency(ofrspec.getFrequency());
 
-                            offer.setChangePoUssdCode(ofrspec.getChangepoussdcode());
+            offer.setCanSwapPoFlag(ofrspec.getCanswappoflag());
 
-                            offer.setAddSoUssdCode(ofrspec.getAddsoussdcode());
-
-                            offer.setDeleteSoUssdCode(ofrspec.getDeletesoussdcode());
-
-                            // offer.frequency your code here with logic
-                            String imsiMapping = invMappingData.getImsi();
-                            IMSIOfferingConfig imsiConfigData = getImsiConfigByImsi(imsiMapping, imsiOfferConfigList);
-                            offer.setFrequency(imsiConfigData.getFrequency());
-
-                            offer.setCanSwapPoFlag(ofrspec.getCanswappoflag());
-
-                            offers.add(offer);
-                        }
-                    }
+            offers.add(offer);
+        }
+    
 
                     /*  
                     * End offer
                     */
-                }
-            }
-        }
         // Only one EventItem [expired, offer]
         eventItem.setOffer(offers);
         eventItems.add(eventItem);
         expiredEv.setEventItems(eventItems);
 
         
-
+        sendData.setOrderID(receivedData.getNotiMsgSeq());
         sendData.setTriggerDate(triggerDate);
         sendData.setPublishChannel("OM-MFE");
         sendData.setOrderType("PACKAGE_EXPIRE");
