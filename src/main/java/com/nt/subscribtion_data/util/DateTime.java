@@ -24,13 +24,8 @@ public class DateTime {
     }
 
     public static Timestamp getTimestampNowUTC(){
-        LocalDateTime now = LocalDateTime.now();
-
-        Instant instant = now.toInstant(ZoneOffset.UTC);
-
-        // Convert Instant to Timestamp
-        Timestamp timestampNowUTC = Timestamp.from(instant);
-        return timestampNowUTC;
+        Instant instant = Instant.now();
+        return Timestamp.from(instant);
     }
 
     public static final String getTriggerTimeStampNow(){

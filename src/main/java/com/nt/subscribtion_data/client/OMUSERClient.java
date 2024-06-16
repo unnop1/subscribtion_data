@@ -11,12 +11,10 @@ import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLData;
 
 public class OMUSERClient {
     private String host;
-    private String port;
     private String context;
 
-    public OMUSERClient(String host, String port, String context){
+    public OMUSERClient(String host, String context){
         this.host = host;
-        this.port = port;
         this.context = context;
     }
 
@@ -24,9 +22,8 @@ public class OMUSERClient {
         TransManageContractDTLClientResp respData = new TransManageContractDTLClientResp();
         try {
             URL url = new URL(String.format(
-                    "http://%s:%s%s/trans_manage_contract/by_trans_master_id?trans_master_id=%s",
+                    "http://%s%s/trans_manage_contract/by_trans_master_id?trans_master_id=%s",
                     host,
-                    port,
                     context,
                     masterID
                 )
@@ -52,9 +49,8 @@ public class OMUSERClient {
         } catch (Exception e) {
             e.printStackTrace();
             String urltest = String.format(
-                "http://%s:%s%s/trans_manage_contract/by_trans_master_id?trans_master_id=%s",
+                "http://%s%s/trans_manage_contract/by_trans_master_id?trans_master_id=%s",
                 host,
-                port,
                 context,
                 masterID
             );

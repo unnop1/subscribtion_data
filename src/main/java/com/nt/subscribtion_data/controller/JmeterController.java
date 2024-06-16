@@ -70,10 +70,8 @@ public class JmeterController {
                     if (orderTypeInfo != null){
                         saChannelConInfo = mappingService.getSaChannelInfoFromList("OM", saChannels);
                         if (saChannelConInfo != null){
-                            Clob bodyMessageClob;
                             try{
-                                bodyMessageClob = new javax.sql.rowset.serial.SerialClob(bodyMessage.toCharArray());
-                                triggerMsg.setMESSAGE_IN(bodyMessageClob);
+                                triggerMsg.setMESSAGE_IN(bodyMessage);
                             } catch (Exception e){
                                 e.printStackTrace();
                             }
@@ -101,8 +99,8 @@ public class JmeterController {
                         if (saChannelConInfo != null){
                             Clob bodyMessageClob;
                             try{
-                                bodyMessageClob = new javax.sql.rowset.serial.SerialClob(bodyMessage.toCharArray());
-                                triggerMsg.setMESSAGE_IN(bodyMessageClob);
+                                // bodyMessageClob = new javax.sql.rowset.serial.SerialClob(bodyMessage.toCharArray());
+                                triggerMsg.setMESSAGE_IN(bodyMessage);
                             } catch (Exception e){
                                 e.printStackTrace();
                             }
@@ -132,7 +130,7 @@ public class JmeterController {
     public ResponseEntity<Boolean> mappingData(@RequestBody String bodyMessage) {
         try {
             // System.out.println("bodyMessage:"+ bodyMessage);
-            mappingService.processOMType(bodyMessage);
+            mappingService.processDefaultType(bodyMessage);
             return new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);

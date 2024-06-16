@@ -3,19 +3,26 @@ package com.nt.subscribtion_data.model.dao.OMMYFRONT;
 import java.sql.Clob;
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class OrderHeaderData {
     @JsonProperty("id")
     private Long id;
 
     @JsonProperty("createby")
-    private Long createBy;
+    private String createBy;
 
     @JsonProperty("createdate")
     private String createDate;

@@ -46,7 +46,7 @@ public class RabbitMqConsumerService {
             // String queueName = (String) headers.get("amqp_receivedRoutingKey");
             // System.out.println("Received message from queue " + queueName + ": " + message);
             // Process the message based on the queue name
-            Data sendData = mappingService.processOMType(message);
+            Data sendData = mappingService.processDefaultType(message);
             if (sendData != null){
                 kafkaProducerService.sendMessage(sendData.getOrderType(),"", sendData);
                 // System.out.println("sending to kafka");

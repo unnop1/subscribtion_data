@@ -53,7 +53,13 @@ public class OMMYFRONTClient {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            respData.setErr(e.getMessage());
+            String urltest = String.format(
+                "http://%s%s/order_header/by_order_id?order_id=%s",
+                host,
+                context,
+                orderID
+            );
+            respData.setErr(e.getMessage()+" url :"+urltest);
         }
         return respData;
     }

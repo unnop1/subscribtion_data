@@ -13,16 +13,13 @@ public class OMUSERService {
     @Value("${omuser.host}")
     private String host;
 
-    @Value("${omuser.port}")
-    private String port;
-
     @Value("${omuser.context}")
     private String context="/";
 
     private OMUSERClient client;
 
     public TransManageContractDTLClientResp getTransManageContractDTLData(String id){
-        client = new OMUSERClient(host, port, context);
+        client = new OMUSERClient(host, context);
         return client.GetTransManageContractByTMasterId(id);
     }
 }
