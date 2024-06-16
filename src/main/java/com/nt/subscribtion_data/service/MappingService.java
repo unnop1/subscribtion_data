@@ -240,6 +240,15 @@ public class MappingService {
         }
 
         OrderTypeEntity orderTypeInfo = getOrderTypeInfoFromList(orderTypeName, orderTypes);
+        if(orderTypeInfo == null){
+            // No save log if ordertype not found
+            return null;
+        }else{
+            if(orderTypeInfo.getIs_Enable().equals(0)){
+                // No save log if ordertype is closed
+                return null;
+            }
+        }
 
         List<SaChannelConEntity> saChannels = cacheUpdater.getSaChannelConnectListCache();
         if (saChannels == null){
@@ -341,6 +350,15 @@ public class MappingService {
         }
 
         OrderTypeEntity orderTypeInfo = getOrderTypeInfoFromList(orderTypeName, orderTypes);
+        if(orderTypeInfo == null){
+            // No save log if ordertype not found
+            return null;
+        }else{
+            if(orderTypeInfo.getIs_Enable().equals(0)){
+                // No save log if ordertype is closed
+                return null;
+            }
+        }
 
         List<SaChannelConEntity> saChannels = cacheUpdater.getSaChannelConnectListCache();
         if (saChannels == null){
