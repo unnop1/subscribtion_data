@@ -1322,7 +1322,7 @@ public class MappingService {
                                     }
 
                                     if (inputData.has("rechargeAmount")){
-                                        topUp.setRechargeAmount(inputTopUp.getString("rechargeAmount"));
+                                        topUp.setRechargeAmount(inputTopUp.getInt("rechargeAmount"));
                                     }
 
                                     if (inputData.has("currencyId")){
@@ -1657,7 +1657,7 @@ public class MappingService {
         // EventItem TopUp 
         TopUp topUp = new TopUp();
         topUp.setTopupType(receivedData.getRechargeType());
-        topUp.setRechargeAmount(String.valueOf(receivedData.getRechargeAmount()));
+        topUp.setRechargeAmount(Integer.valueOf(receivedData.getRechargeAmount()));
         topUp.setCurrencyId(receivedData.getCurrencyId());
         topUp.setChannelId(receivedData.getChannelId());
         topUp.setRechargeDate(receivedData.getRechargeDate());

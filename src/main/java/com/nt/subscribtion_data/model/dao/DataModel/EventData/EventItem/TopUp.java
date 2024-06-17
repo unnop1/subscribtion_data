@@ -29,7 +29,7 @@ public class TopUp {
     private Integer topupType;
 
     @JsonProperty("rechargeAmount")
-    private String rechargeAmount;
+    private Integer rechargeAmount;
 
     @JsonProperty("rechargeType")
     private Integer rechargeType;
