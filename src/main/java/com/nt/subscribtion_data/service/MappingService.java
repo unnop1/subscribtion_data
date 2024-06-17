@@ -1661,6 +1661,7 @@ public class MappingService {
         topUp.setCurrencyId(receivedData.getCurrencyId());
         topUp.setChannelId(receivedData.getChannelId());
         topUp.setRechargeDate(receivedData.getRechargeDate());
+        topUp.setRechargeType(receivedData.getRechargeType());
         topUp.setNotiMsgSeq(receivedData.getNotiMsgSeq());
         topUp.setRechargeLogId(receivedData.getRechargeLogId());
         eventItem.setTopUp(topUp);

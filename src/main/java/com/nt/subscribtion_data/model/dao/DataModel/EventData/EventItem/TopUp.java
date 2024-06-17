@@ -30,6 +30,9 @@ public class TopUp {
 
     @JsonProperty("rechargeAmount")
     private String rechargeAmount;
+
+    @JsonProperty("rechargeType")
+    private Integer rechargeType;
     
     @JsonProperty("currencyId")
     private Integer currencyId;
