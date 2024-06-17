@@ -1595,15 +1595,15 @@ public class MappingService {
                 if(inputData.has("saleInfo")){
                     JSONObject inputSaleInfo = inputData.getJSONObject("saleInfo");
                     SaleInfo saleInfo = new SaleInfo();
-                    saleInfo.setSaleEmpId(inputSaleInfo.getString("saleEmpId"));
-                    saleInfo.setSapCode(inputSaleInfo.getString("sapCode"));
-                    saleInfo.setDealerCode(inputSaleInfo.getString("dealerCode"));
-                    saleInfo.setRegisterBySellerName(inputSaleInfo.getString("registerBySellerName"));
-                    saleInfo.setSaleRole(inputSaleInfo.getString("saleRole"));
-                    saleInfo.setRegisterProvince(inputSaleInfo.getString("registerProvince"));
-                    saleInfo.setTerritoryName(inputSaleInfo.getString("territoryName"));
-                    saleInfo.setSaleRepEmpId(inputSaleInfo.getString("saleRepEmpId"));
-                    saleInfo.setSaleRepSapCode(inputSaleInfo.getString("saleRepSapCode"));
+                    saleInfo.setSaleEmpId(inputSaleInfo.getString("saleEmpId") != null ? inputSaleInfo.getString("saleEmpId") : null);
+                    saleInfo.setSapCode(inputSaleInfo.getString("sapCode") != null ? inputSaleInfo.getString("sapCode") : null);
+                    saleInfo.setDealerCode(inputSaleInfo.getString("dealerCode") != null ? inputSaleInfo.getString("dealerCode") : null);
+                    saleInfo.setRegisterBySellerName(inputSaleInfo.getString("registerBySellerName") != null ? inputSaleInfo.getString("registerBySellerName") : null);
+                    saleInfo.setSaleRole(inputSaleInfo.getString("saleRole") != null ? inputSaleInfo.getString("saleRole") : null);
+                    saleInfo.setRegisterProvince(inputSaleInfo.getString("registerProvince") != null ? inputSaleInfo.getString("registerProvince") : null);
+                    saleInfo.setTerritoryName(inputSaleInfo.getString("territoryName") != null ? inputSaleInfo.getString("territoryName") : null);
+                    saleInfo.setSaleRepEmpId(inputSaleInfo.getString("saleRepEmpId") != null ? inputSaleInfo.getString("saleRepEmpId") : null);
+                    saleInfo.setSaleRepSapCode(inputSaleInfo.getString("saleRepSapCode") != null ? inputSaleInfo.getString("saleRepSapCode") : null);
                     omEv.setSaleInfo(saleInfo);
                 }
 
@@ -1710,8 +1710,8 @@ public class MappingService {
         //     invMappingData = invMappingResp.getData();
         // }
         // System.out.println("inv getImsi: "+invMappingData.getImsi());
-        ListIMSIOfferingConfigClientResp imsiOfferConfigListResp = ommyfrontService.getImsiOfferingConfigList();
-        List<IMSIOfferingConfig> imsiOfferConfigList = imsiOfferConfigListResp.getData();
+        // ListIMSIOfferingConfigClientResp imsiOfferConfigListResp = ommyfrontService.getImsiOfferingConfigList();
+        // List<IMSIOfferingConfig> imsiOfferConfigList = imsiOfferConfigListResp.getData();
 
         // System.out.println(odheader.getInputData());
         // JSONObject inputData = new JSONObject(odheader.getInputData().toString());
