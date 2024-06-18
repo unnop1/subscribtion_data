@@ -59,10 +59,19 @@ public class JmeterController {
     }
 
     @PostMapping("/mapping")
-    public ResponseEntity<Boolean> mappingData(@RequestBody String bodyMessage) {
+    public ResponseEntity<Boolean> mappingData(@PathVariable("type") String mappingType, @RequestBody String bodyMessage) {
         try {
             // System.out.println("bodyMessage:"+ bodyMessage);
-            mappingService.processDefaultType(bodyMessage, true);
+            switch (mappingType.toLowerCase()) {
+                case "om":
+                    mappingService.processDefaultType(bodyMessage, true);
+                    break;
+                case "topup":
+                    mappingService.processTopUpType(bodyMessage, true);
+                    break;
+                default:
+                    return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+            }
             return new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
