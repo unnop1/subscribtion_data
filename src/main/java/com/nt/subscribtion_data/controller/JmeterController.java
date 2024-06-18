@@ -58,7 +58,7 @@ public class JmeterController {
         }
     }
 
-    @PostMapping("/mapping")
+    @PostMapping("/mapping/{type}")
     public ResponseEntity<Boolean> mappingData(@PathVariable("type") String mappingType, @RequestBody String bodyMessage) {
         try {
             // System.out.println("bodyMessage:"+ bodyMessage);
