@@ -40,80 +40,12 @@ public class JmeterController {
     @PostMapping("/subscribe/{type}")
     public ResponseEntity<Boolean> subscribeData(@PathVariable("type") String subscribeType, @RequestBody String bodyMessage) {
         try {
-            // System.out.println("subscribeType: " + subscribeType);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
-            if (orderTypes == null){
-                orderTypes = distributeService.LisOrderTypes();
-            }
-
-            List<SaChannelConEntity> saChannels = cacheUpdater.getSaChannelConnectListCache();
-            if (saChannels == null){
-                saChannels = distributeService.ListChannelConnect();
-            } 
-            
-            OrderTypeEntity orderTypeInfo;
-            SaChannelConEntity saChannelConInfo;
-
-            Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
-
-            TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
-
             switch (subscribeType.toLowerCase()) {
                 case "om":
-                    ReceiveOMDataType receivedOMData = objectMapper.readValue(bodyMessage, ReceiveOMDataType.class);
-                    String orderType = receivedOMData.getOrderType().toUpperCase();
-                    
-                    orderTypeInfo = mappingService.getOrderTypeInfoFromList(orderType, orderTypes);
-                    if (orderTypeInfo != null){
-                        saChannelConInfo = mappingService.getSaChannelInfoFromList("OM", saChannels);
-                        if (saChannelConInfo != null){
-                            try{
-                                triggerMsg.setMESSAGE_IN(bodyMessage);
-                            } catch (Exception e){
-                                e.printStackTrace();
-                            }
-                            triggerMsg.setIS_STATUS(1);
-                            triggerMsg.setORDERID(receivedOMData.getOrderId());
-                            triggerMsg.setOrderType_Name(orderType);
-                            triggerMsg.setOrderType_id(orderTypeInfo.getID());
-                            triggerMsg.setPUBLISH_CHANNEL("OM-MFE");
-                            triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
-                            triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
-                            triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
-                            distributeService.CreateTriggerMessage(triggerMsg);
-                        }
-                    }
+                    mappingService.processDefaultType(bodyMessage, false);
                     break;
-                case "top":
-                    // TOPUP_RECHARGE
-                    String orderTypeName = "TOPUP_RECHARGE";
-                    // String channelType = "TOPUP";
-                    String publishChannelType = "Topup-GW";
-                    
-                    orderTypeInfo = mappingService.getOrderTypeInfoFromList(orderTypeName, orderTypes);
-                    saChannelConInfo = mappingService.getSaChannelInfoFromList("OM", saChannels);
-                    if (orderTypeInfo != null){
-                        if (saChannelConInfo != null){
-                            Clob bodyMessageClob;
-                            try{
-                                // bodyMessageClob = new javax.sql.rowset.serial.SerialClob(bodyMessage.toCharArray());
-                                triggerMsg.setMESSAGE_IN(bodyMessage);
-                            } catch (Exception e){
-                                e.printStackTrace();
-                            }
-                            triggerMsg.setIS_STATUS(1);
-                            triggerMsg.setOrderType_Name(orderTypeName);
-                            triggerMsg.setOrderType_id(orderTypeInfo.getID());
-                            triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
-                            triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
-                            triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
-                            triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
-                            distributeService.CreateTriggerMessage(triggerMsg);
-                        }
-                    }
+                case "topup":
+                    mappingService.processTopUpType(bodyMessage, false);
                     break;
                 default:
                     return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
@@ -130,7 +62,7 @@ public class JmeterController {
     public ResponseEntity<Boolean> mappingData(@RequestBody String bodyMessage) {
         try {
             // System.out.println("bodyMessage:"+ bodyMessage);
-            mappingService.processDefaultType(bodyMessage);
+            mappingService.processDefaultType(bodyMessage, true);
             return new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);

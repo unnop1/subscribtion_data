@@ -84,7 +84,7 @@ public class MappingService {
     @Autowired
     private CacheUpdater cacheUpdater;
 
-    public Data processDefaultType(String message) throws SQLException, IOException {
+    public Data processDefaultType(String message, Boolean isSaveDataModel) throws SQLException, IOException {
         // Process for new_order_type
         Data sendData = null;
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
@@ -173,7 +173,9 @@ public class MappingService {
                         // Send to kafka server
                         TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                         triggerMsg.setMESSAGE_IN(message);
-                        triggerMsg.setDATA_MODEL(jsonString);
+                        if(isSaveDataModel){
+                            triggerMsg.setDATA_MODEL(jsonString);
+                        }
                         triggerMsg.setIS_STATUS(1);
                         triggerMsg.setORDERID(receivedData.getOrderId());
                         triggerMsg.setOrderType_Name(sendData.getOrderType());
@@ -225,7 +227,7 @@ public class MappingService {
         }
     }
 
-    public Data processTopUpType(String message) throws SQLException, IOException {
+    public Data processTopUpType(String message, Boolean isSaveDataModel) throws SQLException, IOException {
         // Process for new_order_type
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
         Data sendData = null;
@@ -281,7 +283,9 @@ public class MappingService {
                 // Send to kafka server
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                 triggerMsg.setMESSAGE_IN(message);
-                triggerMsg.setDATA_MODEL(jsonString);
+                if(isSaveDataModel){
+                    triggerMsg.setDATA_MODEL(jsonString);
+                }
                 triggerMsg.setIS_STATUS(1);
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
@@ -297,7 +301,9 @@ public class MappingService {
                 // UnSend to kafka server
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                 triggerMsg.setMESSAGE_IN(message);
-                triggerMsg.setDATA_MODEL(jsonString);
+                if(isSaveDataModel){
+                    triggerMsg.setDATA_MODEL(jsonString);
+                }
                 triggerMsg.setIS_STATUS(0);
                 triggerMsg.setOrderType_Name(orderTypeName);
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
@@ -327,7 +333,7 @@ public class MappingService {
         }
     }
 
-    public Data processExpiredType(String message) throws SQLException, IOException {
+    public Data processExpiredType(String message, Boolean isSaveDataModel) throws SQLException, IOException {
         // Process for new_order_type
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
         Data sendData = null;
@@ -370,7 +376,9 @@ public class MappingService {
                 // Send to kafka server
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                 triggerMsg.setMESSAGE_IN(message);
-                triggerMsg.setDATA_MODEL(jsonString);
+                if(isSaveDataModel){
+                    triggerMsg.setDATA_MODEL(jsonString);
+                }
                 triggerMsg.setIS_STATUS(1);
                 triggerMsg.setORDERID(receivedData.getNotiMsgSeq());
                 triggerMsg.setOrderType_Name(orderTypeName);
@@ -386,7 +394,9 @@ public class MappingService {
                 // UnSend to kafka server
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                 triggerMsg.setMESSAGE_IN(message);
-                triggerMsg.setDATA_MODEL(jsonString);
+                if(isSaveDataModel){
+                    triggerMsg.setDATA_MODEL(jsonString);
+                }
                 triggerMsg.setIS_STATUS(0);
                 triggerMsg.setORDERID(receivedData.getNotiMsgSeq());
                 triggerMsg.setOrderType_Name(orderTypeName);

@@ -29,7 +29,7 @@ public class RabbitMqConsumerService {
             // String queueName = (String) headers.get("amqp_receivedRoutingKey");
             // System.out.println("Received message from queue " + queueName + ": " + message);
             // Process the message based on the queue name
-            Data sendData = mappingService.processTopUpType(message);
+            Data sendData = mappingService.processTopUpType(message, true);
             if (sendData != null){
                 kafkaProducerService.sendMessage(sendData.getOrderType(),"", sendData);
                 // System.out.println("sending to kafka");
@@ -46,7 +46,7 @@ public class RabbitMqConsumerService {
             // String queueName = (String) headers.get("amqp_receivedRoutingKey");
             // System.out.println("Received message from queue " + queueName + ": " + message);
             // Process the message based on the queue name
-            Data sendData = mappingService.processDefaultType(message);
+            Data sendData = mappingService.processDefaultType(message, true);
             if (sendData != null){
                 kafkaProducerService.sendMessage(sendData.getOrderType(),"", sendData);
                 // System.out.println("sending to kafka");
@@ -63,7 +63,7 @@ public class RabbitMqConsumerService {
             // String queueName = (String) headers.get("amqp_receivedRoutingKey");
             // System.out.println("Received message from queue " + queueName + ": " + message);
             // Process the message based on the queue name
-            Data sendData = mappingService.processExpiredType(message);
+            Data sendData = mappingService.processExpiredType(message, true);
             if (sendData != null){
                 kafkaProducerService.sendMessage(sendData.getOrderType(),"", sendData);
                 // System.out.println("sending to kafka");
