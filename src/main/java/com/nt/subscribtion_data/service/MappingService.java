@@ -1595,15 +1595,43 @@ public class MappingService {
                 if(inputData.has("saleInfo")){
                     JSONObject inputSaleInfo = inputData.getJSONObject("saleInfo");
                     SaleInfo saleInfo = new SaleInfo();
-                    saleInfo.setSaleEmpId(inputSaleInfo.getString("saleEmpId") != null ? inputSaleInfo.getString("saleEmpId") : null);
-                    saleInfo.setSapCode(inputSaleInfo.getString("sapCode") != null ? inputSaleInfo.getString("sapCode") : null);
-                    saleInfo.setDealerCode(inputSaleInfo.getString("dealerCode") != null ? inputSaleInfo.getString("dealerCode") : null);
-                    saleInfo.setRegisterBySellerName(inputSaleInfo.getString("registerBySellerName") != null ? inputSaleInfo.getString("registerBySellerName") : null);
-                    saleInfo.setSaleRole(inputSaleInfo.getString("saleRole") != null ? inputSaleInfo.getString("saleRole") : null);
-                    saleInfo.setRegisterProvince(inputSaleInfo.getString("registerProvince") != null ? inputSaleInfo.getString("registerProvince") : null);
-                    saleInfo.setTerritoryName(inputSaleInfo.getString("territoryName") != null ? inputSaleInfo.getString("territoryName") : null);
-                    saleInfo.setSaleRepEmpId(inputSaleInfo.getString("saleRepEmpId") != null ? inputSaleInfo.getString("saleRepEmpId") : null);
-                    saleInfo.setSaleRepSapCode(inputSaleInfo.getString("saleRepSapCode") != null ? inputSaleInfo.getString("saleRepSapCode") : null);
+
+                    if (inputSaleInfo.has("saleEmpId")){
+                        saleInfo.setSaleEmpId(inputSaleInfo.getString("saleEmpId"));
+                    }
+
+                    if (inputSaleInfo.has("sapCode")){
+                        saleInfo.setSapCode(inputSaleInfo.getString("sapCode"));
+                    }
+
+                    if (inputSaleInfo.has("dealerCode")){
+                        saleInfo.setDealerCode(inputSaleInfo.getString("dealerCode"));
+                    }
+
+                    if (inputSaleInfo.has("registerBySellerName")){
+                        saleInfo.setRegisterBySellerName(inputSaleInfo.getString("registerBySellerName"));
+                    }
+
+                    if (inputSaleInfo.has("saleRole")){
+                        saleInfo.setSaleRole(inputSaleInfo.getString("saleRole"));
+                    }
+
+                    if (inputSaleInfo.has("registerProvince")){
+                        saleInfo.setRegisterProvince(inputSaleInfo.getString("registerProvince"));
+                    }
+
+                    if (inputSaleInfo.has("territoryName")){
+                        saleInfo.setTerritoryName(inputSaleInfo.getString("territoryName"));
+                    }
+
+                    if (inputSaleInfo.has("saleRepEmpId")){
+                        saleInfo.setSaleRepEmpId(inputSaleInfo.getString("saleRepEmpId"));
+                    }
+
+                    if (inputSaleInfo.has("saleRepSapCode")){
+                        saleInfo.setSaleRepSapCode(inputSaleInfo.getString("saleRepSapCode"));
+                    }
+                    
                     omEv.setSaleInfo(saleInfo);
                 }
 
