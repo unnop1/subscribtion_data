@@ -19,6 +19,7 @@ import com.nt.subscribtion_data.component.CacheUpdater;
 import com.nt.subscribtion_data.entity.OrderTypeEntity;
 import com.nt.subscribtion_data.entity.SaChannelConEntity;
 import com.nt.subscribtion_data.entity.TriggerMessageEntity;
+import com.nt.subscribtion_data.model.dao.DataModel.Data;
 import com.nt.subscribtion_data.model.dto.ReceiveOMDataType;
 import com.nt.subscribtion_data.service.DistributeService;
 import com.nt.subscribtion_data.util.DateTime;
@@ -59,22 +60,23 @@ public class JmeterController {
     }
 
     @PostMapping("/mapping/{type}")
-    public ResponseEntity<Boolean> mappingData(@PathVariable("type") String mappingType, @RequestBody String bodyMessage) {
+    public ResponseEntity<Object> mappingData(@PathVariable("type") String mappingType, @RequestBody String bodyMessage) {
+        Data data=null;
         try {
             // System.out.println("bodyMessage:"+ bodyMessage);
             switch (mappingType.toLowerCase()) {
                 case "om":
-                    mappingService.processDefaultType(bodyMessage, true);
+                    data = mappingService.processDefaultType(bodyMessage, true);
                     break;
                 case "topup":
-                    mappingService.processTopUpType(bodyMessage, true);
+                    data = mappingService.processTopUpType(bodyMessage, true);
                     break;
                 default:
                     return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(true, HttpStatus.OK);
+            return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
