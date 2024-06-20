@@ -1,9 +1,5 @@
 package com.nt.subscribtion_data.controller;
 
-import java.sql.Clob;
-import java.sql.Timestamp;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.nt.subscribtion_data.service.MappingService;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nt.subscribtion_data.component.CacheUpdater;
-import com.nt.subscribtion_data.entity.OrderTypeEntity;
-import com.nt.subscribtion_data.entity.SaChannelConEntity;
-import com.nt.subscribtion_data.entity.TriggerMessageEntity;
 import com.nt.subscribtion_data.model.dao.DataModel.Data;
-import com.nt.subscribtion_data.model.dto.ReceiveOMDataType;
-import com.nt.subscribtion_data.service.DistributeService;
-import com.nt.subscribtion_data.util.DateTime;
+import com.nt.subscribtion_data.service.KafkaProducerService;
 
 
 @RestController
@@ -30,10 +19,7 @@ import com.nt.subscribtion_data.util.DateTime;
 public class JmeterController {
 
     @Autowired
-    private CacheUpdater cacheUpdater;
-
-    @Autowired
-    private DistributeService distributeService;
+    private KafkaProducerService kafkaProducerService;
 
     @Autowired
     private MappingService mappingService;
@@ -61,22 +47,30 @@ public class JmeterController {
 
     @PostMapping("/mapping/{type}")
     public ResponseEntity<Object> mappingData(@PathVariable("type") String mappingType, @RequestBody String bodyMessage) {
-        Data data=null;
+        Data sendData=null;
         try {
             // System.out.println("bodyMessage:"+ bodyMessage);
             switch (mappingType.toLowerCase()) {
                 case "om":
-                    data = mappingService.processDefaultType(bodyMessage, true);
+                    sendData = mappingService.processDefaultType(bodyMessage, true);
+                    
                     break;
                 case "topup":
-                    data = mappingService.processTopUpType(bodyMessage, true);
+                    sendData = mappingService.processTopUpType(bodyMessage, true);
                     break;
                 default:
                     return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(data, HttpStatus.OK);
+
+
+            if (sendData != null){
+                kafkaProducerService.sendMessage(sendData.getOrderType(),"", sendData);
+                // System.out.println("sending to kafka");
+            }
+
+            return new ResponseEntity<>(sendData, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(sendData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
