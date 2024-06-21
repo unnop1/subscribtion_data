@@ -1,6 +1,7 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -94,10 +95,10 @@ public class Offer {
     private String unitPeriod;
 
     @JsonProperty("saleStartDate")
-    private String saleStartDate;
+    private LocalDateTime saleStartDate;
 
     @JsonProperty("saleEndDate")
-    private String saleEndDate;
+    private LocalDateTime saleEndDate;
 
     @JsonProperty("maxDayAfterActiveDate")
     private BigDecimal maxDayAfterActiveDate;

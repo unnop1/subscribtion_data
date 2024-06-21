@@ -1,5 +1,7 @@
 package com.nt.subscribtion_data.model.dao.OMUSER;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
@@ -15,7 +17,7 @@ public class TransManageContractDTLData {
     private String billRefNo;
 
     @JsonProperty("bill_REF_DATE")
-    private String billRefDate;
+    private LocalDateTime billRefDate;
 
     @JsonProperty("bill_REF_AMOUNT")
     private Long billRefAmount;
@@ -24,13 +26,13 @@ public class TransManageContractDTLData {
     private Long manageContractType;
 
     @JsonProperty("approve_BYPASS_DATE")
-    private String approveBypassDate;
+    private LocalDateTime approveBypassDate;
 
     @JsonProperty("request_BYPASS_DATE")
-    private String requestBypassDate;
+    private LocalDateTime requestBypassDate;
 
     @JsonProperty("bypass_DATE")
-    private String bypassDate;
+    private LocalDateTime bypassDate;
 
     @JsonProperty("bypass_REASON")
     private String bypassReason;
@@ -42,16 +44,16 @@ public class TransManageContractDTLData {
     private String bypassApproveBy;
 
     @JsonProperty("contract_END")
-    private String contractEnd;
+    private LocalDateTime contractEnd;
 
     @JsonProperty("contract_VALUE")
     private Long contractValue;
 
     @JsonProperty("contract_START")
-    private String contractStart;
+    private LocalDateTime contractStart;
 
     @JsonProperty("contract_MONTH")
-    private Long contractMonth;
+    private Integer contractMonth;
 
     @JsonProperty("contract_TYPE")
     private Long contractType;

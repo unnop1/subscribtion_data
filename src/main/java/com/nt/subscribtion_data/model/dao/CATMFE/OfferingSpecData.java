@@ -1,5 +1,7 @@
 package com.nt.subscribtion_data.model.dao.CATMFE;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
@@ -231,10 +233,10 @@ public class OfferingSpecData {
     private String expirydate;
 
     @JsonProperty("salestartdate")
-    private String salestartdate;
+    private LocalDateTime salestartdate;
 
     @JsonProperty("saleenddate")
-    private String saleenddate;
+    private LocalDateTime saleenddate;
 
     @JsonProperty("maxdayafteractivedate")
     private String maxdayafteractivedate;

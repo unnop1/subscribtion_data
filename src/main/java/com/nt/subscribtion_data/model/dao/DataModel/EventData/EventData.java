@@ -1,6 +1,7 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -47,10 +48,10 @@ public class EventData {
     private String eventType;
 
     @JsonProperty("submitedDate")
-    private String submitedDate;
+    private LocalDateTime submitedDate;
 
     @JsonProperty("completedDate")
-    private Timestamp completedDate;
+    private LocalDateTime completedDate;
 
     @JsonProperty("isProvisionRequired")
     private Boolean isProvisionRequired;

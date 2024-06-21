@@ -1,5 +1,7 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -55,13 +57,13 @@ public class ContractInfo {
     private String contractDesc;
 
     @JsonProperty("contractMonth")
-    private Long contractMonth;
+    private Integer contractMonth;
 
     @JsonProperty("contractStart")
-    private String contractStart;
+    private LocalDateTime contractStart;
 
     @JsonProperty("contractEnd")
-    private String contractEnd;
+    private LocalDateTime contractEnd;
 
     @JsonProperty("contractValue")
     private Long contractValue;
@@ -80,20 +82,20 @@ public class ContractInfo {
     private String bypassReason;
 
     @JsonProperty("bypassDate")
-    private String bypassDate;
+    private LocalDateTime bypassDate;
     
 
     @JsonProperty("requestBypassDate")
-    private String requestBypassDate;
+    private LocalDateTime requestBypassDate;
 
     @JsonProperty("approveBypassDate")
-    private String approveBypassDate;
+    private LocalDateTime approveBypassDate;
 
     @JsonProperty("billRefNo")
     private String billRefNo;
 
     @JsonProperty("billRefDate")
-    private String billRefDate;
+    private LocalDateTime billRefDate;
 
     @JsonProperty("billRefAmount")
     private Long billRefAmount;

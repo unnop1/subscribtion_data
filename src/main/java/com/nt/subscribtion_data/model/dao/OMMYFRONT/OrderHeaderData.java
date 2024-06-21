@@ -2,6 +2,7 @@ package com.nt.subscribtion_data.model.dao.OMMYFRONT;
 
 import java.sql.Clob;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,7 +26,7 @@ public class OrderHeaderData {
     private String createBy;
 
     @JsonProperty("createdate")
-    private String createDate;
+    private LocalDateTime createDate;
 
     @JsonProperty("currentbalance")
     private String currentBalance;
@@ -67,7 +68,7 @@ public class OrderHeaderData {
     private String updateBy;
 
     @JsonProperty("updatedate")
-    private Timestamp updateDate;
+    private LocalDateTime updateDate;
 
     @JsonProperty("operating_PART")
     private String operatingPart;
