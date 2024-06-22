@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.IMSIOfferingConfig;
@@ -47,7 +48,7 @@ public class OMMYFRONTClient {
                 in.close();
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper();
+                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
                 OrderHeaderData data = objectMapper.readValue(response.toString(), OrderHeaderData.class);
                 respData.setData(data);
             }
@@ -88,7 +89,7 @@ public class OMMYFRONTClient {
                 in.close();
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper();
+                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
                 OrderHeaderData data = objectMapper.readValue(response.toString(), OrderHeaderData.class);
                 respData.setData(data);
             }
@@ -125,7 +126,7 @@ public class OMMYFRONTClient {
                 in.close();
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper();
+                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
                 OrderHeaderData data = objectMapper.readValue(response.toString(), OrderHeaderData.class);
                 respData.setData(data);
             }
@@ -163,7 +164,7 @@ public class OMMYFRONTClient {
                 }
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper();
+                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
                 List<IMSIOfferingConfig> dataList = objectMapper.readValue(response.toString(),new TypeReference<List<IMSIOfferingConfig>>() {});
                 respData.setData(dataList);
             }

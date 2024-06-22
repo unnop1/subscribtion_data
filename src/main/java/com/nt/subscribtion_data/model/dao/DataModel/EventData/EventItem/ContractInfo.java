@@ -2,6 +2,7 @@ package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -59,9 +60,11 @@ public class ContractInfo {
     @JsonProperty("contractMonth")
     private Integer contractMonth;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("contractStart")
     private LocalDateTime contractStart;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("contractEnd")
     private LocalDateTime contractEnd;
 
@@ -81,19 +84,22 @@ public class ContractInfo {
     @JsonProperty("bypassReason")
     private String bypassReason;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("bypassDate")
     private LocalDateTime bypassDate;
     
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("requestBypassDate")
     private LocalDateTime requestBypassDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("approveBypassDate")
     private LocalDateTime approveBypassDate;
 
     @JsonProperty("billRefNo")
     private String billRefNo;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("billRefDate")
     private LocalDateTime billRefDate;
 

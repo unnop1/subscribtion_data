@@ -3,6 +3,7 @@ package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -94,9 +95,11 @@ public class Offer {
     @JsonProperty("unitPeriod")
     private String unitPeriod;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("saleStartDate")
     private LocalDateTime saleStartDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("saleEndDate")
     private LocalDateTime saleEndDate;
 

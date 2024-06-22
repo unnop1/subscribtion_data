@@ -2,6 +2,7 @@ package com.nt.subscribtion_data.model.dao.OMUSER;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class TransManageContractDTLData {
     @JsonProperty("bill_REF_NO")
     private String billRefNo;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("bill_REF_DATE")
     private LocalDateTime billRefDate;
 
@@ -25,12 +27,15 @@ public class TransManageContractDTLData {
     @JsonProperty("manage_CONTRACT_TYPE")
     private Long manageContractType;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("approve_BYPASS_DATE")
     private LocalDateTime approveBypassDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("request_BYPASS_DATE")
     private LocalDateTime requestBypassDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("bypass_DATE")
     private LocalDateTime bypassDate;
 
@@ -43,6 +48,7 @@ public class TransManageContractDTLData {
     @JsonProperty("bypass_APPROVE_BY")
     private String bypassApproveBy;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("contract_END")
     private LocalDateTime contractEnd;
 

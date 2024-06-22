@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.json.JSONObject;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.EventItem;
@@ -47,9 +48,11 @@ public class EventData {
     @JsonProperty("eventType")
     private String eventType;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("submitedDate")
     private LocalDateTime submitedDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("completedDate")
     private LocalDateTime completedDate;
 

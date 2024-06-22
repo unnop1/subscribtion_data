@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nt.subscribtion_data.model.dao.INVUSER.INVMappingClientResp;
 import com.nt.subscribtion_data.model.dao.INVUSER.INVMappingData;
 import com.nt.subscribtion_data.model.dao.INVUSER.INVMasterData;
@@ -50,7 +51,7 @@ public class INVUSERClient {
                 }
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper();
+                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
                 INVMappingData data = objectMapper.readValue(response.toString(), INVMappingData.class);
                 respData.setData(data);
             }
@@ -90,7 +91,7 @@ public class INVUSERClient {
                 in.close();
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper();
+                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
                 respDataList = objectMapper.readValue(response.toString(), new TypeReference<List<INVMasterData>>() {});
             }
         } catch (Exception e) {

@@ -3,7 +3,7 @@ package com.nt.subscribtion_data.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.subscribtion_data.model.dao.DataModel.Data;
@@ -21,7 +21,7 @@ public class KafkaProducerService {
     }
 
     public void sendMessage(String topic, String key, Data value) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         // mapper.enable(SerializationFeature.INDENT_OUTPUT);
         String jsonString = mapper.writeValueAsString(value);
 

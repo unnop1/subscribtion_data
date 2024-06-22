@@ -8,7 +8,7 @@ import java.net.URL;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLClientResp;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLData;
-
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class OMUSERClient {
     private String host;
     private String context;
@@ -42,7 +42,7 @@ public class OMUSERClient {
                 in.close();
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper();
+                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
                 TransManageContractDTLData data = objectMapper.readValue(response.toString(), TransManageContractDTLData.class);
                 respData.setData(data);
             }

@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.subscribtion_data.component.CacheUpdater;
 import com.nt.subscribtion_data.entity.OrderTypeEntity;
@@ -88,7 +89,7 @@ public class MappingService {
         // Process for new_order_type
         Data sendData = null;
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
         String publishChannelType = String.format("OM-%s", receivedData.getChannel().toUpperCase());
         String channelConnectName = "OM";
@@ -166,7 +167,7 @@ public class MappingService {
                     return null;
                 }
                 try{
-                    ObjectMapper mapper = new ObjectMapper();
+                    ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
                     // mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
                     String jsonString = mapper.writeValueAsString(sendData);
                     if(orderTypeInfo.getIs_Enable().equals(1)){
@@ -232,7 +233,7 @@ public class MappingService {
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
         Data sendData = null;
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         ReceiveTopUpDataType receivedData = objectMapper.readValue(message, ReceiveTopUpDataType.class);
         String orderTypeName = "TOPUP_RECHARGE";
         String channelConnectType = "TOPUP";
@@ -276,7 +277,7 @@ public class MappingService {
             // Mapping DataType
             sendData = MappingTopUpData(receivedData, orderTypeName);
             sendData.setOrderID(receivedData.getNotiMsgSeq());
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
             String jsonString = mapper.writeValueAsString(sendData);
 
             if (orderTypeInfo.getIs_Enable().equals(1)){
@@ -338,7 +339,7 @@ public class MappingService {
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
         Data sendData = null;
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         ReceiveExpiredDataType receivedData = objectMapper.readValue(message, ReceiveExpiredDataType.class);
         String orderTypeName = "PACKAGE_EXPIRE";
         String channelType = "Expire";
@@ -369,7 +370,7 @@ public class MappingService {
             // Mapping DataType
             sendData = MappingExpiredData(receivedData, orderTypeName);
 
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
             String jsonString = mapper.writeValueAsString(sendData);
             
             if (orderTypeInfo.getIs_Enable().equals(1)){
@@ -1929,7 +1930,7 @@ public class MappingService {
     }
 
     public String getOrderTypeNamePattern(String orderType){
-        String pattern = "_";
+        String pattern = "";
         String result = Arrays.stream(orderType.split(" ")).collect(Collectors.joining(pattern));
         return result;
     }

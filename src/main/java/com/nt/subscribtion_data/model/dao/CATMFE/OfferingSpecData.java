@@ -2,6 +2,7 @@ package com.nt.subscribtion_data.model.dao.CATMFE;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
@@ -232,9 +233,11 @@ public class OfferingSpecData {
     @JsonProperty("expirydate")
     private String expirydate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("salestartdate")
     private LocalDateTime salestartdate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("saleenddate")
     private LocalDateTime saleenddate;
 

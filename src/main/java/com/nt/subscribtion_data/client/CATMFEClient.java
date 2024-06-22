@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecClientResp;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
 
@@ -42,7 +43,7 @@ public class CATMFEClient {
                 in.close();
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper();
+                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
                 // System.out.println("offerings: \"" + response.toString()+"\"");
                 if (response.toString().isBlank()){
                     return null;
