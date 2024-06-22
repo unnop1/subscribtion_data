@@ -21,7 +21,7 @@ public class KafkaProducerService {
     }
 
     public void sendMessage(String topic, String key, Data value) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        ObjectMapper mapper = new ObjectMapper();
         // mapper.enable(SerializationFeature.INDENT_OUTPUT);
         String jsonString = mapper.writeValueAsString(value);
 

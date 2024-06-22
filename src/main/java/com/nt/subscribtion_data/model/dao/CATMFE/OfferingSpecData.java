@@ -233,13 +233,13 @@ public class OfferingSpecData {
     @JsonProperty("expirydate")
     private String expirydate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("salestartdate")
-    private LocalDateTime salestartdate;
+    private String salestartdate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("saleenddate")
-    private LocalDateTime saleenddate;
+    private String saleenddate;
 
     @JsonProperty("maxdayafteractivedate")
     private String maxdayafteractivedate;

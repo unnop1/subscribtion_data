@@ -17,9 +17,9 @@ public class TransManageContractDTLData {
     @JsonProperty("bill_REF_NO")
     private String billRefNo;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("bill_REF_DATE")
-    private LocalDateTime billRefDate;
+    private String billRefDate;
 
     @JsonProperty("bill_REF_AMOUNT")
     private Long billRefAmount;
@@ -27,17 +27,17 @@ public class TransManageContractDTLData {
     @JsonProperty("manage_CONTRACT_TYPE")
     private Long manageContractType;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("approve_BYPASS_DATE")
-    private LocalDateTime approveBypassDate;
+    private String approveBypassDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("request_BYPASS_DATE")
-    private LocalDateTime requestBypassDate;
+    private String requestBypassDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("bypass_DATE")
-    private LocalDateTime bypassDate;
+    private String bypassDate;
 
     @JsonProperty("bypass_REASON")
     private String bypassReason;
@@ -48,15 +48,15 @@ public class TransManageContractDTLData {
     @JsonProperty("bypass_APPROVE_BY")
     private String bypassApproveBy;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("contract_END")
-    private LocalDateTime contractEnd;
+    private String contractEnd;
 
     @JsonProperty("contract_VALUE")
     private Long contractValue;
 
     @JsonProperty("contract_START")
-    private LocalDateTime contractStart;
+    private String contractStart;
 
     @JsonProperty("contract_MONTH")
     private Integer contractMonth;

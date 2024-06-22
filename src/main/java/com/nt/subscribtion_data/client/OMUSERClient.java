@@ -42,7 +42,7 @@ public class OMUSERClient {
                 in.close();
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+                ObjectMapper objectMapper = new ObjectMapper();
                 TransManageContractDTLData data = objectMapper.readValue(response.toString(), TransManageContractDTLData.class);
                 respData.setData(data);
             }

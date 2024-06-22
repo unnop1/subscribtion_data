@@ -26,11 +26,11 @@ public class OrderHeaderData {
     @JsonProperty("createby")
     private String createBy;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("createdate")
-    private LocalDateTime createDate;
+    private String createDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("currentbalance")
     private String currentBalance;
 
@@ -70,9 +70,9 @@ public class OrderHeaderData {
     @JsonProperty("updateby")
     private String updateBy;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("updatedate")
-    private LocalDateTime updateDate;
+    private String updateDate;
 
     @JsonProperty("operating_PART")
     private String operatingPart;

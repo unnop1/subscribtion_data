@@ -79,7 +79,7 @@ public class RabbitMqConsumerService {
     // public void receiveMessage(@Payload String message, @Headers Map<String, Object> headers) throws JsonMappingException, JsonProcessingException {
     //     try{
     //         // String queueName = (String) headers.get("amqp_receivedRoutingKey");
-    //         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    //         ObjectMapper objectMapper = new ObjectMapper();
     //         JsonNode jsonNode = objectMapper.readTree(message);
         
     //         String queueName = jsonNode.get("routingKey").asText();

@@ -89,7 +89,7 @@ public class MappingService {
         // Process for new_order_type
         Data sendData = null;
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
-        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        ObjectMapper objectMapper = new ObjectMapper();
         ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
         String publishChannelType = String.format("OM-%s", receivedData.getChannel().toUpperCase());
         String channelConnectName = "OM";
@@ -121,6 +121,7 @@ public class MappingService {
             TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
             triggerMsg.setMESSAGE_IN(message);
             triggerMsg.setOrderType_Name(orderType);
+            triggerMsg.setORDERID(receivedData.getOrderId());
             triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
             triggerMsg.setIS_STATUS(0);
             triggerMsg.setREMARK("NOT FOUND saChannelConnect : "+ channelConnectName);
@@ -138,6 +139,7 @@ public class MappingService {
                 TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                 triggerMsg.setMESSAGE_IN(message);
                 triggerMsg.setOrderType_Name(orderType);
+                triggerMsg.setORDERID(receivedData.getOrderId());
                 triggerMsg.setOrderType_id(orderTypeInfo.getID());
                 triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
                 triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
@@ -157,6 +159,7 @@ public class MappingService {
                     TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
                     triggerMsg.setOrderType_Name(orderType);
                     triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                    triggerMsg.setORDERID(receivedData.getOrderId());
                     triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
                     triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
                     triggerMsg.setORDERID(receivedData.getOrderId());
@@ -167,7 +170,7 @@ public class MappingService {
                     return null;
                 }
                 try{
-                    ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+                    ObjectMapper mapper = new ObjectMapper();
                     // mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
                     String jsonString = mapper.writeValueAsString(sendData);
                     if(orderTypeInfo.getIs_Enable().equals(1)){
@@ -233,7 +236,7 @@ public class MappingService {
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
         Data sendData = null;
 
-        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        ObjectMapper objectMapper = new ObjectMapper();
         ReceiveTopUpDataType receivedData = objectMapper.readValue(message, ReceiveTopUpDataType.class);
         String orderTypeName = "TOPUP_RECHARGE";
         String channelConnectType = "TOPUP";
@@ -277,7 +280,7 @@ public class MappingService {
             // Mapping DataType
             sendData = MappingTopUpData(receivedData, orderTypeName);
             sendData.setOrderID(receivedData.getNotiMsgSeq());
-            ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+            ObjectMapper mapper = new ObjectMapper();
             String jsonString = mapper.writeValueAsString(sendData);
 
             if (orderTypeInfo.getIs_Enable().equals(1)){
@@ -339,7 +342,7 @@ public class MappingService {
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
         Data sendData = null;
 
-        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        ObjectMapper objectMapper = new ObjectMapper();
         ReceiveExpiredDataType receivedData = objectMapper.readValue(message, ReceiveExpiredDataType.class);
         String orderTypeName = "PACKAGE_EXPIRE";
         String channelType = "Expire";
@@ -370,7 +373,7 @@ public class MappingService {
             // Mapping DataType
             sendData = MappingExpiredData(receivedData, orderTypeName);
 
-            ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+            ObjectMapper mapper = new ObjectMapper();
             String jsonString = mapper.writeValueAsString(sendData);
             
             if (orderTypeInfo.getIs_Enable().equals(1)){

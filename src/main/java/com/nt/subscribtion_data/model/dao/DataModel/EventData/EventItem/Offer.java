@@ -95,13 +95,13 @@ public class Offer {
     @JsonProperty("unitPeriod")
     private String unitPeriod;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("saleStartDate")
-    private LocalDateTime saleStartDate;
+    private String saleStartDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("saleEndDate")
-    private LocalDateTime saleEndDate;
+    private String saleEndDate;
 
     @JsonProperty("maxDayAfterActiveDate")
     private BigDecimal maxDayAfterActiveDate;

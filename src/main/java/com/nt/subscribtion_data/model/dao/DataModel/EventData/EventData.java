@@ -48,13 +48,13 @@ public class EventData {
     @JsonProperty("eventType")
     private String eventType;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("submitedDate")
-    private LocalDateTime submitedDate;
+    private String submitedDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    
     @JsonProperty("completedDate")
-    private LocalDateTime completedDate;
+    private String completedDate;
 
     @JsonProperty("isProvisionRequired")
     private Boolean isProvisionRequired;

@@ -51,7 +51,7 @@ public class INVUSERClient {
                 }
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+                ObjectMapper objectMapper = new ObjectMapper();
                 INVMappingData data = objectMapper.readValue(response.toString(), INVMappingData.class);
                 respData.setData(data);
             }
@@ -91,7 +91,7 @@ public class INVUSERClient {
                 in.close();
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+                ObjectMapper objectMapper = new ObjectMapper();
                 respDataList = objectMapper.readValue(response.toString(), new TypeReference<List<INVMasterData>>() {});
             }
         } catch (Exception e) {

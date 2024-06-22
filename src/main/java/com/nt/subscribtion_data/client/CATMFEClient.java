@@ -43,7 +43,7 @@ public class CATMFEClient {
                 in.close();
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+                ObjectMapper objectMapper = new ObjectMapper();
                 // System.out.println("offerings: \"" + response.toString()+"\"");
                 if (response.toString().isBlank()){
                     return null;

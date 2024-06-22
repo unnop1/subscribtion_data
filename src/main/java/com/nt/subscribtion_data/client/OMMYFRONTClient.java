@@ -48,7 +48,7 @@ public class OMMYFRONTClient {
                 in.close();
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+                ObjectMapper objectMapper = new ObjectMapper();
                 OrderHeaderData data = objectMapper.readValue(response.toString(), OrderHeaderData.class);
                 respData.setData(data);
             }
@@ -89,7 +89,7 @@ public class OMMYFRONTClient {
                 in.close();
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+                ObjectMapper objectMapper = new ObjectMapper();
                 OrderHeaderData data = objectMapper.readValue(response.toString(), OrderHeaderData.class);
                 respData.setData(data);
             }
@@ -126,7 +126,7 @@ public class OMMYFRONTClient {
                 in.close();
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+                ObjectMapper objectMapper = new ObjectMapper();
                 OrderHeaderData data = objectMapper.readValue(response.toString(), OrderHeaderData.class);
                 respData.setData(data);
             }
@@ -164,7 +164,7 @@ public class OMMYFRONTClient {
                 }
 
                 // Parse JSON response into MetricsResp object using ObjectMapper
-                ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+                ObjectMapper objectMapper = new ObjectMapper();
                 List<IMSIOfferingConfig> dataList = objectMapper.readValue(response.toString(),new TypeReference<List<IMSIOfferingConfig>>() {});
                 respData.setData(dataList);
             }
