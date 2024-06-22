@@ -5,8 +5,10 @@ import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +23,7 @@ import com.nt.subscribtion_data.component.CacheUpdater;
 import com.nt.subscribtion_data.entity.OrderTypeEntity;
 import com.nt.subscribtion_data.entity.SaChannelConEntity;
 import com.nt.subscribtion_data.entity.TriggerMessageEntity;
+import com.nt.subscribtion_data.log.LogFlie;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecClientResp;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
 import com.nt.subscribtion_data.model.dao.DataModel.Data;
@@ -85,6 +88,8 @@ public class MappingService {
 
     @Autowired
     private CacheUpdater cacheUpdater;
+    
+    private LogFlie log;
 
 
     public Data doOrderDataType(String message, Boolean isSaveDataModel) throws SQLException, IOException {
@@ -109,6 +114,9 @@ public class MappingService {
           List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
           if (orderTypes == null){
               orderTypes = distributeService.LisOrderTypes();
+              log.WriteLogFile("MappingService", "processContractManagementType", "Trigger", "New", receivedData.getOrderId(), orderTypes.toString());
+          }else {
+        	  log.WriteLogFile("MappingService", "processContractManagementType", "Trigger", "Reconnect", receivedData.getOrderId(), orderTypes.toString());
           }
   
           OrderTypeEntity orderTypeInfo = getOrderTypeInfoFromList(orderType, orderTypes);
@@ -137,6 +145,8 @@ public class MappingService {
               triggerMsg.setIS_STATUS(0);
               triggerMsg.setREMARK("NOT FOUND saChannelConnect : "+ channelConnectName);
               distributeService.CreateTriggerMessage(triggerMsg);
+              
+              log.WriteLogFile("MappingService", "processContractManagementType", "Trigger", orderType, receivedData.getOrderId(), triggerMsg.toString());
               return null;
           }
   
@@ -165,6 +175,9 @@ public class MappingService {
                         triggerMsg.setREMARK(String.format("%s cause %s", orderHeaderErr, tMCDTLResp.getErr()));
                     }
                     distributeService.CreateTriggerMessage(triggerMsg);
+                    
+                    log.WriteLogFile("MappingService", "processContractManagementType", "Trigger", orderType, receivedData.getOrderId(), triggerMsg.toString());
+                    
                     return null;
                 }else{
                     TransManageContractDTLData tMCDTLData = tMCDTLResp.getData();
@@ -183,6 +196,9 @@ public class MappingService {
                       triggerMsg.setIS_STATUS(0);
                       triggerMsg.setREMARK("error execption in mapping :"+e.getMessage());
                       distributeService.CreateTriggerMessage(triggerMsg);
+                      
+                      log.WriteLogFile("MappingService", "processContractManagementType", "Trigger", orderType, receivedData.getOrderId(), triggerMsg.toString());
+                      
                       return null;
                   }
                   try{
@@ -207,6 +223,8 @@ public class MappingService {
                           triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
                           distributeService.CreateTriggerMessage(triggerMsg);
   
+                          log.WriteLogFile("MappingService", "processContractManagementType", "Trigger", orderType, receivedData.getOrderId(), triggerMsg.toString());
+                          
                           return sendData;
                       }else{
                           return null;
@@ -222,6 +240,8 @@ public class MappingService {
                       triggerMsg.setIS_STATUS(0);
                       triggerMsg.setREMARK("error execption in objectmapper :"+e.getMessage());
                       distributeService.CreateTriggerMessage(triggerMsg);
+                      
+                      log.WriteLogFile("MappingService", "processContractManagementType", "Trigger", orderType, receivedData.getOrderId(), triggerMsg.toString());
                       return null;
                   }
               }
@@ -243,6 +263,8 @@ public class MappingService {
               triggerMsg.setIS_STATUS(0);
               triggerMsg.setREMARK("error execption :"+e.getMessage()+" cloberr:"+errClob);
               distributeService.CreateTriggerMessage(triggerMsg);
+              
+              log.WriteLogFile("MappingService", "processContractManagementType", "Trigger", orderType, receivedData.getOrderId(), triggerMsg.toString());
               return null;
           }
       }
@@ -257,6 +279,9 @@ public class MappingService {
         List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
         if (orderTypes == null){
             orderTypes = distributeService.LisOrderTypes();
+            log.WriteLogFile("MappingService", "processDefaultType", "Trigger", "New", receivedData.getOrderId(), orderTypes.toString());
+        }else {
+        	log.WriteLogFile("MappingService", "processDefaultType", "Trigger", "New", receivedData.getOrderId(), orderTypes.toString());
         }
 
         OrderTypeEntity orderTypeInfo = getOrderTypeInfoFromList(orderType, orderTypes);
@@ -285,6 +310,8 @@ public class MappingService {
             triggerMsg.setIS_STATUS(0);
             triggerMsg.setREMARK("NOT FOUND saChannelConnect : "+ channelConnectName);
             distributeService.CreateTriggerMessage(triggerMsg);
+            
+            log.WriteLogFile("MappingService", "processDefaultType", "Trigger", orderType, receivedData.getOrderId(), triggerMsg.toString());
             return null;
         }
 
@@ -308,6 +335,8 @@ public class MappingService {
                     triggerMsg.setREMARK(String.format("%s cause %s", orderHeaderErr, odheaderResp.getErr()));
                 }
                 distributeService.CreateTriggerMessage(triggerMsg);
+                
+                log.WriteLogFile("MappingService", "processDefaultType", "Trigger", orderType, receivedData.getOrderId(), triggerMsg.toString());
                 return null;
             }else{
                 OrderHeaderData odheader = odheaderResp.getData();
@@ -326,6 +355,8 @@ public class MappingService {
                     triggerMsg.setIS_STATUS(0);
                     triggerMsg.setREMARK("error execption in mapping :"+e.getMessage());
                     distributeService.CreateTriggerMessage(triggerMsg);
+                    
+                    log.WriteLogFile("MappingService", "processDefaultType", "Trigger", orderType, receivedData.getOrderId(), triggerMsg.toString());
                     return null;
                 }
                 try{
@@ -349,6 +380,8 @@ public class MappingService {
                         triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
                         triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
                         distributeService.CreateTriggerMessage(triggerMsg);
+                        
+                        log.WriteLogFile("MappingService", "processDefaultType", "Trigger", orderType, receivedData.getOrderId(), triggerMsg.toString());
 
                         return sendData;
                     }else{
@@ -365,6 +398,8 @@ public class MappingService {
                     triggerMsg.setIS_STATUS(0);
                     triggerMsg.setREMARK("error execption in objectmapper :"+e.getMessage());
                     distributeService.CreateTriggerMessage(triggerMsg);
+                    
+                    log.WriteLogFile("MappingService", "processDefaultType", "Trigger", orderType, receivedData.getOrderId(), triggerMsg.toString());
                     return null;
                 }
             }
@@ -386,6 +421,8 @@ public class MappingService {
             triggerMsg.setIS_STATUS(0);
             triggerMsg.setREMARK("error execption :"+e.getMessage()+" cloberr:"+errClob);
             distributeService.CreateTriggerMessage(triggerMsg);
+            
+            log.WriteLogFile("MappingService", "processDefaultType", "Trigger", orderType, receivedData.getOrderId(), triggerMsg.toString());
             return null;
         }
     }
@@ -403,6 +440,9 @@ public class MappingService {
         List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
         if (orderTypes == null){
             orderTypes = distributeService.LisOrderTypes();
+            log.WriteLogFile("MappingService", "processTopUpType", "Trigger", "New", receivedData.getOrderId(), orderTypes.toString());
+        }else {
+        	log.WriteLogFile("MappingService", "processTopUpType", "Trigger", "Reconnect", receivedData.getOrderId(), orderTypes.toString());
         }
 
         OrderTypeEntity orderTypeInfo = getOrderTypeInfoFromList(orderTypeName, orderTypes);
@@ -430,6 +470,8 @@ public class MappingService {
             triggerMsg.setIS_STATUS(0);
             triggerMsg.setREMARK("NOT FOUND saChannelConnect "+channelConnectType);
             distributeService.CreateTriggerMessage(triggerMsg);
+            
+            log.WriteLogFile("MappingService", "processTopUpType", "Trigger", orderTypeName, receivedData.getOrderId(), triggerMsg.toString());
             return null;
         }
 
@@ -459,6 +501,8 @@ public class MappingService {
                 triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
                 triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
                 distributeService.CreateTriggerMessage(triggerMsg);
+                
+                log.WriteLogFile("MappingService", "processTopUpType", "Trigger", orderTypeName, receivedData.getOrderId(), triggerMsg.toString());
                 return sendData;
             }else{
                 // UnSend to kafka server
@@ -477,6 +521,7 @@ public class MappingService {
                 triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
                 distributeService.CreateTriggerMessage(triggerMsg);
 
+                log.WriteLogFile("MappingService", "processTopUpType", "Trigger", orderTypeName, receivedData.getOrderId(), triggerMsg.toString());
                 return null;
             }
         }catch (Exception e){
@@ -492,6 +537,8 @@ public class MappingService {
             triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
             triggerMsg.setIS_STATUS(0);
             distributeService.CreateTriggerMessage(triggerMsg);
+            
+            log.WriteLogFile("MappingService", "processTopUpType", "Trigger", orderTypeName, receivedData.getOrderId(), triggerMsg.toString());
             return null;
         }
     }
@@ -533,7 +580,7 @@ public class MappingService {
             sendData = MappingExpiredData(receivedData, orderTypeName);
 
             ObjectMapper mapper = new ObjectMapper();
-            String jsonString = mapper.writeValueAsString(sendData);
+            String jsonString = mapper.writeValueAsString(sendData);; 
             
             if (orderTypeInfo.getIs_Enable().equals(1)){
                 // Send to kafka server
@@ -552,6 +599,8 @@ public class MappingService {
                 triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
                 triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
                 distributeService.CreateTriggerMessage(triggerMsg);
+                
+                log.WriteLogFile("MappingService", "processTopUpType", "Trigger", orderTypeName, receivedData.getOrderId(), triggerMsg.toString());
                 return sendData;
             }else{
                 // UnSend to kafka server
@@ -570,6 +619,7 @@ public class MappingService {
                 triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
                 distributeService.CreateTriggerMessage(triggerMsg);
 
+                log.WriteLogFile("MappingService", "processTopUpType", "Trigger", orderTypeName, receivedData.getOrderId(), triggerMsg.toString());
                 return null;
             }
         }catch (Exception e){
@@ -588,6 +638,7 @@ public class MappingService {
             // triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
             distributeService.CreateTriggerMessage(triggerMsg);
 
+            log.WriteLogFile("MappingService", "processTopUpType", "Trigger", orderTypeName, receivedData.getOrderId(), triggerMsg.toString());
             return null;
         }
     }
