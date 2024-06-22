@@ -63,6 +63,7 @@ import com.nt.subscribtion_data.service.database.CATMFEService;
 import com.nt.subscribtion_data.service.database.INVUSERService;
 import com.nt.subscribtion_data.service.database.OMMYFRONTService;
 import com.nt.subscribtion_data.service.database.OMUSERService;
+import com.nt.subscribtion_data.util.Constant;
 import com.nt.subscribtion_data.util.DateTime;
 
 @Service
@@ -85,15 +86,173 @@ public class MappingService {
     @Autowired
     private CacheUpdater cacheUpdater;
 
-    public Data processDefaultType(String message, Boolean isSaveDataModel) throws SQLException, IOException {
+
+    public Data doOrderDataType(String message, Boolean isSaveDataModel) throws SQLException, IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
+        String orderType = getOrderTypeNamePattern(receivedData.getOrderType().toUpperCase());
+        switch (orderType) {
+            case "CONTRACTMANAGEMENT":
+                return processContractManagementType(orderType, message, receivedData, isSaveDataModel);
+            default:
+                return processDefaultType(orderType, message, receivedData, isSaveDataModel);
+        }
+    }
+
+    public Data processContractManagementType(String orderType, String message, ReceiveOMDataType receivedData, Boolean isSaveDataModel) throws SQLException, IOException {
+          // Process for new_order_type
+          Data sendData = null;
+          Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
+          String publishChannelType = String.format("OM-%s", receivedData.getChannel().toUpperCase());
+          String channelConnectName = Constant.OM_CHANNEL_CONNECT;
+  
+          List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
+          if (orderTypes == null){
+              orderTypes = distributeService.LisOrderTypes();
+          }
+  
+          OrderTypeEntity orderTypeInfo = getOrderTypeInfoFromList(orderType, orderTypes);
+          if(orderTypeInfo == null){
+              // No save log if ordertype not found
+              return null;
+          }else{
+              if(orderTypeInfo.getIs_Enable().equals(0)){
+                  // No save log if ordertype is closed
+                  return null;
+              }
+          }
+  
+          List<SaChannelConEntity> saChannels = cacheUpdater.getSaChannelConnectListCache();
+          if (saChannels == null){
+              saChannels = distributeService.ListChannelConnect();
+          }
+          
+          SaChannelConEntity saChannelConInfo = getSaChannelInfoFromList(channelConnectName, saChannels);
+          if(saChannelConInfo == null){
+              TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+              triggerMsg.setMESSAGE_IN(message);
+              triggerMsg.setOrderType_Name(orderType);
+              triggerMsg.setORDERID(receivedData.getOrderId());
+              triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+              triggerMsg.setIS_STATUS(0);
+              triggerMsg.setREMARK("NOT FOUND saChannelConnect : "+ channelConnectName);
+              distributeService.CreateTriggerMessage(triggerMsg);
+              return null;
+          }
+  
+          try{
+              
+                TransManageContractDTLClientResp tMCDTLResp=null;
+                try{
+                    String transMasterID = receivedData.getOrderId();
+                    tMCDTLResp = omuserService.getTransManageContractDTLData(transMasterID);
+                
+                }catch (Exception e){
+                    throw new Exception("TransManageContractDTLClientResp mapping error: " + e.getMessage());
+                }
+                if (tMCDTLResp.getData() == null){
+                    String orderHeaderErr = "NOT FOUND TransManageContractDTL data";
+                    TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                    triggerMsg.setMESSAGE_IN(message);
+                    triggerMsg.setOrderType_Name(orderType);
+                    triggerMsg.setORDERID(receivedData.getOrderId());
+                    triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                    triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+                    triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+                    triggerMsg.setIS_STATUS(0);
+                    triggerMsg.setREMARK(orderHeaderErr);
+                    if (tMCDTLResp.getErr() != null){
+                        triggerMsg.setREMARK(String.format("%s cause %s", orderHeaderErr, tMCDTLResp.getErr()));
+                    }
+                    distributeService.CreateTriggerMessage(triggerMsg);
+                    return null;
+                }else{
+                    TransManageContractDTLData tMCDTLData = tMCDTLResp.getData();
+                  try{
+                      sendData = MappingContractManagementData(tMCDTLData, orderType);
+                      sendData.setOrderID(receivedData.getOrderId());
+                  }catch(Exception e){
+                      TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                      triggerMsg.setOrderType_Name(orderType);
+                      triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                      triggerMsg.setORDERID(receivedData.getOrderId());
+                      triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+                      triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
+                      triggerMsg.setORDERID(receivedData.getOrderId());
+                      triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+                      triggerMsg.setIS_STATUS(0);
+                      triggerMsg.setREMARK("error execption in mapping :"+e.getMessage());
+                      distributeService.CreateTriggerMessage(triggerMsg);
+                      return null;
+                  }
+                  try{
+                      ObjectMapper mapper = new ObjectMapper();
+                      // mapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
+                      String jsonString = mapper.writeValueAsString(sendData);
+                      if(orderTypeInfo.getIs_Enable().equals(1)){
+                          // Send to kafka server
+                          TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                          triggerMsg.setMESSAGE_IN(message);
+                          if(isSaveDataModel){
+                              triggerMsg.setDATA_MODEL(jsonString);
+                          }
+                          triggerMsg.setIS_STATUS(1);
+                          triggerMsg.setORDERID(receivedData.getOrderId());
+                          triggerMsg.setOrderType_Name(sendData.getOrderType());
+                          triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                          triggerMsg.setPHONENUMBER(sendData.getMsisdn());
+                          triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
+                          triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+                          triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+                          triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
+                          distributeService.CreateTriggerMessage(triggerMsg);
+  
+                          return sendData;
+                      }else{
+                          return null;
+                      }
+                  } catch(Exception e){
+                      TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+                      triggerMsg.setOrderType_Name(orderType);
+                      triggerMsg.setOrderType_id(orderTypeInfo.getID());
+                      triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+                      triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
+                      triggerMsg.setORDERID(receivedData.getOrderId());
+                      triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+                      triggerMsg.setIS_STATUS(0);
+                      triggerMsg.setREMARK("error execption in objectmapper :"+e.getMessage());
+                      distributeService.CreateTriggerMessage(triggerMsg);
+                      return null;
+                  }
+              }
+          }catch (Exception e){
+              String errClob = "";
+              TriggerMessageEntity triggerMsg = new TriggerMessageEntity();
+              try{
+                  triggerMsg.setMESSAGE_IN(message);
+              } catch (Exception clobE){
+                  clobE.printStackTrace();
+                  errClob = clobE.getMessage();
+              }
+              triggerMsg.setOrderType_Name(orderType);
+              // triggerMsg.setOrderType_id(orderTypeInfo.getID());
+              triggerMsg.setRECEIVE_DATE(receiveDataTimestamp);
+              triggerMsg.setPUBLISH_CHANNEL(publishChannelType);
+              triggerMsg.setORDERID(receivedData.getOrderId());
+              triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
+              triggerMsg.setIS_STATUS(0);
+              triggerMsg.setREMARK("error execption :"+e.getMessage()+" cloberr:"+errClob);
+              distributeService.CreateTriggerMessage(triggerMsg);
+              return null;
+          }
+      }
+
+    public Data processDefaultType(String orderType, String message, ReceiveOMDataType receivedData, Boolean isSaveDataModel) throws SQLException, IOException {
         // Process for new_order_type
         Data sendData = null;
         Timestamp receiveDataTimestamp = DateTime.getTimestampNowUTC();
-        ObjectMapper objectMapper = new ObjectMapper();
-        ReceiveOMDataType receivedData = objectMapper.readValue(message, ReceiveOMDataType.class);
         String publishChannelType = String.format("OM-%s", receivedData.getChannel().toUpperCase());
-        String channelConnectName = "OM";
-        String orderType = getOrderTypeNamePattern(receivedData.getOrderType().toUpperCase());
+        String channelConnectName = Constant.OM_CHANNEL_CONNECT;
 
         List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
         if (orderTypes == null){
@@ -238,7 +397,7 @@ public class MappingService {
 
         ObjectMapper objectMapper = new ObjectMapper();
         ReceiveTopUpDataType receivedData = objectMapper.readValue(message, ReceiveTopUpDataType.class);
-        String orderTypeName = "TOPUP_RECHARGE";
+        String orderTypeName = "TOPUPRECHARGE";
         String channelConnectType = "TOPUP";
         String publishChannelType = "Topup-GW";
         List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
@@ -344,7 +503,7 @@ public class MappingService {
 
         ObjectMapper objectMapper = new ObjectMapper();
         ReceiveExpiredDataType receivedData = objectMapper.readValue(message, ReceiveExpiredDataType.class);
-        String orderTypeName = "PACKAGE_EXPIRE";
+        String orderTypeName = "PACKAGEEXPIRE";
         String channelType = "Expire";
         String publishChannelType = "PackageExpireEX";
         List<OrderTypeEntity> orderTypes = cacheUpdater.getOrderTypeListCache();
@@ -431,6 +590,69 @@ public class MappingService {
 
             return null;
         }
+    }
+
+    private Data MappingContractManagementData(TransManageContractDTLData tMCDTLData, String orderTypeName) throws Exception{
+        String triggerDate = DateTime.getTimeStampNowStr();
+
+        Data sendData = new Data();
+        
+        EventData omEv = new EventData();
+
+        try{
+            // eventItem
+            List<EventItem> evenItems = new ArrayList<>();
+            try{
+                
+                EventItem evenItem = new EventItem();
+
+                // contractInfo 
+                if (tMCDTLData != null){
+                    ContractInfo contractInfo = new ContractInfo();
+                    contractInfo.setSubscrNo(tMCDTLData.getSubscrNo());
+                    contractInfo.setContractId(tMCDTLData.getContractId());
+                    contractInfo.setRefDocumentId(tMCDTLData.getRefDocumentId());
+                    contractInfo.setContractCode(tMCDTLData.getContractCode());
+                    contractInfo.setRefDocumentId(tMCDTLData.getRefDocumentId());
+                    contractInfo.setContractCode(tMCDTLData.getContractCode());
+                    contractInfo.setContractType(tMCDTLData.getContractType());
+                    contractInfo.setContractDesc(tMCDTLData.getContractDesc());
+                    contractInfo.setContractMonth(tMCDTLData.getContractMonth());
+                    contractInfo.setContractStart(tMCDTLData.getContractStart());
+                    contractInfo.setContractEnd(tMCDTLData.getContractEnd());
+                    contractInfo.setContractValue(tMCDTLData.getContractValue());
+                    contractInfo.setBypassBy(tMCDTLData.getBypassBy());
+                    contractInfo.setBypassApproveBy(tMCDTLData.getBypassApproveBy());
+                    contractInfo.setBypassFee(tMCDTLData.getBypassFee());
+                    contractInfo.setBypassReason(tMCDTLData.getBypassReason());
+                    contractInfo.setBypassDate(tMCDTLData.getBypassDate());
+                    contractInfo.setRequestBypassDate(tMCDTLData.getRequestBypassDate());
+                    contractInfo.setApproveBypassDate(tMCDTLData.getApproveBypassDate());
+                    contractInfo.setBillRefNo(tMCDTLData.getBillRefNo());
+                    contractInfo.setBillRefDate(tMCDTLData.getBillRefDate());
+                    contractInfo.setBillRefAmount(tMCDTLData.getBillRefAmount());
+                    contractInfo.setManageContractType(tMCDTLData.getManageContractType());
+                    contractInfo.setRemark(tMCDTLData.getRemark());
+                    evenItem.setContractInfo(contractInfo);
+                }
+
+                // append eventItem
+                evenItems.add(evenItem);
+                omEv.setEventItems(evenItems);
+            }catch (Exception e){
+                throw new Exception("event item mapping contractInfo error: " + e.getMessage());
+            }
+        }catch (Exception e){
+            throw new Exception("event item mapping error: " + e.getMessage());
+        }    
+
+        sendData.setTriggerDate(triggerDate);
+        sendData.setPublishChannel("OM-MFE");
+        sendData.setOrderType(orderTypeName);
+        sendData.setEventData(omEv);
+
+        return sendData;
+        
     }
 
     private Data MappingDefaultData(OrderHeaderData odheader, String orderTypeName) throws Exception{

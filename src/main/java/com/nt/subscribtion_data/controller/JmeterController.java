@@ -29,7 +29,7 @@ public class JmeterController {
         try {
             switch (subscribeType.toLowerCase()) {
                 case "om":
-                    mappingService.processDefaultType(bodyMessage, false);
+                    mappingService.doOrderDataType(bodyMessage, false);
                     break;
                 case "topup":
                     mappingService.processTopUpType(bodyMessage, false);
@@ -52,7 +52,7 @@ public class JmeterController {
             // System.out.println("bodyMessage:"+ bodyMessage);
             switch (mappingType.toLowerCase()) {
                 case "om":
-                    sendData = mappingService.processDefaultType(bodyMessage, true);
+                    sendData = mappingService.doOrderDataType(bodyMessage, true);
                     
                     break;
                 case "topup":
