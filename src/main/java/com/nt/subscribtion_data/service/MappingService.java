@@ -1868,18 +1868,6 @@ public class MappingService {
                                 }catch (Exception e){
                                     throw new Exception("loop destinationSubscriberInfo main error: " + e.getMessage());
                                 }
-                                // Varieties service
-                                List<VarietyService> varietyServices = new ArrayList<VarietyService>();
-                                VarietyService varietyService = new VarietyService();
-                                if (orderItem.has("varietyServices")){
-                                    varietyService.setVarietyType(orderItem.getString("varietyServices"));
-                                }
-
-                                if (orderItem.has("enabledFlag")){
-                                    varietyService.setEnabledFlag(orderItem.getString("enabledFlag"));
-                                }
-                                varietyServices.add(varietyService);
-                                evenItem.setVarietyServices(varietyServices);
 
 
                                 // Balance transfer info
@@ -3387,7 +3375,7 @@ public class MappingService {
                                 List<VarietyService> varietyServices = new ArrayList<VarietyService>();
                                 VarietyService varietyService = new VarietyService();
                                 if (orderItem.has("varietyServices")){
-                                    varietyService.setVarietyType(orderItem.getString("varietyServices"));
+                                    varietyService.setVarietyType(orderItem.getJSONArray("varietyServices"));
                                 }
 
                                 if (orderItem.has("enabledFlag")){
@@ -3559,7 +3547,7 @@ public class MappingService {
         sendData.setTriggerDate(triggerDate);
         sendData.setOrderID(receivedData.getNotiMsgSeq());
         sendData.setPublishChannel("Topup-GW");
-        sendData.setOrderType("TOPUP_RECHARGE");
+        sendData.setOrderType("TOPUPRECHARGE");
         sendData.setMsisdn(String.format("0%s", receivedData.getMsisdn()));
         sendData.setEventData(topUpEv);
 
@@ -3740,7 +3728,7 @@ public class MappingService {
         sendData.setOrderID(receivedData.getNotiMsgSeq());
         sendData.setTriggerDate(triggerDate);
         sendData.setPublishChannel("OM-MFE");
-        sendData.setOrderType("PACKAGE_EXPIRE");
+        sendData.setOrderType("PACKAGEEXPIRE");
         sendData.setMsisdn(String.format("0%s", receivedData.getMsisdn()));
         sendData.setEventData(expiredEv);
 

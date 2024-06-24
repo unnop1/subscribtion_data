@@ -1,5 +1,7 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 
+import org.json.JSONArray;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -17,7 +19,7 @@ public class VarietyService {
     }    
      */
     @JsonProperty("varietyType")
-    private String varietyType;
+    private JSONArray varietyType;
 
     @JsonProperty("enabledFlag")
     private String enabledFlag;
