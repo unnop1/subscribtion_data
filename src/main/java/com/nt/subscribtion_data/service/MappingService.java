@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,7 @@ import com.nt.subscribtion_data.component.CacheUpdater;
 import com.nt.subscribtion_data.entity.OrderTypeEntity;
 import com.nt.subscribtion_data.entity.SaChannelConEntity;
 import com.nt.subscribtion_data.entity.TriggerMessageEntity;
+import com.nt.subscribtion_data.log.LogFlie;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecClientResp;
 import com.nt.subscribtion_data.model.dao.CATMFE.OfferingSpecData;
 import com.nt.subscribtion_data.model.dao.DataModel.Data;
@@ -85,6 +87,8 @@ public class MappingService {
 
     @Autowired
     private CacheUpdater cacheUpdater;
+
+    private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 
     public Data doOrderDataType(String message, Boolean isSaveDataModel) throws SQLException, IOException {
@@ -203,6 +207,13 @@ public class MappingService {
                        triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
                        triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
                        distributeService.CreateTriggerMessage(triggerMsg);
+
+                       // System log
+                       LogFlie.logMessage(
+                        "subscribtion_data", 
+                        orderType,
+                        sendData
+                    );
 
                        return sendData;
                    }else{
@@ -351,6 +362,13 @@ public class MappingService {
                           triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
                           triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
                           distributeService.CreateTriggerMessage(triggerMsg);
+
+                            // System log
+                            LogFlie.logMessage(
+                                "subscribtion_data", 
+                                orderType,
+                                sendData
+                            );
   
                           return sendData;
                       }else{
@@ -495,6 +513,13 @@ public class MappingService {
                         triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
                         distributeService.CreateTriggerMessage(triggerMsg);
 
+                        // System log
+                        LogFlie.logMessage(
+                            "subscribtion_data", 
+                            orderType,
+                            sendData
+                        );
+
                         return sendData;
                     }else{
                         return null;
@@ -604,6 +629,14 @@ public class MappingService {
                 triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
                 triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
                 distributeService.CreateTriggerMessage(triggerMsg);
+
+                // System log
+                LogFlie.logMessage(
+                "subscribtion_data", 
+                orderTypeName,
+                sendData
+                );
+
                 return sendData;
             }else{
                 // UnSend to kafka server
@@ -697,6 +730,14 @@ public class MappingService {
                 triggerMsg.setSA_CHANNEL_CONNECT_ID(saChannelConInfo.getID());
                 triggerMsg.setSEND_DATE(DateTime.getTimestampNowUTC());
                 distributeService.CreateTriggerMessage(triggerMsg);
+
+                // System log
+                LogFlie.logMessage(
+                "subscribtion_data", 
+                orderTypeName,
+                sendData
+                );
+
                 return sendData;
             }else{
                 // UnSend to kafka server

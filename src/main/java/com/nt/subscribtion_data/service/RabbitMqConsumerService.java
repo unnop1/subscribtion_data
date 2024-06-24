@@ -74,41 +74,4 @@ public class RabbitMqConsumerService {
         }
     }
 
-
-    // @RabbitListener(queues = {"RedsRechargeQ", "RedsOrderQ", "RedsPackageExpireQ"})
-    // public void receiveMessage(@Payload String message, @Headers Map<String, Object> headers) throws JsonMappingException, JsonProcessingException {
-    //     try{
-    //         // String queueName = (String) headers.get("amqp_receivedRoutingKey");
-    //         ObjectMapper objectMapper = new ObjectMapper();
-    //         JsonNode jsonNode = objectMapper.readTree(message);
-        
-    //         String queueName = jsonNode.get("routingKey").asText();
-    //         // System.out.println("Received message from queue " + queueName + ": " + message);
-    //         // Process the message based on the queue name
-    //         Data sendData = null;
-    //         switch (queueName) {
-    //             case "RedsRechargeQ":
-    //                 sendData = mappingService.processTopUpType(message);
-    //                 break;
-    //             case "RedsOrderQ":
-    //                 sendData = mappingService.processOMType(message);
-    //                 break;
-    //             case "RedsPackageExpireQ":
-    //                 sendData = mappingService.processExpiredType(message);
-    //                 break;
-    //             default:
-    //                 // System.out.println("Unknown queue: " + queueName);
-    //                 break;
-    //         }
-
-    //         if (sendData != null){
-    //             kafkaProducerService.sendMessage(sendData.getOrderType(),"", sendData);
-    //             // System.out.println("sending to kafka");
-    //         }
-
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    // }
-
 }
