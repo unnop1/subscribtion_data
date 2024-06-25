@@ -2,12 +2,9 @@ package com.nt.subscribtion_data.log;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.springframework.boot.logging.java.SimpleFormatter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -19,19 +16,11 @@ public class LogFlie {
         Logger logger = Logger.getLogger(className);
 
         try {
-            Date date = new Date();
-            SimpleDateFormat df = new SimpleDateFormat("MMyyyy");
             
             // Use JBoss data directory
-            String jbossDataDir = System.getProperty("jboss.server.data.dir");
-            if (jbossDataDir == null) {
-                jbossDataDir = "";
-            }
+            String jbossDataDir = "data";
             
             String pathLog = jbossDataDir + "/" + path + "/";
-            if(jbossDataDir.isBlank()){
-                pathLog = path + "/";
-            }
             String fileName = data.getOrderID() + ".json";
 
             // Ensure directory exists, create if it doesn't
@@ -48,6 +37,8 @@ public class LogFlie {
             fileHandler.setFormatter(new PlainTextFormatter());
             logger.addHandler(fileHandler);
             logger.setUseParentHandlers(false); // Prevents logging to console
+            logger.setLevel(Level.INFO);
+            fileHandler.setLevel(Level.INFO);
 
             // Convert log entry to JSON
             ObjectMapper objectMapper = new ObjectMapper();

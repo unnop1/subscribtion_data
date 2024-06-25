@@ -1725,7 +1725,7 @@ public class MappingService {
 
                                 destinationCustomerAccount.setAddress(address);
                                 destinationCustomerAccount.setBillingAccount(billingAccount);
-                                evenItem.setDestinationCustomerAccount(destinationCustomerAccount);
+                                // evenItem.setDestinationCustomerAccount(destinationCustomerAccount);
 
 
 
@@ -3100,7 +3100,8 @@ public class MappingService {
 
                             destinationCustomerAccount.setAddress(address);
                             destinationCustomerAccount.setBillingAccount(billingAccount);
-                            evenItemOther.setDestinationCustomerAccount(destinationCustomerAccount);
+                            // evenItemOther.setDestinationCustomerAccount(destinationCustomerAccount);
+                            omEv.setSourceCustomerAccount(destinationCustomerAccount);
                             
 
                             if (inputData.has("southernContactAddress")){
@@ -3235,6 +3236,7 @@ public class MappingService {
                                 throw new Exception("loop destinationSubscriberInfo main error: " + e.getMessage());
                             }
 
+                            // omEv.setD
                             evenItems.add(evenItemOther);
                             omEv.setEventItems(evenItems);
                         }catch (Exception e){

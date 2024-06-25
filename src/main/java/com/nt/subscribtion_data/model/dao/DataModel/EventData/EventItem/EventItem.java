@@ -38,8 +38,8 @@ public class EventItem {
     @JsonProperty("photo")
     private List<Photo> photo;
 
-    @JsonProperty("destinationCustomerAccount")
-    private DestinationCustomerAccount destinationCustomerAccount;
+    // @JsonProperty("destinationCustomerAccount")
+    // private DestinationCustomerAccount destinationCustomerAccount;
 
     @JsonProperty("topUp")
     private TopUp topUp;
