@@ -29,15 +29,21 @@ public class SubscriberInfo {
     @JsonProperty("serviceType")
     private String serviceType;
 
+    @JsonProperty("reserveFlag")
+    private Boolean reserveFlag;
+
+    @JsonProperty("preProFlag")
+    private Boolean preProFlag;
+
     @JsonProperty("sourceSimInfo")
     private List<SourceSimInfo> sourceSimInfo;
+
+    @JsonProperty("destinationSimInfo")
+    private List<DestinationSimInfo> destinationSimInfo;
 
     @JsonProperty("touristSimFlag")
     private String touristSimFlag;
 
     @JsonProperty("subscriberNumber")
     private String subscriberNumber;
-
-    @JsonProperty("destinationSimInfo")
-    private List<DestinationSimInfo> destinationSimInfo;
 }
