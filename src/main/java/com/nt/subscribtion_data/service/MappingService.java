@@ -2182,6 +2182,9 @@ public class MappingService {
                                 try{
                                     if (orderItem.has("orderType")){
                                         evenItem.setItemType(orderItem.getString("orderType"));
+                                    }else{
+                                        // Skip the order event item
+                                        continue;
                                     }
                                     
                                     if (orderItem.has("orderExecutionDate")){
@@ -3368,9 +3371,6 @@ public class MappingService {
                     throw new Exception("get header main mapping error: " + e.getMessage());
                 }
 
-                omEv.setSubmitedDate(odheader.getCreateDate());
-                omEv.setCompletedDate(odheader.getUpdateDate());
-
                 if (inputData.has("isProvisionRequired")){
                     omEv.setIsProvisionRequired(inputData.getBoolean("isProvisionRequired"));
                 }
@@ -3552,6 +3552,10 @@ public class MappingService {
         }catch(Exception e){
             throw new Exception("mapp orderheader error :"+e.getMessage());
         }
+        
+        omEv.setOrderStatus(odheader.getOrderStatus());
+        omEv.setSubmitedDate(odheader.getCreateDate());
+        omEv.setCompletedDate(odheader.getUpdateDate());
 
         sendData.setTriggerDate(triggerDate);
         sendData.setPublishChannel("OM-MFE");

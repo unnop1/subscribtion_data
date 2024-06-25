@@ -67,6 +67,7 @@ public class EventItem {
     @JsonProperty("varietyServices")
     private List<VarietyService> varietyServices;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("balanceTransferInfo")
     private BalanceTransferInfo balanceTransferInfo;
 
