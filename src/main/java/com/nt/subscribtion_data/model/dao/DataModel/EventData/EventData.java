@@ -10,8 +10,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.EventItem;
-import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.DestinationCustomerAccount;
-import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSubscriberInfo;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.SubscriberInfo.SubscriberInfo;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -68,10 +67,13 @@ public class EventData {
     private List<EventItem> eventItems;
 
     @JsonProperty("sourceCustomerAccount")
-    private DestinationCustomerAccount sourceCustomerAccount;
+    private SourceCustomerAccount sourceCustomerAccount;
+
+    @JsonProperty("destinationCustomerAccount")
+    private DestinationCustomerAccount destinationCustomerAccount;
 
     @JsonProperty("subscriberInfo")
-    private DestinationSubscriberInfo subscriberInfo;
+    private SubscriberInfo subscriberInfo;
 
     @JsonProperty("saleInfo")
     private SaleInfo saleInfo;

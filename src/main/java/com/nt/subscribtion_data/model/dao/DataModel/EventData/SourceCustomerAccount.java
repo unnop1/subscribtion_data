@@ -1,9 +1,8 @@
-package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount;
+package com.nt.subscribtion_data.model.dao.DataModel.EventData;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.BillingAccount.BillingAccount;
-
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.BillingAccount.BillingAccount;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 // @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DestinationCustomerAccount {
+public class SourceCustomerAccount {
     /*
     {
         "address": {},

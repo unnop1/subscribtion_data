@@ -1,8 +1,8 @@
-package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.BillingAccount;
-
+package com.nt.subscribtion_data.model.dao.DataModel.EventData;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 // @JsonInclude(JsonInclude.Include.NON_NULL)
-public class VatDeliveryAddress {
+public class Address {
     /*
      {
         "building": "",

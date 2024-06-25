@@ -1,4 +1,4 @@
-package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo;
+package com.nt.subscribtion_data.model.dao.DataModel.EventData.SubscriberInfo;
 
 import java.util.List;
 
@@ -11,14 +11,14 @@ import lombok.Setter;
 @Getter
 @Setter
 // @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DestinationSubscriberInfo {
+public class SubscriberInfo {
     /*
-    {
+     {
         "msisdn": "812345678",
         "serviceType": "0",
         "sourceSimInfo": [],
-        "touristSimFlag": "",
-        "subscriberNumber": "",
+        "touristSimFlag": "N",
+        "subscriberNumber": "1234567",
         "destinationSimInfo": []
     }
      */

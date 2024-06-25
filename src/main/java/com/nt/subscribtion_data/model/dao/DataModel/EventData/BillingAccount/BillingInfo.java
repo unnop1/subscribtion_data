@@ -1,4 +1,4 @@
-package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.BillingAccount;
+package com.nt.subscribtion_data.model.dao.DataModel.EventData.BillingAccount;
 
 
 
@@ -10,7 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-// @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BillingInfo {
     /*
      {

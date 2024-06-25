@@ -1,4 +1,4 @@
-package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.BillingAccount;
+package com.nt.subscribtion_data.model.dao.DataModel.EventData.BillingAccount;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,18 +8,18 @@ import lombok.Setter;
 
 @Getter
 @Setter
-// @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BillDeliveryAddress {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class BillingAddress {
     /*
      {
-        "building": "",
-        "country": "",
-        "houseNumber": "",
-        "khetAmphur": "",
-        "kwangTambon": "",
-        "moo": "",
-        "postCode": "",
-        "province": "",
+        "building": "A",
+        "country": "Thailand",
+        "houseNumber": "1",
+        "khetAmphur": "เขตหลักสี่",
+        "kwangTambon": "แขวงทุ่งสองห้อง",
+        "moo": "หมู่ 4",
+        "postCode": "11000",
+        "province": "กรุงเทพมหานคร",
         "road": "",
         "troksoi": "",
         "village": ""
