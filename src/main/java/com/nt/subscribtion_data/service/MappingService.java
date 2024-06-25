@@ -2278,8 +2278,13 @@ public class MappingService {
                                 if (orderItem.has("enabledFlag")){
                                     varietyService.setEnabledFlag(orderItem.getString("enabledFlag"));
                                 }
-                                varietyServices.add(varietyService);
-                                evenItem.setVarietyServices(varietyServices);
+                                
+                                if(varietyService.getEnabledFlag() != null && varietyService.getVarietyType() != null){
+                                    varietyServices.add(varietyService);
+                                }
+                                if(varietyServices.size()>0){
+                                    evenItem.setVarietyServices(varietyServices);
+                                }
 
 
                                 // Balance transfer info
