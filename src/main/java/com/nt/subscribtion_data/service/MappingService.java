@@ -973,7 +973,7 @@ public class MappingService {
                                 try{
                                     if (orderItem.has("orderType")){
                                         evenItem.setItemType(orderItem.getString("orderType"));
-                                        if(evenItem.getItemType()== null){
+                                        if(orderItem.getString("orderType")== null || orderItem.getString("orderType").isBlank()){
                                             // Skip the order event item
                                             continue;
                                         }
