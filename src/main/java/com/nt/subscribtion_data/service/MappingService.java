@@ -1961,6 +1961,7 @@ public class MappingService {
                             
                             sourceCustomerAccount.setAddress(address);
                             sourceCustomerAccount.setBillingAccount(billingAccount);
+                            omEv.setSourceCustomerAccount(sourceCustomerAccount);
 
                         }
                         
