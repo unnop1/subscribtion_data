@@ -2127,6 +2127,13 @@ public class MappingService {
             if (invMappingData != null){
                 if(invMappingData.getImsi() != null){
                     imsiConfigData = getImsiConfigByImsi(invMappingData.getImsi(), imsiOfferConfigList.getData());
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    String imsidataDebug = objectMapper.writeValueAsString(imsiConfigData);
+                    LogFlie.logMessageTest(
+                        "subscribtion_data", 
+                        "debug_subscribtion",
+                        imsidataDebug
+                    );
                 }
             }
         }catch (Exception e){
@@ -3102,20 +3109,23 @@ public class MappingService {
                             destinationSubscriberInfo.setPreProFlag(inputSubscriberInfo.getBoolean("preProFlag"));
                         }
 
-                        JSONObject inputSourceSimInfo = new JSONObject();
+                        JSONArray inputSourceSimInfo = new JSONArray();
                         if (inputData.has("sourceSimInfo")){
-                            inputSourceSimInfo = inputSubscriberInfo.getJSONObject("sourceSimInfo");
+                            inputSourceSimInfo = inputSubscriberInfo.getJSONArray("sourceSimInfo");
 
                             // Source sim info
                             List<SourceSimInfo> sourceSimInfoList = new ArrayList<SourceSimInfo>();
-                            SourceSimInfo sourceSimInfo = new SourceSimInfo();
-                            if(imsiConfigData != null){
-                                sourceSimInfo.setIccid(inputSourceSimInfo.getString("iccid"));
-                                sourceSimInfo.setImsi(imsiConfigData.getImsiPrefix()); // query imsi prefix
-                                sourceSimInfo.setSimType(inputSourceSimInfo.getString("simType"));
-                                sourceSimInfo.setFrequency(imsiConfigData.getFrequency()); // query frequency
-                                sourceSimInfoList.add(sourceSimInfo);
+                            for(int index=0; index<inputSourceSimInfo.length(); index++){
+                                SourceSimInfo sourceSimInfo = new SourceSimInfo();
+                                if(imsiConfigData != null){
+                                    sourceSimInfo.setIccid(inputSourceSimInfo.getJSONObject(index).getString("iccid"));
+                                    sourceSimInfo.setImsi(imsiConfigData.getImsiPrefix()); // query imsi prefix
+                                    sourceSimInfo.setSimType(inputSourceSimInfo.getJSONObject(index).getString("simType"));
+                                    sourceSimInfo.setFrequency(imsiConfigData.getFrequency()); // query frequency
+                                    sourceSimInfoList.add(sourceSimInfo);
+                                }
                             }
+                            destinationSubscriberInfo.setSourceSimInfo(sourceSimInfoList);
 
                             JSONObject inputDestinationSimInfo = new JSONObject();
                             // Destination sim info
@@ -3151,7 +3161,6 @@ public class MappingService {
 
                                 destinationSubscriberInfo.setDestinationSimInfo(destinationSimInfoList);
                             }
-                            destinationSubscriberInfo.setSourceSimInfo(sourceSimInfoList);
                         }
                         omEv.setSubscriberInfo(destinationSubscriberInfo);
                         // evenItemOther.setDestinationSubscriberInfo(destinationSubscriberInfo);
@@ -4005,22 +4014,26 @@ public class MappingService {
                             destinationSubscriberInfo.setPreProFlag(inputSubscriberInfo.getBoolean("preProFlag"));
                         }
 
-                        JSONObject inputSourceSimInfo = new JSONObject();
+                        JSONArray inputSourceSimInfo = new JSONArray();
                         if (inputData.has("sourceSimInfo")){
-                            inputSourceSimInfo = inputSubscriberInfo.getJSONObject("sourceSimInfo");
+                            inputSourceSimInfo = inputSubscriberInfo.getJSONArray("sourceSimInfo");
 
                             // Source sim info
                             List<SourceSimInfo> sourceSimInfoList = new ArrayList<SourceSimInfo>();
-                            SourceSimInfo sourceSimInfo = new SourceSimInfo();
-                            if(imsiConfigData != null){
-                                sourceSimInfo.setIccid(inputSourceSimInfo.getString("iccid"));
-                                sourceSimInfo.setImsi(imsiConfigData.getImsiPrefix()); // query imsi prefix
-                                sourceSimInfo.setSimType(inputSourceSimInfo.getString("simType"));
-                                sourceSimInfo.setFrequency(imsiConfigData.getFrequency()); // query frequency
-                                sourceSimInfoList.add(sourceSimInfo);
+                            for(int index=0; index<inputSourceSimInfo.length(); index++){
+                                SourceSimInfo sourceSimInfo = new SourceSimInfo();
+                                if(imsiConfigData != null){
+                                    sourceSimInfo.setIccid(inputSourceSimInfo.getJSONObject(index).getString("iccid"));
+                                    sourceSimInfo.setImsi(imsiConfigData.getImsiPrefix()); // query imsi prefix
+                                    sourceSimInfo.setSimType(inputSourceSimInfo.getJSONObject(index).getString("simType"));
+                                    sourceSimInfo.setFrequency(imsiConfigData.getFrequency()); // query frequency
+                                    sourceSimInfoList.add(sourceSimInfo);
+                                }
                             }
+                            destinationSubscriberInfo.setSourceSimInfo(sourceSimInfoList);
 
                             JSONObject inputDestinationSimInfo = new JSONObject();
+                            // Destination sim info
                             if (inputData.has("destinationSimInfo")){
                                 inputDestinationSimInfo = inputSubscriberInfo.getJSONObject("destinationSimInfo");
                                 
@@ -4053,7 +4066,6 @@ public class MappingService {
 
                                 destinationSubscriberInfo.setDestinationSimInfo(destinationSimInfoList);
                             }
-                            destinationSubscriberInfo.setSourceSimInfo(sourceSimInfoList);
                         }
                         omEv.setSubscriberInfo(destinationSubscriberInfo);
                         // evenItemOther.setDestinationSubscriberInfo(destinationSubscriberInfo);
@@ -4062,7 +4074,6 @@ public class MappingService {
                             destinationSubscriberInfo.setTouristSimFlag(inputSubscriberInfo.getString("touristSimFlag"));
                         }
                     }
-                    
 
                 }catch (Exception e){
                     throw new Exception("loop destinationSubscriberInfo main error: " + e.getMessage());
