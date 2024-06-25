@@ -1873,8 +1873,8 @@ public class MappingService {
                                 sourceCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
                             }
         
-                            if (inputSourceCustomerAccount.has("custAccountId")){
-                                sourceCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custAccountId"));
+                            if (inputSourceCustomerAccount.has("custaccountId")){
+                                sourceCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custaccountId"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerFocus")){
