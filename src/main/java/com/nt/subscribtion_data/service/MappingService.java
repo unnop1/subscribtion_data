@@ -3110,7 +3110,7 @@ public class MappingService {
                         }
 
                         JSONArray inputSourceSimInfo = new JSONArray();
-                        if (inputData.has("sourceSimInfo")){
+                        if (inputSubscriberInfo.has("sourceSimInfo")){
                             inputSourceSimInfo = inputSubscriberInfo.getJSONArray("sourceSimInfo");
 
                             // Source sim info
