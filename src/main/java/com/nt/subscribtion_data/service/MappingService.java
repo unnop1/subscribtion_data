@@ -2555,6 +2555,7 @@ public class MappingService {
                             }
                             // EventItem
                             EventItem evenItemOther = new EventItem();
+
                             /*
                             * destinationCustomerAccount
                             */
@@ -3227,7 +3228,8 @@ public class MappingService {
                                         }
                                         destinationSubscriberInfo.setSourceSimInfo(sourceSimInfoList);
                                     }
-                                    evenItemOther.setDestinationSubscriberInfo(destinationSubscriberInfo);
+                                    omEv.setSubscriberInfo(destinationSubscriberInfo);
+                                    // evenItemOther.setDestinationSubscriberInfo(destinationSubscriberInfo);
                                     
                                 }
                                 

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.EventItem;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationCustomerAccount.DestinationCustomerAccount;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSubscriberInfo;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -66,8 +67,11 @@ public class EventData {
     @JsonProperty("eventItem")
     private List<EventItem> eventItems;
 
-    @JsonProperty("sourceCustomerAccount") // Fix name to sourceCustomerAccount
+    @JsonProperty("sourceCustomerAccount")
     private DestinationCustomerAccount sourceCustomerAccount;
+
+    @JsonProperty("subscriberInfo")
+    private DestinationSubscriberInfo subscriberInfo;
 
     @JsonProperty("saleInfo")
     private SaleInfo saleInfo;
