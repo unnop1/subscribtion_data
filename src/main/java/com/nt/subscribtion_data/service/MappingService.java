@@ -2093,7 +2093,7 @@ public class MappingService {
             INVMappingClientResp invMappingResp = invuserService.getInvMappingData(externalId);
 
             
-            if (invMappingResp.getData() != null && invMappingResp.getErr() != null){
+            if (invMappingResp.getData() != null && invMappingResp.getErr() == null){
                 invMappingData = invMappingResp.getData();
             }
 
