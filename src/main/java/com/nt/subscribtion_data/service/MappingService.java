@@ -2124,7 +2124,7 @@ public class MappingService {
             throw new Exception("TransManageContractDTLClientResp mapping error: " + e.getMessage());
         }
 
-        // System.out.println(odheader.getInputData());
+        // Input Data
         try{
             if (odheader.getInputData() != null){
                 JSONObject inputData = null;
@@ -2153,9 +2153,6 @@ public class MappingService {
                 }catch (Exception e){
                     throw new Exception("get header main mapping error: " + e.getMessage());
                 }
-
-                omEv.setSubmitedDate(odheader.getCreateDate());
-                omEv.setCompletedDate(odheader.getUpdateDate());
 
                 if (inputData.has("isProvisionRequired")){
                     omEv.setIsProvisionRequired(inputData.getBoolean("isProvisionRequired"));
@@ -3309,17 +3306,21 @@ public class MappingService {
                     omEv.setIvrLanguage(inputData.getString("ivrLanguage"));
                 }
 
-                // orderStatus
-                if(inputData.has("orderHeader")){
-                    JSONObject orderHeader = inputData.getJSONObject("orderHeader");
-                    if(orderHeader.has("orderStatus")){
-                        omEv.setOrderStatus(orderHeader.getString("orderStatus"));
-                    }
-                }
+                // // orderStatus
+                // if(inputData.has("orderHeader")){
+                //     JSONObject orderHeader = inputData.getJSONObject("orderHeader");
+                //     if(orderHeader.has("orderStatus")){
+                //         omEv.setOrderStatus(orderHeader.getString("orderStatus"));
+                //     }
+                // }
             }
         }catch(Exception e){
             throw new Exception("mapp orderheader error :"+e.getMessage());
         }
+
+        omEv.setOrderStatus(odheader.getOrderStatus());
+        omEv.setSubmitedDate(odheader.getCreateDate());
+        omEv.setCompletedDate(odheader.getUpdateDate());
 
         sendData.setTriggerDate(triggerDate);
         sendData.setPublishChannel("OM-MFE");
@@ -3540,13 +3541,13 @@ public class MappingService {
                     omEv.setIvrLanguage(inputData.getString("ivrLanguage"));
                 }
 
-                // orderStatus
-                if(inputData.has("orderHeader")){
-                    JSONObject orderHeader = inputData.getJSONObject("orderHeader");
-                    if(orderHeader.has("orderStatus")){
-                        omEv.setOrderStatus(orderHeader.getString("orderStatus"));
-                    }
-                }
+                // // orderStatus
+                // if(inputData.has("orderHeader")){
+                //     JSONObject orderHeader = inputData.getJSONObject("orderHeader");
+                //     if(orderHeader.has("orderStatus")){
+                //         omEv.setOrderStatus(orderHeader.getString("orderStatus"));
+                //     }
+                // }
             }
         }catch(Exception e){
             throw new Exception("mapp orderheader error :"+e.getMessage());
