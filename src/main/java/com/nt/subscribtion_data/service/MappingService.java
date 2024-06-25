@@ -968,31 +968,36 @@ public class MappingService {
                             for (int i = 0; i < orderItems.length(); i++){
                                 JSONObject orderItem = orderItems.getJSONObject(i);
                                 EventItem evenItem = new EventItem();
-
+                                Boolean isFoundEveBoolean = false;
                                 // EventItem
                                 try{
                                     if (orderItem.has("orderType")){
                                         evenItem.setItemType(orderItem.getString("orderType"));
-                                        if(orderItem.getString("orderType")== null || orderItem.getString("orderType").isBlank()){
+                                        if(orderItem.getString("orderType") == null || orderItem.getString("orderType").isBlank()){
                                             // Skip the order event item
                                             continue;
                                         }
+                                        isFoundEveBoolean = true;
                                     }
                                     
                                     if (orderItem.has("orderExecutionDate")){
                                         evenItem.setEffectiveDate(orderItem.getString("orderExecutionDate"));
+                                        isFoundEveBoolean = true;
                                     }
                                     
                                     if (orderItem.has("orderExecutionType")){
                                         evenItem.setExecutionType(orderItem.getString("orderExecutionType"));
+                                        isFoundEveBoolean = true;
                                     }
 
                                     if (orderItem.has("sourceEntity")){
                                         evenItem.setSourceEntity(orderItem.getString("sourceEntity"));
+                                        isFoundEveBoolean = true;
                                     }
 
                                     if (orderItem.has("userRole")){
                                         evenItem.setUserRole(orderItem.getString("userRole"));
+                                        isFoundEveBoolean = true;
                                     }
                                 }catch(Exception e){
                                     throw new Exception("loop event item main error: " + e.getMessage());
@@ -1004,10 +1009,12 @@ public class MappingService {
                                 try{
                                     if (orderItem.has("productOffering")){
                                         productOfferingList = orderItem.getJSONArray("productOffering");
+                                        isFoundEveBoolean = true;
                                     }
                                     
                                     if (orderItem.has("subscriberInfo")){
                                         subscriberInfo = orderItem.getJSONObject("subscriberInfo");
+                                        isFoundEveBoolean = true;
                                     }
                                 }catch(Exception e){
                                     throw new Exception("loop OrderItem main error: " + e.getMessage());
@@ -1288,6 +1295,7 @@ public class MappingService {
                                         balanceTransferInfo.setTransferAmount(orderItemBalanceTransferInfo.getString("transferAmount"));
                                     }
                                     evenItem.setBalanceTransferInfo(balanceTransferInfo);
+                                    isFoundEveBoolean = true;
                                 }
 
                                 // ExtendExpireInfo
@@ -1304,6 +1312,7 @@ public class MappingService {
                                         extendExpireInfo.setExtendedDay(orderItemExtendExpireInfo.getString("transAmount"));
                                     }
                                     evenItem.setExtendExpireInfo(extendExpireInfo);
+                                    isFoundEveBoolean = true;
                                 }
 
                                 // contractInfo 
@@ -1340,7 +1349,7 @@ public class MappingService {
 
 
                                 // append eventItem
-                                if(evenItem != null) {
+                                if(isFoundEveBoolean) {
                                     evenItems.add(evenItem);
                                 }
 
@@ -1410,7 +1419,9 @@ public class MappingService {
                             }
 
                             // omEv.setD
-                            evenItems.add(evenItemOther);
+                            if(evenItemOther.getSouthernContactAddress() != null){
+                                evenItems.add(evenItemOther);
+                            }
                             omEv.setEventItems(evenItems);
                         }catch (Exception e){
                             throw new Exception("event item loop mapping error: " + e.getMessage());
@@ -1422,7 +1433,7 @@ public class MappingService {
 
 
                 /*
-                * sourceCustomerAccount
+                * SourceCustomerAccount
                 */
                 SourceCustomerAccount sourceCustomerAccount = new SourceCustomerAccount();
                 DestinationCustomerAccount destinationCustomerAccount = new DestinationCustomerAccount();
@@ -1604,8 +1615,6 @@ public class MappingService {
         
                             }
         
-                            
-                            
                             // billing delivery address
                             if (inputSourceCustomerAccount.has("billDeliveryAddress")){
                                 sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
@@ -1825,6 +1834,7 @@ public class MappingService {
                             // billing account
                             if (inputSourceCustomerAccount.has("existingFlag")){
                                 billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+                                sourceCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
                             }
         
                             if (inputSourceCustomerAccount.has("billingAccountId")){
@@ -1833,6 +1843,114 @@ public class MappingService {
         
                             if (inputSourceCustomerAccount.has("paymentProfile")){
                                 billingAccount.setPaymentProfile(inputSourceCustomerAccount.getString("paymentProfile")); // must validate
+                            }
+
+                            if (inputSourceCustomerAccount.has("cardNumber")){
+                                sourceCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("cardType")){
+                                sourceCustomerAccount.setCardType(inputSourceCustomerAccount.getInt("cardType"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("catEmployeeFlag")){
+                                sourceCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getInt("catEmployeeFlag"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("companyBranchId")){
+                                sourceCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("companyName")){
+                                sourceCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("companyType")){
+                                sourceCustomerAccount.setCompanyType(inputSourceCustomerAccount.getInt("companyType"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("contactNumber")){
+                                sourceCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("custAccountId")){
+                                sourceCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custAccountId"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("customerFocus")){
+                                sourceCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("customerGroup")){
+                                sourceCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getInt("customerGroup"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("customerId")){
+                                sourceCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("customerInfoType")){
+                                sourceCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getInt("customerInfoType"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("customerSegment")){
+                                sourceCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getInt("customerSegment"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("customerType")){
+                                sourceCustomerAccount.setCustomerType(inputSourceCustomerAccount.getInt("customerType"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("dob")){
+                                sourceCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("documentNumber")){
+                                sourceCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("documentType")){
+                                sourceCustomerAccount.setDocumentType(inputSourceCustomerAccount.getInt("documentType"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("emailAddress")){
+                                sourceCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("existingFlag")){
+                                sourceCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("firstName")){
+                                sourceCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("gender")){
+                                sourceCustomerAccount.setGender(inputSourceCustomerAccount.getInt("gender"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("ivrLanguage")){
+                                sourceCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("lastName")){
+                                sourceCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("nationality")){
+                                sourceCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("taxRegisterNumber")){
+                                sourceCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("title")){
+                                sourceCustomerAccount.setTitle(inputSourceCustomerAccount.getInt("title"));
+                            }
+        
+                            if (inputSourceCustomerAccount.has("writtenLanguage")){
+                                sourceCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
                             }
                             
                             billingAccount.setBillingInfo(billingInfo);
@@ -1843,9 +1961,7 @@ public class MappingService {
                             
                             sourceCustomerAccount.setAddress(address);
                             sourceCustomerAccount.setBillingAccount(billingAccount);
-                            // evenItemOther.setDestinationCustomerAccount(destinationCustomerAccount);
-                            omEv.setSourceCustomerAccount(sourceCustomerAccount);
-        
+
                         }
                         
                     }
