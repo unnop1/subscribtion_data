@@ -2096,6 +2096,25 @@ public class MappingService {
             if (invMappingResp.getData() != null && invMappingResp.getErr() != null){
                 invMappingData = invMappingResp.getData();
             }
+
+            try{
+                ObjectMapper objectMapper = new ObjectMapper();
+                String invdataDebug = objectMapper.writeValueAsString(invMappingData);
+
+                // System log
+                LogFlie.logMessageTest(
+                    "subscribtion_data", 
+                    "debug_subscribtion",
+                    invdataDebug
+                );
+            }catch (Exception e){
+                // System log
+                LogFlie.logMessageTest(
+                    "subscribtion_data", 
+                    "error_subscribtion",
+                    e.getMessage()
+                );
+            }
         
 
             imsiOfferConfigList = cacheUpdater.getIMSIOfferConfigListCache();
@@ -3376,6 +3395,9 @@ public class MappingService {
                 if(invMappingData.getImsi() != null){
                     imsiConfigData = getImsiConfigByImsi(invMappingData.getImsi(), imsiOfferConfigList.getData());
                 }
+                ObjectMapper objectmapper = new ObjectMapper();
+                objectmapper.writeValueAsString(imsiConfigData);
+
             }
         }catch (Exception e){
             throw new Exception("INV mapping error: " + e.getMessage());
