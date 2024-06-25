@@ -2182,9 +2182,10 @@ public class MappingService {
                                 try{
                                     if (orderItem.has("orderType")){
                                         evenItem.setItemType(orderItem.getString("orderType"));
-                                    }else{
-                                        // Skip the order event item
-                                        continue;
+                                        if(evenItem.getItemType()== null){
+                                            // Skip the order event item
+                                            continue;
+                                        }
                                     }
                                     
                                     if (orderItem.has("orderExecutionDate")){
@@ -3399,9 +3400,10 @@ public class MappingService {
                                 try{
                                     if (orderItem.has("orderType")){
                                         evenItem.setItemType(orderItem.getString("orderType"));
-                                    }else{
-                                        // Skip the order event item
-                                        continue;
+                                        if(evenItem.getItemType()== null){
+                                            // Skip the order event item
+                                            continue;
+                                        }
                                     }
                                     
                                     if (orderItem.has("orderExecutionDate")){
