@@ -995,6 +995,10 @@ public class MappingService {
                                         isFoundEveBoolean = true;
                                     }
 
+                                    if (orderItem.has("extendedDay")){
+                                        evenItem.setExtendedDay(orderItem.getInt("extendedDay"));
+                                    }
+
                                     if (orderItem.has("effectiveTime")){
                                         evenItem.setEffectiveTime(orderItem.getString("effectiveTime"));
                                         isFoundEveBoolean = true;
@@ -2265,6 +2269,10 @@ public class MappingService {
 
                                     if (orderItem.has("actionType")){
                                         evenItem.setActionType(orderItem.getString("actionType"));
+                                    }
+
+                                    if (orderItem.has("extendedDay")){
+                                        evenItem.setExtendedDay(orderItem.getInt("extendedDay"));
                                     }
 
                                     if (orderItem.has("effectiveTime")){

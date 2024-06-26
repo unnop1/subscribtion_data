@@ -24,6 +24,9 @@ public class EventItem {
     @JsonProperty("executionType")
     private String executionType;
 
+    @JsonProperty("extendedDay")
+    private Integer extendedDay;
+
     @JsonProperty("effectiveMode")
     private String effectiveMode;
 
