@@ -64,7 +64,7 @@ public class EventItem {
     private EvDestinationSubscriberInfo destinationSubscriberInfo;
 
     @JsonProperty("subPropertyCode")
-    private JSONArray subPropertyCode;
+    private List<SubPropertyCode> subPropertyCode;
 
     @JsonProperty("topUp")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

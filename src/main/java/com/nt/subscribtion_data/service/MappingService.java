@@ -43,6 +43,7 @@ import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.ExtendEx
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Offer;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Photo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.SouthernContactAddress;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.SubPropertyCode;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.TopUp;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.VarietyService;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.EvDestinationSimInfo;
@@ -1041,8 +1042,23 @@ public class MappingService {
                                     }
 
                                     if (orderItem.has("subPropertyCode")){
-                                        evenItem.setSubPropertyCode(orderItem.getJSONArray("subPropertyCode"));
+                                        List<SubPropertyCode> subPropertyCodes = new ArrayList<SubPropertyCode>();
+                                        JSONArray subProperties = orderItem.getJSONArray("subPropertyCode");
+                                        for (int index = 0; index < subProperties.length(); index++) {
+                                            SubPropertyCode subPropertyCode = new SubPropertyCode();
+
+                                            if(subProperties.getJSONObject(index).has("value")){
+                                                subPropertyCode.setValue(subProperties.getJSONObject(index).getString("value"));
+                                            }
+
+                                            if(subProperties.getJSONObject(index).has("code")){
+                                                subPropertyCode.setCode(subProperties.getJSONObject(index).getString("code"));
+                                            }
+                                            subPropertyCodes.add(subPropertyCode);
+                                        }
+                                        evenItem.setSubPropertyCode(subPropertyCodes);
                                         isFoundEveBoolean = true;
+
                                     }
 
                                     if (orderItem.has("unitType")){
@@ -2403,7 +2419,22 @@ public class MappingService {
                                     }
 
                                     if (orderItem.has("subPropertyCode")){
-                                        evenItem.setSubPropertyCode(orderItem.getJSONArray("subPropertyCode"));
+                                        List<SubPropertyCode> subPropertyCodes = new ArrayList<SubPropertyCode>();
+                                        JSONArray subProperties = orderItem.getJSONArray("subPropertyCode");
+                                        for (int index = 0; index < subProperties.length(); index++) {
+                                            SubPropertyCode subPropertyCode = new SubPropertyCode();
+
+                                            if(subProperties.getJSONObject(index).has("value")){
+                                                subPropertyCode.setValue(subProperties.getJSONObject(index).getString("value"));
+                                            }
+
+                                            if(subProperties.getJSONObject(index).has("code")){
+                                                subPropertyCode.setCode(subProperties.getJSONObject(index).getString("code"));
+                                            }
+                                            subPropertyCodes.add(subPropertyCode);
+                                        }
+                                        evenItem.setSubPropertyCode(subPropertyCodes);
+
                                     }
 
                                     if (orderItem.has("unitType")){
