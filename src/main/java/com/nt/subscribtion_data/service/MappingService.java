@@ -3420,7 +3420,7 @@ public class MappingService {
         OfferingSpecClientResp expiredOfrspecResp = catmfeService.getOfferingSpecByOfferingId(expiredOfferingId);
         OfferingSpecData expiredOfrspec = expiredOfrspecResp.getData();
         if (expiredOfrspec != null){
-            offer.setOfferingId(expiredOfferingId);
+            ofrspecExpired.setOfferingId(expiredOfrspec.getOfferingID()+"");
             // System.out.println("offeringId:"+offeringId);
 
             ofrspecExpired.setOfferingType("SO");
