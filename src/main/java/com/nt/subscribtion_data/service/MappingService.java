@@ -858,8 +858,19 @@ public class MappingService {
             INVMappingClientResp invMappingResp = invuserService.getInvMappingData(externalId);
 
             
-            if (invMappingResp.getData() != null && invMappingResp.getErr() == null){
-                invMappingData = invMappingResp.getData();
+            if (invMappingResp != null){
+                if (invMappingResp.getData() != null && invMappingResp.getErr() == null){
+                    invMappingData = invMappingResp.getData();
+                    if (invMappingData == null){
+                        throw new Exception("INV mapping not found external id: "+externalId);
+                    }
+                }else{
+                    INVMappingClientResp invMappingOnlyResp = invuserService.getInvMappingDataOnly(externalId);
+                    invMappingData = invMappingOnlyResp.getData();
+                    if (invMappingData == null){
+                        throw new Exception("INV mapping not found external id: "+externalId);
+                    }
+                }
             }else{
                 INVMappingClientResp invMappingOnlyResp = invuserService.getInvMappingDataOnly(externalId);
                 invMappingData = invMappingOnlyResp.getData();
@@ -2181,8 +2192,25 @@ public class MappingService {
         try{
             INVMappingClientResp invMappingResp = invuserService.getInvMappingData(externalId);
 
-            if (invMappingResp.getData() != null && invMappingResp.getErr() != null){
-                invMappingData = invMappingResp.getData();
+            if (invMappingResp != null){
+                if (invMappingResp.getData() != null && invMappingResp.getErr() == null){
+                    invMappingData = invMappingResp.getData();
+                    if (invMappingData == null){
+                        throw new Exception("INV mapping not found external id: "+externalId);
+                    }
+                }else{
+                    INVMappingClientResp invMappingOnlyResp = invuserService.getInvMappingDataOnly(externalId);
+                    invMappingData = invMappingOnlyResp.getData();
+                    if (invMappingData == null){
+                        throw new Exception("INV mapping not found external id: "+externalId);
+                    }
+                }
+            }else{
+                INVMappingClientResp invMappingOnlyResp = invuserService.getInvMappingDataOnly(externalId);
+                invMappingData = invMappingOnlyResp.getData();
+                if (invMappingData == null){
+                    throw new Exception("INV mapping not found external id: "+externalId);
+                }
             }
         
             imsiOfferConfigList = cacheUpdater.getIMSIOfferConfigListCache();
