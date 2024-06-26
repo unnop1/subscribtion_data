@@ -30,6 +30,12 @@ public class EventItem {
     @JsonProperty("effectiveMode")
     private String effectiveMode;
 
+    @JsonProperty("orderItemId")
+    private String orderItemId;
+
+    @JsonProperty("orderItemStatus")
+    private String orderItemStatus;
+
     @JsonProperty("effectiveTime")
     private String effectiveTime;
 

@@ -990,6 +990,16 @@ public class MappingService {
                                         isFoundEveBoolean = true;
                                     }
 
+                                    if (orderItem.has("orderItemId")){
+                                        evenItem.setOrderItemId(orderItem.getString("orderItemId"));
+                                        isFoundEveBoolean = true;
+                                    }
+
+                                    if (orderItem.has("orderItemStatus")){
+                                        evenItem.setOrderItemStatus(orderItem.getString("orderItemStatus"));
+                                        isFoundEveBoolean = true;
+                                    }
+
                                     if (orderItem.has("actionType")){
                                         evenItem.setActionType(orderItem.getString("actionType"));
                                         isFoundEveBoolean = true;
@@ -2269,6 +2279,14 @@ public class MappingService {
 
                                     if (orderItem.has("actionType")){
                                         evenItem.setActionType(orderItem.getString("actionType"));
+                                    }
+
+                                    if (orderItem.has("orderItemId")){
+                                        evenItem.setOrderItemId(orderItem.getString("orderItemId"));
+                                    }
+
+                                    if (orderItem.has("orderItemStatus")){
+                                        evenItem.setOrderItemStatus(orderItem.getString("orderItemStatus"));
                                     }
 
                                     if (orderItem.has("extendedDay")){
