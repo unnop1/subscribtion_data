@@ -1242,9 +1242,6 @@ public class MappingService {
                                         */
                                     }
                                     
-                                    
-
-                                    
                                 }catch (Exception e){
                                     throw new Exception("loop Offer main error: " + e.getMessage());
                                 }
@@ -3307,21 +3304,19 @@ public class MappingService {
         */
         List<Offer> offers = new ArrayList<Offer>();
 
+
+        // Add from POID to offer
         Offer offer = new Offer();
         String offeringId = receivedData.getPoId()+"";
 
         OfferingSpecClientResp ofrspecResp = catmfeService.getOfferingSpecByOfferingId(offeringId);
         OfferingSpecData ofrspec = ofrspecResp.getData();
 
-
-        
-            
-        
         if (ofrspec != null){
             offer.setOfferingId(offeringId);
             // System.out.println("offeringId:"+offeringId);
 
-            offer.setOfferingType(ofrspec.getOfferingtype());
+            offer.setOfferingType("PO");
 
             offer.setOfferingNameTh(ofrspec.getOfferingnameTH());
 
@@ -3401,9 +3396,96 @@ public class MappingService {
         }
     
 
-                    /*  
-                    * End offer
-                    */
+        // Add from expiredOfferId to offer
+        Offer ofrspecExpired = new Offer();
+        String expiredOfferingId = receivedData.getExpireOfferId();
+
+        OfferingSpecClientResp expiredOfrspecResp = catmfeService.getOfferingSpecByOfferingId(expiredOfferingId);
+        OfferingSpecData expiredOfrspec = expiredOfrspecResp.getData();
+        if (expiredOfrspec != null){
+            offer.setOfferingId(offeringId);
+            // System.out.println("offeringId:"+offeringId);
+
+            ofrspecExpired.setOfferingType("SO");
+
+            ofrspecExpired.setOfferingNameTh(expiredOfrspec.getOfferingnameTH());
+
+            ofrspecExpired.setOfferingNameEn(expiredOfrspec.getOfferingnameEN());
+
+            ofrspecExpired.setPackageId(expiredOfrspec.getPackageID());
+
+            ofrspecExpired.setPackageName(expiredOfrspec.getPackageName());
+
+            ofrspecExpired.setDescriptionTh(expiredOfrspec.getDescTH());
+
+            ofrspecExpired.setDescriptionEn(expiredOfrspec.getDescEN());
+
+            ofrspecExpired.setServiceType(expiredOfrspec.getServiceType());
+
+            ofrspecExpired.setOcsOfferingName(expiredOfrspec.getOcsofferingname());
+
+            if(expiredOfrspec.getRcamount() != null){
+                BigDecimal rcamount = new BigDecimal(expiredOfrspec.getRcamount());
+                ofrspecExpired.setRcAmount(rcamount);
+            }
+
+            if(expiredOfrspec.getRcvatamount() != null){
+                BigDecimal rcvatamount = new BigDecimal(expiredOfrspec.getRcvatamount());
+                ofrspecExpired.setRcVatAmount(rcvatamount);
+            }
+
+            ofrspecExpired.setPeriod(expiredOfrspec.getPeriod());
+
+            ofrspecExpired.setUnitPeriod(expiredOfrspec.getUnitperiod());
+
+            ofrspecExpired.setSaleStartDate(expiredOfrspec.getSalestartdate());
+
+            ofrspecExpired.setSaleEndDate(expiredOfrspec.getSaleenddate());
+
+            if(expiredOfrspec.getMaxdayafteractivedate()!=null){
+                BigDecimal maxdayafteractivedate = new BigDecimal(expiredOfrspec.getMaxdayafteractivedate());
+                ofrspecExpired.setMaxDayAfterActiveDate(maxdayafteractivedate);
+            }
+
+            ofrspecExpired.setNiceNumberFlag(expiredOfrspec.getNicenumberflag());
+
+            if(expiredOfrspec.getNicenumberlevel()!= null){
+                BigDecimal nicenumberlevel = new BigDecimal(expiredOfrspec.getNicenumberlevel());
+                ofrspecExpired.setNiceNumberLevel(nicenumberlevel);
+            }
+
+            ofrspecExpired.setConTractFlag(expiredOfrspec.getContractflag());
+
+            if(expiredOfrspec.getContractunitperiod() != null){
+                BigDecimal contractunitperiod = new BigDecimal(expiredOfrspec.getContractunitperiod());
+                ofrspecExpired.setContractUnitPeriod(contractunitperiod);
+            }
+
+            ofrspecExpired.setCatEmpFlag(expiredOfrspec.getCatempflag());
+
+            ofrspecExpired.setCatRetireEmpFlag(expiredOfrspec.getRetiredcatempflag());
+
+            // ofrspecExpired.multisimFlag your code here with logic
+            ofrspecExpired.setMultisimFlag(expiredOfrspec.getMultisimflag());
+
+            ofrspecExpired.setTopupSimFlag(expiredOfrspec.getTopupsimflag());
+
+            ofrspecExpired.setTouristSimFlag(expiredOfrspec.getTouristsimflag());
+
+            ofrspecExpired.setChangePoUssdCode(expiredOfrspec.getChangepoussdcode());
+
+            ofrspecExpired.setAddSoUssdCode(expiredOfrspec.getAddsoussdcode());
+
+            ofrspecExpired.setDeleteSoUssdCode(expiredOfrspec.getDeletesoussdcode());
+
+            ofrspecExpired.setFrequency(expiredOfrspec.getFrequency());
+
+            ofrspecExpired.setCanSwapPoFlag(expiredOfrspec.getCanswappoflag());
+
+            offers.add(ofrspecExpired);
+        }
+    
+
         // Only one EventItem [expired, offer]
         eventItem.setOffer(offers);
         eventItems.add(eventItem);
