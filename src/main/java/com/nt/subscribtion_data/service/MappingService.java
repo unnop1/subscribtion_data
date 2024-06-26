@@ -2037,9 +2037,14 @@ public class MappingService {
                             for(int index=0; index<inputSourceSimInfo.length(); index++){
                                 SourceSimInfo sourceSimInfo = new SourceSimInfo();
                                 if(imsiConfigData != null){
-                                    sourceSimInfo.setIccid(inputSourceSimInfo.getJSONObject(index).getString("iccid"));
+                                    JSONObject inputSourceSimInfoData = inputSourceSimInfo.getJSONObject(index);
+                                    if(inputSourceSimInfoData.has("iccid")){
+                                        sourceSimInfo.setIccid(inputSourceSimInfoData.getString("iccid"));
+                                    }
                                     sourceSimInfo.setImsi(imsiConfigData.getImsiPrefix()); // query imsi prefix
-                                    sourceSimInfo.setSimType(inputSourceSimInfo.getJSONObject(index).getString("simType"));
+                                    if(inputSourceSimInfoData.has("simType")){
+                                        sourceSimInfo.setSimType(inputSourceSimInfoData.getString("simType"));
+                                    }
                                     sourceSimInfo.setFrequency(imsiConfigData.getFrequency()); // query frequency
                                     sourceSimInfoList.add(sourceSimInfo);
                                 }
@@ -2983,9 +2988,14 @@ public class MappingService {
                             for(int index=0; index<inputSourceSimInfo.length(); index++){
                                 SourceSimInfo sourceSimInfo = new SourceSimInfo();
                                 if(imsiConfigData != null){
-                                    sourceSimInfo.setIccid(inputSourceSimInfo.getJSONObject(index).getString("iccid"));
+                                    JSONObject inputSourceSimInfoData = inputSourceSimInfo.getJSONObject(index);
+                                    if(inputSourceSimInfoData.has("iccid")){
+                                        sourceSimInfo.setIccid(inputSourceSimInfoData.getString("iccid"));
+                                    }
                                     sourceSimInfo.setImsi(imsiConfigData.getImsiPrefix()); // query imsi prefix
-                                    sourceSimInfo.setSimType(inputSourceSimInfo.getJSONObject(index).getString("simType"));
+                                    if(inputSourceSimInfoData.has("simType")){
+                                        sourceSimInfo.setSimType(inputSourceSimInfoData.getString("simType"));
+                                    }
                                     sourceSimInfo.setFrequency(imsiConfigData.getFrequency()); // query frequency
                                     sourceSimInfoList.add(sourceSimInfo);
                                 }
