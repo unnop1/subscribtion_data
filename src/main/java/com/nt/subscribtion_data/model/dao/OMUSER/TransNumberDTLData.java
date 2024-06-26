@@ -1,5 +1,7 @@
 package com.nt.subscribtion_data.model.dao.OMUSER;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,64 +34,64 @@ public class TransNumberDTLData {
         "trans_GROUP_ID": null
     }
      */
-    @Column(name = "trans_NUMBER_ID")
+    @JsonProperty("trans_NUMBER_ID")
     private Long transNumberID;
 
-    @Column(name = "created_DATE", nullable = true)
-    private String createdDATE=null;
+    @JsonProperty("created_DATE")
+    private String createdDATE;
 
-    @Column(name = "updated_DATE", nullable = true)
-    private String updatedDATE=null;
+    @JsonProperty("updated_DATE")
+    private String updatedDATE;
 
-    @Column(name = "created_BY", nullable = true)
-    private String createdBY=null;
+    @JsonProperty("created_BY")
+    private String createdBY;
 
-    @Column(name = "is_ACTIVE", nullable = true)
-    private String isACTIVE=null;
+    @JsonProperty("is_ACTIVE")
+    private String isACTIVE;
 
-    @Column(name = "remark", nullable = true)
-    private String remark=null;
+    @JsonProperty("remark")
+    private String remark;
 
-    @Column(name = "updated_BY", nullable = true)
-    private String updatedBY=null;
+    @JsonProperty("updated_BY")
+    private String updatedBY;
 
-    @Column(name = "action_FLAG", nullable = true)
-    private Integer actionFLAG=null;
+    @JsonProperty("action_FLAG")
+    private Integer actionFLAG;
 
-    @Column(name = "change_FLAG", nullable = true)
-    private String changeFLAG=null;
+    @JsonProperty("change_FLAG")
+    private String changeFLAG;
 
-    @Column(name = "change_REASON", nullable = true)
-    private String changeREASON=null;
+    @JsonProperty("change_REASON")
+    private String changeREASON;
 
-    @Column(name = "expire_EXISTING", nullable = true)
-    private String expireEXISTING=null;
+    @JsonProperty("expire_EXISTING")
+    private String expireEXISTING;
 
-    @Column(name = "expire_NEW", nullable = true)
-    private String expireNEW=null;
+    @JsonProperty("expire_NEW")
+    private String expireNEW;
 
-    @Column(name = "iccid", nullable = true)
-    private String iccid=null;
+    @JsonProperty("iccid")
+    private String iccid;
 
-    @Column(name = "imsi", nullable = true)
-    private String imsi=null;
+    @JsonProperty("imsi")
+    private String imsi;
 
-    @Column(name = "msisdn", nullable = true)
-    private String msisdn=null;
+    @JsonProperty("msisdn")
+    private String msisdn;
 
-    @Column(name = "reconnect_FLAG", nullable = true)
-    private Integer reconnectFLAG=null;
+    @JsonProperty("reconnect_FLAG")
+    private Integer reconnectFLAG;
     
-    @Column(name = "trans_MASTER_ID", nullable = true)
-    private String transMasterID=null;
+    @JsonProperty("trans_MASTER_ID")
+    private String transMasterID;
 
-    @Column(name = "transferFLAG", nullable = true)
-    private Integer transferFLAG=null;
+    @JsonProperty("transferFLAG")
+    private Integer transferFLAG;
 
-    @Column(name = "trans_DTL_ID", nullable = true)
-    private Long transDTLID=null;
+    @JsonProperty("trans_DTL_ID")
+    private Long transDTLID;
 
-    @Column(name = "trans_GROUP_ID", nullable = true)
-    private Long transGroupID=null;
+    @JsonProperty("trans_GROUP_ID")
+    private Long transGroupID;
     
 }
