@@ -85,7 +85,7 @@ public class TransNumberDTLData {
     @JsonProperty("trans_MASTER_ID")
     private String transMasterID;
 
-    @JsonProperty("transferFLAG")
+    @JsonProperty("transfer_FLAG")
     private Integer transferFLAG;
 
     @JsonProperty("trans_DTL_ID")
