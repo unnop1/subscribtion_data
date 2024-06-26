@@ -48,6 +48,8 @@ import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Photo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.SouthernContactAddress;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.TopUp;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.VarietyService;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSubscriberInfo;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSubscriberInfoSimInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.SubscriberInfo.DestinationSimInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.SubscriberInfo.SourceSimInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.SubscriberInfo.SubscriberInfo;
@@ -1447,6 +1449,43 @@ public class MappingService {
                                 }
 
 
+                                if(orderItem.has("destinationSubscriberInfo")){
+                                    JSONObject inputDestinationSubscriberInfo = null;
+                                    DestinationSubscriberInfo destinationSubscriberInfo = new DestinationSubscriberInfo();
+        
+                                    inputDestinationSubscriberInfo = orderItem.getJSONObject("destinationSubscriberInfo");
+                                    
+                                    if(inputDestinationSubscriberInfo != null){
+
+                                        if (inputDestinationSubscriberInfo.has("destinationSimInfo")){
+                                            JSONArray inputDestinationSimInfoList = null;
+                                            List<DestinationSubscriberInfoSimInfo> destinationSimInfoList = new ArrayList<DestinationSubscriberInfoSimInfo>();
+                                            inputDestinationSimInfoList = inputDestinationSubscriberInfo.getJSONArray("destinationSimInfo");
+                                            for (int index = 0; index < inputDestinationSimInfoList.length(); index++){
+                                                DestinationSubscriberInfoSimInfo destinationSimInfo = new DestinationSubscriberInfoSimInfo();
+                                                JSONObject desSimData = inputDestinationSimInfoList.getJSONObject(index);
+                                                if (desSimData.has("iccid")){
+                                                    destinationSimInfo.setIccid(desSimData.getString("iccid"));
+                                                }
+
+                                                if (desSimData.has("imsi")){
+                                                    destinationSimInfo.setImsi(desSimData.getString("imsi"));
+                                                }
+
+                                                if (desSimData.has("simType")){
+                                                    destinationSimInfo.setSimType(desSimData.getString("simType"));
+                                                }
+
+                                                if (desSimData.has("frequency")){
+                                                    destinationSimInfo.setFrequency(desSimData.getString("frequency"));
+                                                }
+                                                destinationSimInfoList.add(destinationSimInfo);
+                                            }
+                                            destinationSubscriberInfo.setDestinationSimInfo(destinationSimInfoList);
+                                        }
+                                        evenItem.setDestinationSubscriberInfo(destinationSubscriberInfo);
+                                    }
+                                }
 
                                 // append eventItem
                                 if(isFoundEveBoolean) {
