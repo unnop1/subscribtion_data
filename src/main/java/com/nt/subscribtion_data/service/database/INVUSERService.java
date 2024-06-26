@@ -23,6 +23,11 @@ public class INVUSERService {
         return client.GetINVMappingByExternalId(id);
     }
 
+    public INVMappingClientResp getInvMappingDataOnly(String id){
+        client = new INVUSERClient(host, context);
+        return client.GetINVMappingByExternalIdOnly(id);
+    }
+
     // public List<INVMasterData> getListINVMasterData(){
     //     client = new INVUSERClient(host, port, context);
     //     return client.GetINVMaster();

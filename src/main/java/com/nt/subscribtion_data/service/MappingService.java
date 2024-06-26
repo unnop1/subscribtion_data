@@ -860,6 +860,12 @@ public class MappingService {
             
             if (invMappingResp.getData() != null && invMappingResp.getErr() == null){
                 invMappingData = invMappingResp.getData();
+            }else{
+                INVMappingClientResp invMappingOnlyResp = invuserService.getInvMappingDataOnly(externalId);
+                invMappingData = invMappingOnlyResp.getData();
+                if (invMappingData == null){
+                    throw new Exception("INV mapping not found external id: "+externalId);
+                }
             }
 
             try{
@@ -1366,6 +1372,64 @@ public class MappingService {
                                     evenItem.setContractInfo(contractInfo);
                                 }
 
+                                /*
+                                *  SouthernContactAddress
+                                */
+                                if (orderItem.has("southernContactAddress")){
+
+                                    JSONObject inputSouthernContactAddress = null;
+                                    SouthernContactAddress southernContactAddress = new SouthernContactAddress();
+        
+
+                                    inputSouthernContactAddress = orderItem.getJSONObject("southernContactAddress");
+
+                                    
+                                    if (inputSouthernContactAddress.has("building")){
+                                        southernContactAddress.setBuilding(inputSouthernContactAddress.getString("building"));
+                                    }
+
+                                    if (inputSouthernContactAddress.has("country")){
+                                        southernContactAddress.setCountry(inputSouthernContactAddress.getString("country"));
+                                    }
+                                    
+                                    if (inputSouthernContactAddress.has("houseNumber")){
+                                        southernContactAddress.setHouseNumber(inputSouthernContactAddress.getString("houseNumber"));
+                                    }
+
+                                    if (inputSouthernContactAddress.has("khetAmphur")){
+                                        southernContactAddress.setKhetAmphur(inputSouthernContactAddress.getString("khetAmphur"));
+                                    }
+
+                                    if (inputSouthernContactAddress.has("kwangTambon")){
+                                        southernContactAddress.setKwangTambon(inputSouthernContactAddress.getString("kwangTambon"));
+                                    }
+
+                                    if (inputSouthernContactAddress.has("moo")){
+                                        southernContactAddress.setMoo(inputSouthernContactAddress.getString("moo"));
+                                    }
+
+                                    if (inputSouthernContactAddress.has("postCode")){
+                                        southernContactAddress.setPostCode(inputSouthernContactAddress.getString("postCode"));
+                                    }
+
+                                    if (inputSouthernContactAddress.has("province")){
+                                        southernContactAddress.setProvince(inputSouthernContactAddress.getString("province"));
+                                    }
+
+                                    if (inputSouthernContactAddress.has("road")){
+                                        southernContactAddress.setRoad(inputSouthernContactAddress.getString("road"));
+                                    }
+
+                                    if (inputSouthernContactAddress.has("troksoi")){
+                                        southernContactAddress.setTroksoi(inputSouthernContactAddress.getString("troksoi"));
+                                    }
+
+                                    if (inputSouthernContactAddress.has("village")){
+                                        southernContactAddress.setVillage(inputSouthernContactAddress.getString("village"));
+                                    }
+                                    evenItem.setSouthernContactAddress(southernContactAddress);
+                                }
+
 
 
                                 // append eventItem
@@ -1373,75 +1437,8 @@ public class MappingService {
                                     evenItems.add(evenItem);
                                 }
 
-                                
-                                
                             }
-                            // EventItem
-                            EventItem evenItemOther = new EventItem();
                             
-                          
-                            /*
-                            *  SouthernContactAddress
-                            */
-                            if (inputData.has("southernContactAddress")){
-
-                                JSONObject inputSouthernContactAddress = null;
-                                SouthernContactAddress southernContactAddress = new SouthernContactAddress();
-    
-
-                                inputSouthernContactAddress = inputData.getJSONObject("southernContactAddress");
-
-                                
-                                if (inputSouthernContactAddress.has("building")){
-                                    southernContactAddress.setBuilding(inputSouthernContactAddress.getString("building"));
-                                }
-
-                                if (inputSouthernContactAddress.has("country")){
-                                    southernContactAddress.setCountry(inputSouthernContactAddress.getString("country"));
-                                }
-                                
-                                if (inputSouthernContactAddress.has("houseNumber")){
-                                    southernContactAddress.setHouseNumber(inputSouthernContactAddress.getString("houseNumber"));
-                                }
-
-                                if (inputSouthernContactAddress.has("khetAmphur")){
-                                    southernContactAddress.setKhetAmphur(inputSouthernContactAddress.getString("khetAmphur"));
-                                }
-
-                                if (inputSouthernContactAddress.has("kwangTambon")){
-                                    southernContactAddress.setKwangTambon(inputSouthernContactAddress.getString("kwangTambon"));
-                                }
-
-                                if (inputSouthernContactAddress.has("moo")){
-                                    southernContactAddress.setMoo(inputSouthernContactAddress.getString("moo"));
-                                }
-
-                                if (inputSouthernContactAddress.has("postCode")){
-                                    southernContactAddress.setPostCode(inputSouthernContactAddress.getString("postCode"));
-                                }
-
-                                if (inputSouthernContactAddress.has("province")){
-                                    southernContactAddress.setProvince(inputSouthernContactAddress.getString("province"));
-                                }
-
-                                if (inputSouthernContactAddress.has("road")){
-                                    southernContactAddress.setRoad(inputSouthernContactAddress.getString("road"));
-                                }
-
-                                if (inputSouthernContactAddress.has("troksoi")){
-                                    southernContactAddress.setTroksoi(inputSouthernContactAddress.getString("troksoi"));
-                                }
-
-                                if (inputSouthernContactAddress.has("village")){
-                                    southernContactAddress.setVillage(inputSouthernContactAddress.getString("village"));
-                                }
-                                evenItemOther.setSouthernContactAddress(southernContactAddress);
-                            }
-
-                            // omEv.setD
-                            if(evenItemOther.getSouthernContactAddress() != null){
-                                evenItems.add(evenItemOther);
-                            }
                             omEv.setEventItems(evenItems);
                         }catch (Exception e){
                             throw new Exception("event item loop mapping error: " + e.getMessage());
