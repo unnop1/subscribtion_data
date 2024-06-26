@@ -49,11 +49,11 @@ public class EventData {
     @JsonProperty("eventType")
     private String eventType;
 
-    
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     @JsonProperty("submitedDate")
     private String submitedDate;
 
-    
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     @JsonProperty("completedDate")
     private String completedDate;
 
