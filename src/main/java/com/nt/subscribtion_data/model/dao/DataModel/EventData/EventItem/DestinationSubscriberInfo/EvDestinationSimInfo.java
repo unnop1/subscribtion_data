@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DestinationSubscriberInfoSimInfo {
+public class EvDestinationSimInfo {
     /*
      {
         "touristSimFlag": "8966001234567890123",

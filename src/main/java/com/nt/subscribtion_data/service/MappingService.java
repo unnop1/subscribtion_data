@@ -2,7 +2,6 @@ package com.nt.subscribtion_data.service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -16,7 +15,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.subscribtion_data.component.CacheUpdater;
 import com.nt.subscribtion_data.entity.OrderTypeEntity;
@@ -30,7 +28,6 @@ import com.nt.subscribtion_data.model.dao.DataModel.EventData.Address;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.DestinationCustomerAccount;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventData;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.SaleInfo;
-import com.nt.subscribtion_data.model.dao.DataModel.EventData.SourceCustomerAccount;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.BillingAccount.BillDeliveryAddress;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.BillingAccount.BillingAccount;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.BillingAccount.BillingAddress;
@@ -48,8 +45,8 @@ import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.Photo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.SouthernContactAddress;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.TopUp;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.VarietyService;
-import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSubscriberInfo;
-import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSubscriberInfoSimInfo;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.EvDestinationSimInfo;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.EvDestinationSubscriberInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.SubscriberInfo.DestinationSimInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.SubscriberInfo.SourceSimInfo;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.SubscriberInfo.SubscriberInfo;
@@ -1451,7 +1448,7 @@ public class MappingService {
 
                                 if(orderItem.has("destinationSubscriberInfo")){
                                     JSONObject inputDestinationSubscriberInfo = null;
-                                    DestinationSubscriberInfo destinationSubscriberInfo = new DestinationSubscriberInfo();
+                                    EvDestinationSubscriberInfo destinationSubscriberInfo = new EvDestinationSubscriberInfo();
         
                                     inputDestinationSubscriberInfo = orderItem.getJSONObject("destinationSubscriberInfo");
                                     
@@ -1459,10 +1456,10 @@ public class MappingService {
 
                                         if (inputDestinationSubscriberInfo.has("destinationSimInfo")){
                                             JSONArray inputDestinationSimInfoList = null;
-                                            List<DestinationSubscriberInfoSimInfo> destinationSimInfoList = new ArrayList<DestinationSubscriberInfoSimInfo>();
+                                            List<EvDestinationSimInfo> destinationSimInfoList = new ArrayList<EvDestinationSimInfo>();
                                             inputDestinationSimInfoList = inputDestinationSubscriberInfo.getJSONArray("destinationSimInfo");
                                             for (int index = 0; index < inputDestinationSimInfoList.length(); index++){
-                                                DestinationSubscriberInfoSimInfo destinationSimInfo = new DestinationSubscriberInfoSimInfo();
+                                                EvDestinationSimInfo destinationSimInfo = new EvDestinationSimInfo();
                                                 JSONObject desSimData = inputDestinationSimInfoList.getJSONObject(index);
                                                 if (desSimData.has("iccid")){
                                                     destinationSimInfo.setIccid(desSimData.getString("iccid"));

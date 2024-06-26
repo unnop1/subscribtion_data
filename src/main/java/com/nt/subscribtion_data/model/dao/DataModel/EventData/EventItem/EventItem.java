@@ -5,7 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.DestinationSubscriberInfo;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.EvDestinationSubscriberInfo;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -59,7 +59,7 @@ public class EventItem {
     private List<Photo> photo;
 
     @JsonProperty("destinationSubscriberInfo")
-    private DestinationSubscriberInfo destinationSubscriberInfo;
+    private EvDestinationSubscriberInfo destinationSubscriberInfo;
 
     @JsonProperty("topUp")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
