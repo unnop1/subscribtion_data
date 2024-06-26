@@ -1515,9 +1515,6 @@ public class MappingService {
                                     sourceCustomerAccountBillingAccount = inputSourceCustomerAccount.getJSONObject("billingAccount");
 
                                     if (sourceCustomerAccountBillingAccount != null){
-                                        if (inputSourceCustomerAccount.has("existingFlag")){
-                                            billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-                                        }
 
                                         if (inputSourceCustomerAccount.has("billingAccountId")){
                                             billingAccount.setBillingAccountId(inputSourceCustomerAccount.getString("billingAccountId"));
@@ -1833,17 +1830,16 @@ public class MappingService {
                             }
         
                             // billing account
-                            if (inputSourceCustomerAccount.has("existingFlag")){
-                                billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-                                destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-                            }
-        
                             if (inputSourceCustomerAccount.has("billingAccountId")){
                                 billingAccount.setBillingAccountId(inputSourceCustomerAccount.getString("billingAccountId")); // must validate
                             }
         
                             if (inputSourceCustomerAccount.has("paymentProfile")){
                                 billingAccount.setPaymentProfile(inputSourceCustomerAccount.getString("paymentProfile")); // must validate
+                            }
+
+                            if (inputSourceCustomerAccount.has("existingFlag")){
+                                destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
                             }
 
                             if (inputSourceCustomerAccount.has("cardNumber")){
@@ -2423,9 +2419,6 @@ public class MappingService {
                                     sourceCustomerAccountBillingAccount = inputSourceCustomerAccount.getJSONObject("billingAccount");
 
                                     if (sourceCustomerAccountBillingAccount != null){
-                                        if (inputSourceCustomerAccount.has("existingFlag")){
-                                            billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-                                        }
 
                                         if (inputSourceCustomerAccount.has("billingAccountId")){
                                             billingAccount.setBillingAccountId(inputSourceCustomerAccount.getString("billingAccountId"));
