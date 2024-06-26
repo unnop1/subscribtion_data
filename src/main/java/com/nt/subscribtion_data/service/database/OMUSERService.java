@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.nt.subscribtion_data.client.OMUSERClient;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLClientResp;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLData;
+import com.nt.subscribtion_data.model.dao.OMUSER.TransNumberDTLClientResp;
 
 @Service
 public class OMUSERService {
@@ -21,5 +22,10 @@ public class OMUSERService {
     public TransManageContractDTLClientResp getTransManageContractDTLData(String id){
         client = new OMUSERClient(host, context);
         return client.GetTransManageContractByTMasterId(id);
+    }
+
+    public TransNumberDTLClientResp getTransNumberDTLData(String id){
+        client = new OMUSERClient(host, context);
+        return client.GetTransNumberDtlByTMasterId(id);
     }
 }

@@ -59,6 +59,7 @@ import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderClientResp;
 import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderData;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLClientResp;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLData;
+import com.nt.subscribtion_data.model.dao.OMUSER.TransNumberDTLClientResp;
 import com.nt.subscribtion_data.model.dto.ReceiveExpiredDataType;
 import com.nt.subscribtion_data.model.dto.ReceiveOMDataType;
 import com.nt.subscribtion_data.model.dto.ReceiveTopUpDataType;
@@ -787,6 +788,21 @@ public class MappingService {
         EventData omEv = new EventData();
 
         try{
+            TransNumberDTLClientResp tNumberDTL = omuserService.getTransNumberDTLData(tMCDTLData.getTransMasterId());
+            if(tNumberDTL== null){
+                throw new Exception("transNumberDtl not found ");
+            }
+
+            if(tNumberDTL.getErr()!= null){
+                throw new Exception("transNumberDtl found error: "+tNumberDTL.getErr());
+            }else{
+                if(tNumberDTL.getData()== null){
+                    throw new Exception("transNumberDtl not found data");
+                }
+                if(tNumberDTL.getData().getMsisdn() == null){
+                    throw new Exception("transNumberDtl not found msisdn");
+                }
+            }
             // eventItem
             List<EventItem> evenItems = new ArrayList<>();
             try{
@@ -827,16 +843,17 @@ public class MappingService {
                 evenItems.add(evenItem);
                 omEv.setEventItems(evenItems);
             }catch (Exception e){
-                throw new Exception("event item mapping contractInfo error: " + e.getMessage());
+                throw new Exception("MappingContractManagementData event item mapping contractInfo error: " + e.getMessage());
             }
+            sendData.setTriggerDate(triggerDate);
+            sendData.setPublishChannel("OM-MFE");
+            sendData.setMsisdn(String.format("0%s",tNumberDTL.getData().getMsisdn()));
+            sendData.setOrderType(orderTypeName);
+            sendData.setEventData(omEv);
         }catch (Exception e){
-            throw new Exception("event item mapping error: " + e.getMessage());
+            throw new Exception("MappingContractManagementData error: " + e.getMessage());
         }    
 
-        sendData.setTriggerDate(triggerDate);
-        sendData.setPublishChannel("OM-MFE");
-        sendData.setOrderType(orderTypeName);
-        sendData.setEventData(omEv);
 
         return sendData;
         
@@ -3403,7 +3420,7 @@ public class MappingService {
         OfferingSpecClientResp expiredOfrspecResp = catmfeService.getOfferingSpecByOfferingId(expiredOfferingId);
         OfferingSpecData expiredOfrspec = expiredOfrspecResp.getData();
         if (expiredOfrspec != null){
-            offer.setOfferingId(offeringId);
+            offer.setOfferingId(expiredOfferingId);
             // System.out.println("offeringId:"+offeringId);
 
             ofrspecExpired.setOfferingType("SO");
