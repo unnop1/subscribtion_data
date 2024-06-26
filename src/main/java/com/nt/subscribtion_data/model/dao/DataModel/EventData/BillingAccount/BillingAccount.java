@@ -32,17 +32,22 @@ public class BillingAccount {
     private String paymentProfile;
 
     @JsonProperty("billingInfo")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private BillingInfo billingInfo;
 
     @JsonProperty("billingAddress")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private BillingAddress billingAddress;
 
     @JsonProperty("billDeliveryAddress")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private BillDeliveryAddress billDeliveryAddress;
 
     @JsonProperty("vatAddress")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private VatAddress vatAddress;
 
     @JsonProperty("vatDeliveryAddress")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private VatDeliveryAddress vatDeliveryAddress;
 }

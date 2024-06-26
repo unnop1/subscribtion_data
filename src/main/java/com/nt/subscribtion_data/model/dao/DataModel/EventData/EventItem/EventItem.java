@@ -2,6 +2,7 @@ package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -15,11 +16,22 @@ public class EventItem {
     @JsonProperty("itemType")
     private String itemType;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     @JsonProperty("effectiveDate")
     private String effectiveDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     @JsonProperty("executionType")
     private String executionType;
+
+    @JsonProperty("effectiveMode")
+    private String effectiveMode;
+
+    @JsonProperty("effectiveTime")
+    private String effectiveTime;
+
+    @JsonProperty("actionType")
+    private String actionType;
 
     @JsonProperty("sourceEntity")
     private String sourceEntity;
@@ -40,26 +52,31 @@ public class EventItem {
     // private DestinationCustomerAccount destinationCustomerAccount;
 
     @JsonProperty("topUp")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private TopUp topUp;
 
     @JsonProperty("creditLimit")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private CreditLimit creditLimit;
 
     @JsonProperty("southernContactAddress")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private SouthernContactAddress southernContactAddress;
 
-    // @JsonProperty("destinationSubscriberInfo")
-    // private DestinationSubscriberInfo destinationSubscriberInfo;
-
+    @JsonProperty("unitType")
+    private String unitType;
+    
     @JsonProperty("varietyServices")
     private List<VarietyService> varietyServices;
 
     @JsonProperty("balanceTransferInfo")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private BalanceTransferInfo balanceTransferInfo;
 
     @JsonProperty("extendExpireInfo")
     private ExtendExpireInfo extendExpireInfo;
 
     @JsonProperty("contractInfo")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private ContractInfo contractInfo;
 }

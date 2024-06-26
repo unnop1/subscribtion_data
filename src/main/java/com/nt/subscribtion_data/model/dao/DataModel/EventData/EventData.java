@@ -70,12 +70,15 @@ public class EventData {
     // private SourceCustomerAccount sourceCustomerAccount;
 
     @JsonProperty("destinationCustomerAccount")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private DestinationCustomerAccount destinationCustomerAccount;
 
     @JsonProperty("subscriberInfo")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private SubscriberInfo subscriberInfo;
 
     @JsonProperty("saleInfo")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private SaleInfo saleInfo;
 
     @JsonProperty("writtenLanguage")

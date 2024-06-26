@@ -49,4 +49,7 @@ public class SaleInfo {
 
     @JsonProperty("saleRepSapCode")
     private String saleRepSapCode;
+
+    @JsonProperty("verifyIdentity")
+    private Boolean verifyIdentity;
 }

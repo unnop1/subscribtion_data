@@ -19,8 +19,8 @@ public class VarietyService {
     }    
      */
     @JsonProperty("varietyType")
-    private JSONArray varietyType;
+    private String varietyType;
 
     @JsonProperty("enabledFlag")
-    private String enabledFlag;
+    private Integer enabledFlag;
 }

@@ -984,6 +984,21 @@ public class MappingService {
                                         evenItem.setEffectiveDate(orderItem.getString("orderExecutionDate"));
                                         isFoundEveBoolean = true;
                                     }
+
+                                    if (orderItem.has("effectiveMode")){
+                                        evenItem.setEffectiveMode(orderItem.getString("effectiveMode"));
+                                        isFoundEveBoolean = true;
+                                    }
+
+                                    if (orderItem.has("actionType")){
+                                        evenItem.setActionType(orderItem.getString("actionType"));
+                                        isFoundEveBoolean = true;
+                                    }
+
+                                    if (orderItem.has("effectiveTime")){
+                                        evenItem.setEffectiveTime(orderItem.getString("effectiveTime"));
+                                        isFoundEveBoolean = true;
+                                    }
                                     
                                     if (orderItem.has("orderExecutionType")){
                                         evenItem.setExecutionType(orderItem.getString("orderExecutionType"));
@@ -995,6 +1010,11 @@ public class MappingService {
                                         isFoundEveBoolean = true;
                                     }
 
+                                    if (orderItem.has("unitType")){
+                                        evenItem.setUnitType(orderItem.getString("unitType"));
+                                        isFoundEveBoolean = true;
+                                    }
+                                    
                                     if (orderItem.has("userRole")){
                                         evenItem.setUserRole(orderItem.getString("userRole"));
                                         isFoundEveBoolean = true;
@@ -1246,8 +1266,8 @@ public class MappingService {
                                 *  Credit Limit
                                 */
                                 JSONObject inputCreditLimit = new JSONObject();
-                                if (inputData.has("creditLimit")){
-                                    inputCreditLimit = inputData.getJSONObject("creditLimit");
+                                if (orderItem.has("creditLimit")){
+                                    inputCreditLimit = orderItem.getJSONObject("creditLimit");
 
                                     if (inputCreditLimit.has("type")){
                                         creditLimit.setType(inputCreditLimit.getString("type"));
@@ -1262,20 +1282,6 @@ public class MappingService {
                                     }
                                     evenItem.setCreditLimit(creditLimit);
                                 }
-
-                                // // Varieties service
-                                // List<VarietyService> varietyServices = new ArrayList<VarietyService>();
-                                // VarietyService varietyService = new VarietyService();
-                                // if (orderItem.has("varietyServices")){
-                                //     varietyService.setVarietyType(orderItem.getString("varietyServices"));
-                                // }
-
-                                // if (orderItem.has("enabledFlag")){
-                                //     varietyService.setEnabledFlag(orderItem.getString("enabledFlag"));
-                                // }
-                                // varietyServices.add(varietyService);
-                                // evenItem.setVarietyServices(varietyServices);
-
 
                                 // Balance transfer info
                                 JSONObject orderItemBalanceTransferInfo = new JSONObject();
@@ -2105,6 +2111,10 @@ public class MappingService {
                     if (inputSaleInfo.has("saleRepSapCode")){
                         saleInfo.setSaleRepSapCode(inputSaleInfo.getString("saleRepSapCode"));
                     }
+
+                    if (inputSaleInfo.has("verifyIdentity")){
+                        saleInfo.setVerifyIdentity(inputSaleInfo.getBoolean("verifyIdentity"));
+                    }
                     
                     omEv.setSaleInfo(saleInfo);
                 }
@@ -2239,7 +2249,7 @@ public class MappingService {
                                 try{
                                     if (orderItem.has("orderType")){
                                         evenItem.setItemType(orderItem.getString("orderType"));
-                                        if(evenItem.getItemType()== null){
+                                        if(orderItem.getString("orderType") == null || orderItem.getString("orderType").isBlank()){
                                             // Skip the order event item
                                             continue;
                                         }
@@ -2247,6 +2257,18 @@ public class MappingService {
                                     
                                     if (orderItem.has("orderExecutionDate")){
                                         evenItem.setEffectiveDate(orderItem.getString("orderExecutionDate"));
+                                    }
+
+                                    if (orderItem.has("effectiveMode")){
+                                        evenItem.setEffectiveMode(orderItem.getString("effectiveMode"));
+                                    }
+
+                                    if (orderItem.has("actionType")){
+                                        evenItem.setActionType(orderItem.getString("actionType"));
+                                    }
+
+                                    if (orderItem.has("effectiveTime")){
+                                        evenItem.setEffectiveTime(orderItem.getString("effectiveTime"));
                                     }
                                     
                                     if (orderItem.has("orderExecutionType")){
@@ -2257,6 +2279,10 @@ public class MappingService {
                                         evenItem.setSourceEntity(orderItem.getString("sourceEntity"));
                                     }
 
+                                    if (orderItem.has("unitType")){
+                                        evenItem.setUnitType(orderItem.getString("unitType"));
+                                    }
+                                    
                                     if (orderItem.has("userRole")){
                                         evenItem.setUserRole(orderItem.getString("userRole"));
                                     }
@@ -2265,22 +2291,26 @@ public class MappingService {
                                 }
                                 
                                 // Varieties service
-                                List<VarietyService> varietyServices = new ArrayList<VarietyService>();
-                                VarietyService varietyService = new VarietyService();
+                                List<VarietyService> varietyServicesList = new ArrayList<VarietyService>();
                                 if (orderItem.has("varietyServices")){
-                                    varietyService.setVarietyType(orderItem.getJSONArray("varietyServices"));
+                                    // List<VarietyService> varietyServices = new ArrayList<VarietyService>();
+                                    JSONArray varietyServices = orderItem.getJSONArray("varietyServices");
+                                    for(int index = 0;index<varietyServices.length();index++){
+                                        JSONObject varietyServiceItem = varietyServices.getJSONObject(index);
+                                        VarietyService varietyService = new VarietyService();
+                                        if (varietyServiceItem.has("enabledFlag")){
+                                            varietyService.setEnabledFlag(orderItem.getInt("enabledFlag"));
+                                        }
+                                        if (varietyServiceItem.has("varietyType")){
+                                            varietyService.setVarietyType(orderItem.getString("varietyType"));
+                                        }
+                                        varietyServicesList.add(varietyService);
+                                    }
+                                    
+                                    evenItem.setVarietyServices(varietyServicesList);
                                 }
 
-                                if (orderItem.has("enabledFlag")){
-                                    varietyService.setEnabledFlag(orderItem.getString("enabledFlag"));
-                                }
                                 
-                                if(varietyService.getEnabledFlag() != null && varietyService.getVarietyType() != null){
-                                    varietyServices.add(varietyService);
-                                }
-                                if(varietyServices.size()>0){
-                                    evenItem.setVarietyServices(varietyServices);
-                                }
 
 
                                 // Balance transfer info
@@ -2339,7 +2369,6 @@ public class MappingService {
                 /*
                 * SourceCustomerAccount
                 */
-                SourceCustomerAccount sourceCustomerAccount = new SourceCustomerAccount();
                 DestinationCustomerAccount destinationCustomerAccount = new DestinationCustomerAccount();
                 Address address = new Address();
                 BillingAccount billingAccount = new BillingAccount();
@@ -2997,6 +3026,10 @@ public class MappingService {
 
                     if (inputSaleInfo.has("saleRepSapCode")){
                         saleInfo.setSaleRepSapCode(inputSaleInfo.getString("saleRepSapCode"));
+                    }
+
+                    if (inputSaleInfo.has("verifyIdentity")){
+                        saleInfo.setVerifyIdentity(inputSaleInfo.getBoolean("verifyIdentity"));
                     }
                     
                     omEv.setSaleInfo(saleInfo);
