@@ -2416,10 +2416,10 @@ public class MappingService {
                                     for(int index = 0;index<varietyServices.length();index++){
                                         JSONObject varietyServiceItem = varietyServices.getJSONObject(index);
                                         VarietyService varietyService = new VarietyService();
-                                        if (varietyServiceItem.has("enabledFlag")){
+                                        if (varietyServiceItem.has("enabledFlag") &&!varietyServiceItem.isNull("enabledFlag")){
                                             varietyService.setEnabledFlag(orderItem.getInt("enabledFlag"));
                                         }
-                                        if (varietyServiceItem.has("varietyType")){
+                                        if (varietyServiceItem.has("varietyType")&&!varietyServiceItem.isNull("varietyType")){
                                             varietyService.setVarietyType(orderItem.getString("varietyType"));
                                         }
                                         varietyServicesList.add(varietyService);
@@ -2437,7 +2437,7 @@ public class MappingService {
                                     orderItemBalanceTransferInfo = orderItem.getJSONObject("balanceTransferInfo");
                                 
                                     BalanceTransferInfo balanceTransferInfo = new BalanceTransferInfo();
-                                    if (orderItemBalanceTransferInfo.has("transferTotalFlag")){
+                                    if (orderItemBalanceTransferInfo.has("transferTotalFlag") ){
                                         balanceTransferInfo.setTransferTotalFlag(orderItemBalanceTransferInfo.getString("transferTotalFlag"));
                                     }
 
