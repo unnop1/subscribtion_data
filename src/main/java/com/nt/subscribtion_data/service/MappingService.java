@@ -1454,6 +1454,14 @@ public class MappingService {
                                     
                                     if(inputDestinationSubscriberInfo != null){
 
+                                        if (inputDestinationSubscriberInfo.has("msisdn")){
+                                            destinationSubscriberInfo.setMsisdn(inputDestinationSubscriberInfo.getString("msisdn"));
+                                        }
+
+                                        if (inputDestinationSubscriberInfo.has("serviceType")){
+                                            destinationSubscriberInfo.setServiceType(inputDestinationSubscriberInfo.getString("serviceType"));
+                                        }
+
                                         if (inputDestinationSubscriberInfo.has("destinationSimInfo")){
                                             JSONArray inputDestinationSimInfoList = null;
                                             List<EvDestinationSimInfo> destinationSimInfoList = new ArrayList<EvDestinationSimInfo>();
@@ -1463,14 +1471,6 @@ public class MappingService {
                                                 JSONObject desSimData = inputDestinationSimInfoList.getJSONObject(index);
                                                 if (desSimData.has("iccid")){
                                                     destinationSimInfo.setIccid(desSimData.getString("iccid"));
-                                                }
-
-                                                if (desSimData.has("msisdn")){
-                                                    destinationSimInfo.setMsisdn(desSimData.getString("msisdn"));
-                                                }
-
-                                                if (desSimData.has("serviceType")){
-                                                    destinationSimInfo.setServiceType(desSimData.getString("serviceType"));
                                                 }
 
                                                 if (desSimData.has("imsi")){
@@ -1488,6 +1488,19 @@ public class MappingService {
                                             }
                                             destinationSubscriberInfo.setDestinationSimInfo(destinationSimInfoList);
                                         }
+                                        
+                                        if (inputDestinationSubscriberInfo.has("reserveFlag")){
+                                            destinationSubscriberInfo.setReserveFlag(inputDestinationSubscriberInfo.getBoolean("reserveFlag"));
+                                        }
+                
+                                        if (inputDestinationSubscriberInfo.has("preProFlag")){
+                                            destinationSubscriberInfo.setPreProFlag(inputDestinationSubscriberInfo.getBoolean("preProFlag"));
+                                        }
+
+                                        if (inputDestinationSubscriberInfo.has("touristSimFlag")){
+                                            destinationSubscriberInfo.setTouristSimFlag(inputDestinationSubscriberInfo.getString("touristSimFlag"));
+                                        }
+                                        
                                         evenItem.setDestinationSubscriberInfo(destinationSubscriberInfo);
                                     }
                                 }

@@ -21,12 +21,6 @@ public class EvDestinationSimInfo {
     @JsonProperty("iccid")
     private String iccid;
 
-    @JsonProperty("msisdn")
-    private String msisdn;
-
-    @JsonProperty("serviceType")
-    private String serviceType;
-
     @JsonProperty("imsi")
     private String imsi;
 
