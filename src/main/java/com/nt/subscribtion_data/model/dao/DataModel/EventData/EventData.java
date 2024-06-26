@@ -17,7 +17,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-// @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventData {
     /*
     "eventData": {
@@ -66,8 +66,8 @@ public class EventData {
     @JsonProperty("eventItem")
     private List<EventItem> eventItems;
 
-    @JsonProperty("sourceCustomerAccount")
-    private SourceCustomerAccount sourceCustomerAccount;
+    // @JsonProperty("sourceCustomerAccount")
+    // private SourceCustomerAccount sourceCustomerAccount;
 
     @JsonProperty("destinationCustomerAccount")
     private DestinationCustomerAccount destinationCustomerAccount;

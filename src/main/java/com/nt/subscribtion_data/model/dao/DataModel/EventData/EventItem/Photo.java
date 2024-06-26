@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-// @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Photo {
     /*
     {

@@ -1433,9 +1433,9 @@ public class MappingService {
 
 
                 /*
-                * SourceCustomerAccount
+                * DestinationCustomerAccount
                 */
-                SourceCustomerAccount sourceCustomerAccount = new SourceCustomerAccount();
+                // SourceCustomerAccount sourceCustomerAccount = new SourceCustomerAccount();
                 DestinationCustomerAccount destinationCustomerAccount = new DestinationCustomerAccount();
                 Address address = new Address();
                 BillingAccount billingAccount = new BillingAccount();
@@ -1454,6 +1454,7 @@ public class MappingService {
                 JSONObject sourceCustomerAccountBillingAccountBillingInfo = null;
                 JSONObject sourceCustomerAccountVatAddress = null;
                 JSONObject sourceCustomerAccountVatDeliveryAddress = null;
+                
                 
                 try{
                     if (inputData.has("sourceCustomerAccount")){
@@ -1834,7 +1835,7 @@ public class MappingService {
                             // billing account
                             if (inputSourceCustomerAccount.has("existingFlag")){
                                 billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-                                sourceCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+                                destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
                             }
         
                             if (inputSourceCustomerAccount.has("billingAccountId")){
@@ -1846,111 +1847,111 @@ public class MappingService {
                             }
 
                             if (inputSourceCustomerAccount.has("cardNumber")){
-                                sourceCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
+                                destinationCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
                             }
         
                             if (inputSourceCustomerAccount.has("cardType")){
-                                sourceCustomerAccount.setCardType(inputSourceCustomerAccount.getInt("cardType"));
+                                destinationCustomerAccount.setCardType(inputSourceCustomerAccount.getInt("cardType"));
                             }
         
                             if (inputSourceCustomerAccount.has("catEmployeeFlag")){
-                                sourceCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getInt("catEmployeeFlag"));
+                                destinationCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getInt("catEmployeeFlag"));
                             }
         
                             if (inputSourceCustomerAccount.has("companyBranchId")){
-                                sourceCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
+                                destinationCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
                             }
         
                             if (inputSourceCustomerAccount.has("companyName")){
-                                sourceCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
+                                destinationCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
                             }
         
                             if (inputSourceCustomerAccount.has("companyType")){
-                                sourceCustomerAccount.setCompanyType(inputSourceCustomerAccount.getInt("companyType"));
+                                destinationCustomerAccount.setCompanyType(inputSourceCustomerAccount.getInt("companyType"));
                             }
         
                             if (inputSourceCustomerAccount.has("contactNumber")){
-                                sourceCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
+                                destinationCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
                             }
         
                             if (inputSourceCustomerAccount.has("custaccountId")){
-                                sourceCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custaccountId"));
+                                destinationCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custaccountId"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerFocus")){
-                                sourceCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
+                                destinationCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerGroup")){
-                                sourceCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getInt("customerGroup"));
+                                destinationCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getInt("customerGroup"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerId")){
-                                sourceCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
+                                destinationCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerInfoType")){
-                                sourceCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getInt("customerInfoType"));
+                                destinationCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getInt("customerInfoType"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerSegment")){
-                                sourceCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getInt("customerSegment"));
+                                destinationCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getInt("customerSegment"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerType")){
-                                sourceCustomerAccount.setCustomerType(inputSourceCustomerAccount.getInt("customerType"));
+                                destinationCustomerAccount.setCustomerType(inputSourceCustomerAccount.getInt("customerType"));
                             }
         
                             if (inputSourceCustomerAccount.has("dob")){
-                                sourceCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
+                                destinationCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
                             }
         
                             if (inputSourceCustomerAccount.has("documentNumber")){
-                                sourceCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
+                                destinationCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
                             }
         
                             if (inputSourceCustomerAccount.has("documentType")){
-                                sourceCustomerAccount.setDocumentType(inputSourceCustomerAccount.getInt("documentType"));
+                                destinationCustomerAccount.setDocumentType(inputSourceCustomerAccount.getInt("documentType"));
                             }
         
                             if (inputSourceCustomerAccount.has("emailAddress")){
-                                sourceCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
+                                destinationCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
                             }
         
                             if (inputSourceCustomerAccount.has("existingFlag")){
-                                sourceCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+                                destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
                             }
         
                             if (inputSourceCustomerAccount.has("firstName")){
-                                sourceCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
+                                destinationCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
                             }
         
                             if (inputSourceCustomerAccount.has("gender")){
-                                sourceCustomerAccount.setGender(inputSourceCustomerAccount.getInt("gender"));
+                                destinationCustomerAccount.setGender(inputSourceCustomerAccount.getInt("gender"));
                             }
         
                             if (inputSourceCustomerAccount.has("ivrLanguage")){
-                                sourceCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
+                                destinationCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
                             }
         
                             if (inputSourceCustomerAccount.has("lastName")){
-                                sourceCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
+                                destinationCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
                             }
         
                             if (inputSourceCustomerAccount.has("nationality")){
-                                sourceCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
+                                destinationCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
                             }
         
                             if (inputSourceCustomerAccount.has("taxRegisterNumber")){
-                                sourceCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
+                                destinationCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
                             }
         
                             if (inputSourceCustomerAccount.has("title")){
-                                sourceCustomerAccount.setTitle(inputSourceCustomerAccount.getInt("title"));
+                                destinationCustomerAccount.setTitle(inputSourceCustomerAccount.getInt("title"));
                             }
         
                             if (inputSourceCustomerAccount.has("writtenLanguage")){
-                                sourceCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
+                                destinationCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
                             }
                             
                             billingAccount.setBillingInfo(billingInfo);
@@ -1959,9 +1960,9 @@ public class MappingService {
                             billingAccount.setVatAddress(vatAddress);
                             billingAccount.setVatDeliveryAddress(vatDeliveryAddress);
                             
-                            sourceCustomerAccount.setAddress(address);
-                            sourceCustomerAccount.setBillingAccount(billingAccount);
-                            omEv.setSourceCustomerAccount(sourceCustomerAccount);
+                            destinationCustomerAccount.setAddress(address);
+                            destinationCustomerAccount.setBillingAccount(billingAccount);
+                            omEv.setDestinationCustomerAccount(destinationCustomerAccount);
 
                         }
                         
@@ -1970,6 +1971,7 @@ public class MappingService {
                 }catch(Exception e){
                     throw new Exception("loop sourceCustomerAccount main error: " + e.getMessage());
                 }
+
 
 
                 /*
@@ -2065,125 +2067,6 @@ public class MappingService {
                 }catch (Exception e){
                     throw new Exception("loop destinationSubscriberInfo main error: " + e.getMessage());
                 }
-
-
-                // destinationCustomerAccount
-                if (inputSourceCustomerAccount != null){
-
-                    if (inputSourceCustomerAccount.has("cardNumber")){
-                        destinationCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("cardType")){
-                        destinationCustomerAccount.setCardType(inputSourceCustomerAccount.getInt("cardType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("catEmployeeFlag")){
-                        destinationCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getInt("catEmployeeFlag"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("companyBranchId")){
-                        destinationCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("companyName")){
-                        destinationCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("companyType")){
-                        destinationCustomerAccount.setCompanyType(inputSourceCustomerAccount.getInt("companyType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("contactNumber")){
-                        destinationCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("custAccountId")){
-                        destinationCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custAccountId"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerFocus")){
-                        destinationCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerGroup")){
-                        destinationCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getInt("customerGroup"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerId")){
-                        destinationCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerInfoType")){
-                        destinationCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getInt("customerInfoType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerSegment")){
-                        destinationCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getInt("customerSegment"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerType")){
-                        destinationCustomerAccount.setCustomerType(inputSourceCustomerAccount.getInt("customerType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("dob")){
-                        destinationCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("documentNumber")){
-                        destinationCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("documentType")){
-                        destinationCustomerAccount.setDocumentType(inputSourceCustomerAccount.getInt("documentType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("emailAddress")){
-                        destinationCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("existingFlag")){
-                        destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("firstName")){
-                        destinationCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("gender")){
-                        destinationCustomerAccount.setGender(inputSourceCustomerAccount.getInt("gender"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("ivrLanguage")){
-                        destinationCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("lastName")){
-                        destinationCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("nationality")){
-                        destinationCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("taxRegisterNumber")){
-                        destinationCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("title")){
-                        destinationCustomerAccount.setTitle(inputSourceCustomerAccount.getInt("title"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("writtenLanguage")){
-                        destinationCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
-                    }
-                }
-
-                destinationCustomerAccount.setAddress(address);
-                destinationCustomerAccount.setBillingAccount(billingAccount);
-                // evenItemOther.setDestinationCustomerAccount(destinationCustomerAccount);
-                omEv.setDestinationCustomerAccount(destinationCustomerAccount);
-                
 
             
                 // saleInfo
@@ -2480,6 +2363,7 @@ public class MappingService {
                 JSONObject sourceCustomerAccountVatAddress = null;
                 JSONObject sourceCustomerAccountVatDeliveryAddress = null;
                 
+                
                 try{
                     if (inputData.has("sourceCustomerAccount")){
                         inputSourceCustomerAccount = inputData.getJSONObject("sourceCustomerAccount");
@@ -2859,7 +2743,7 @@ public class MappingService {
                             // billing account
                             if (inputSourceCustomerAccount.has("existingFlag")){
                                 billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-                                sourceCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+                                destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
                             }
         
                             if (inputSourceCustomerAccount.has("billingAccountId")){
@@ -2871,111 +2755,111 @@ public class MappingService {
                             }
 
                             if (inputSourceCustomerAccount.has("cardNumber")){
-                                sourceCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
+                                destinationCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
                             }
         
                             if (inputSourceCustomerAccount.has("cardType")){
-                                sourceCustomerAccount.setCardType(inputSourceCustomerAccount.getInt("cardType"));
+                                destinationCustomerAccount.setCardType(inputSourceCustomerAccount.getInt("cardType"));
                             }
         
                             if (inputSourceCustomerAccount.has("catEmployeeFlag")){
-                                sourceCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getInt("catEmployeeFlag"));
+                                destinationCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getInt("catEmployeeFlag"));
                             }
         
                             if (inputSourceCustomerAccount.has("companyBranchId")){
-                                sourceCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
+                                destinationCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
                             }
         
                             if (inputSourceCustomerAccount.has("companyName")){
-                                sourceCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
+                                destinationCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
                             }
         
                             if (inputSourceCustomerAccount.has("companyType")){
-                                sourceCustomerAccount.setCompanyType(inputSourceCustomerAccount.getInt("companyType"));
+                                destinationCustomerAccount.setCompanyType(inputSourceCustomerAccount.getInt("companyType"));
                             }
         
                             if (inputSourceCustomerAccount.has("contactNumber")){
-                                sourceCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
+                                destinationCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
                             }
         
-                            if (inputSourceCustomerAccount.has("custAccountId")){
-                                sourceCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custAccountId"));
+                            if (inputSourceCustomerAccount.has("custaccountId")){
+                                destinationCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custaccountId"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerFocus")){
-                                sourceCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
+                                destinationCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerGroup")){
-                                sourceCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getInt("customerGroup"));
+                                destinationCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getInt("customerGroup"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerId")){
-                                sourceCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
+                                destinationCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerInfoType")){
-                                sourceCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getInt("customerInfoType"));
+                                destinationCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getInt("customerInfoType"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerSegment")){
-                                sourceCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getInt("customerSegment"));
+                                destinationCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getInt("customerSegment"));
                             }
         
                             if (inputSourceCustomerAccount.has("customerType")){
-                                sourceCustomerAccount.setCustomerType(inputSourceCustomerAccount.getInt("customerType"));
+                                destinationCustomerAccount.setCustomerType(inputSourceCustomerAccount.getInt("customerType"));
                             }
         
                             if (inputSourceCustomerAccount.has("dob")){
-                                sourceCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
+                                destinationCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
                             }
         
                             if (inputSourceCustomerAccount.has("documentNumber")){
-                                sourceCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
+                                destinationCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
                             }
         
                             if (inputSourceCustomerAccount.has("documentType")){
-                                sourceCustomerAccount.setDocumentType(inputSourceCustomerAccount.getInt("documentType"));
+                                destinationCustomerAccount.setDocumentType(inputSourceCustomerAccount.getInt("documentType"));
                             }
         
                             if (inputSourceCustomerAccount.has("emailAddress")){
-                                sourceCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
+                                destinationCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
                             }
         
                             if (inputSourceCustomerAccount.has("existingFlag")){
-                                sourceCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
+                                destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
                             }
         
                             if (inputSourceCustomerAccount.has("firstName")){
-                                sourceCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
+                                destinationCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
                             }
         
                             if (inputSourceCustomerAccount.has("gender")){
-                                sourceCustomerAccount.setGender(inputSourceCustomerAccount.getInt("gender"));
+                                destinationCustomerAccount.setGender(inputSourceCustomerAccount.getInt("gender"));
                             }
         
                             if (inputSourceCustomerAccount.has("ivrLanguage")){
-                                sourceCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
+                                destinationCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
                             }
         
                             if (inputSourceCustomerAccount.has("lastName")){
-                                sourceCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
+                                destinationCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
                             }
         
                             if (inputSourceCustomerAccount.has("nationality")){
-                                sourceCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
+                                destinationCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
                             }
         
                             if (inputSourceCustomerAccount.has("taxRegisterNumber")){
-                                sourceCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
+                                destinationCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
                             }
         
                             if (inputSourceCustomerAccount.has("title")){
-                                sourceCustomerAccount.setTitle(inputSourceCustomerAccount.getInt("title"));
+                                destinationCustomerAccount.setTitle(inputSourceCustomerAccount.getInt("title"));
                             }
         
                             if (inputSourceCustomerAccount.has("writtenLanguage")){
-                                sourceCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
+                                destinationCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
                             }
                             
                             billingAccount.setBillingInfo(billingInfo);
@@ -2984,9 +2868,9 @@ public class MappingService {
                             billingAccount.setVatAddress(vatAddress);
                             billingAccount.setVatDeliveryAddress(vatDeliveryAddress);
                             
-                            sourceCustomerAccount.setAddress(address);
-                            sourceCustomerAccount.setBillingAccount(billingAccount);
-                            omEv.setSourceCustomerAccount(sourceCustomerAccount);
+                            destinationCustomerAccount.setAddress(address);
+                            destinationCustomerAccount.setBillingAccount(billingAccount);
+                            omEv.setDestinationCustomerAccount(destinationCustomerAccount);
 
                         }
                         
@@ -2995,6 +2879,7 @@ public class MappingService {
                 }catch(Exception e){
                     throw new Exception("loop sourceCustomerAccount main error: " + e.getMessage());
                 }
+
 
 
                 /*
@@ -3090,127 +2975,6 @@ public class MappingService {
                 }catch (Exception e){
                     throw new Exception("loop destinationSubscriberInfo main error: " + e.getMessage());
                 }
-
-
-                /*
-                * DestinationCustomerAccount
-                */
-                if (inputSourceCustomerAccount != null){
-
-                    if (inputSourceCustomerAccount.has("cardNumber")){
-                        destinationCustomerAccount.setCardNumber(inputSourceCustomerAccount.getString("cardNumber"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("cardType")){
-                        destinationCustomerAccount.setCardType(inputSourceCustomerAccount.getInt("cardType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("catEmployeeFlag")){
-                        destinationCustomerAccount.setCatEmployeeFlag(inputSourceCustomerAccount.getInt("catEmployeeFlag"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("companyBranchId")){
-                        destinationCustomerAccount.setCompanyBranchId(inputSourceCustomerAccount.getString("companyBranchId"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("companyName")){
-                        destinationCustomerAccount.setCompanyName(inputSourceCustomerAccount.getString("companyName"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("companyType")){
-                        destinationCustomerAccount.setCompanyType(inputSourceCustomerAccount.getInt("companyType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("contactNumber")){
-                        destinationCustomerAccount.setContactNumber(inputSourceCustomerAccount.getString("contactNumber"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("custAccountId")){
-                        destinationCustomerAccount.setCustAccountId(inputSourceCustomerAccount.getString("custAccountId"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerFocus")){
-                        destinationCustomerAccount.setCustomerFocus(inputSourceCustomerAccount.getString("customerFocus"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerGroup")){
-                        destinationCustomerAccount.setCustomerGroup(inputSourceCustomerAccount.getInt("customerGroup"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerId")){
-                        destinationCustomerAccount.setCustomerId(inputSourceCustomerAccount.getString("customerId"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerInfoType")){
-                        destinationCustomerAccount.setCustomerInfoType(inputSourceCustomerAccount.getInt("customerInfoType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerSegment")){
-                        destinationCustomerAccount.setCustomerSegment(inputSourceCustomerAccount.getInt("customerSegment"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("customerType")){
-                        destinationCustomerAccount.setCustomerType(inputSourceCustomerAccount.getInt("customerType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("dob")){
-                        destinationCustomerAccount.setDob(inputSourceCustomerAccount.getString("dob"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("documentNumber")){
-                        destinationCustomerAccount.setDocumentNumber(inputSourceCustomerAccount.getString("documentNumber"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("documentType")){
-                        destinationCustomerAccount.setDocumentType(inputSourceCustomerAccount.getInt("documentType"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("emailAddress")){
-                        destinationCustomerAccount.setEmailAddress(inputSourceCustomerAccount.getString("emailAddress"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("existingFlag")){
-                        destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("firstName")){
-                        destinationCustomerAccount.setFirstName(inputSourceCustomerAccount.getString("firstName"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("gender")){
-                        destinationCustomerAccount.setGender(inputSourceCustomerAccount.getInt("gender"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("ivrLanguage")){
-                        destinationCustomerAccount.setIvrLanguage(inputSourceCustomerAccount.getString("ivrLanguage"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("lastName")){
-                        destinationCustomerAccount.setLastName(inputSourceCustomerAccount.getString("lastName"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("nationality")){
-                        destinationCustomerAccount.setNationality(inputSourceCustomerAccount.getString("nationality"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("taxRegisterNumber")){
-                        destinationCustomerAccount.setTaxRegisterNumber(inputSourceCustomerAccount.getString("taxRegisterNumber"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("title")){
-                        destinationCustomerAccount.setTitle(inputSourceCustomerAccount.getInt("title"));
-                    }
-
-                    if (inputSourceCustomerAccount.has("writtenLanguage")){
-                        destinationCustomerAccount.setWrittenLanguage(inputSourceCustomerAccount.getString("writtenLanguage"));
-                    }
-                }
-
-                destinationCustomerAccount.setAddress(address);
-                destinationCustomerAccount.setBillingAccount(billingAccount);
-                // evenItemOther.setDestinationCustomerAccount(destinationCustomerAccount);
-                omEv.setDestinationCustomerAccount(destinationCustomerAccount);
-                
 
                 // saleInfo
                 if(inputData.has("saleInfo")){
