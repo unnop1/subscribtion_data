@@ -1465,6 +1465,14 @@ public class MappingService {
                                                     destinationSimInfo.setIccid(desSimData.getString("iccid"));
                                                 }
 
+                                                if (desSimData.has("msisdn")){
+                                                    destinationSimInfo.setMsisdn(desSimData.getString("msisdn"));
+                                                }
+
+                                                if (desSimData.has("serviceType")){
+                                                    destinationSimInfo.setServiceType(desSimData.getString("serviceType"));
+                                                }
+
                                                 if (desSimData.has("imsi")){
                                                     destinationSimInfo.setImsi(desSimData.getString("imsi"));
                                                 }
