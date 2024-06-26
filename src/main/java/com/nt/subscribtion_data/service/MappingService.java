@@ -2527,7 +2527,6 @@ public class MappingService {
                             // billing delivery address
                             if (inputSourceCustomerAccount.has("billDeliveryAddress")){
                                 sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
-
                                 
                                 if (sourceCustomerAccountBillDeliveryAddress.has("building")){
                                     billDeliveryAddress.setBuilding(sourceCustomerAccountBillDeliveryAddress.getString("building"));
@@ -2740,18 +2739,8 @@ public class MappingService {
                                 }
                             }
         
-                            // billing account
                             if (inputSourceCustomerAccount.has("existingFlag")){
-                                billingAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
                                 destinationCustomerAccount.setExistingFlag(inputSourceCustomerAccount.getBoolean("existingFlag"));
-                            }
-        
-                            if (inputSourceCustomerAccount.has("billingAccountId")){
-                                billingAccount.setBillingAccountId(inputSourceCustomerAccount.getString("billingAccountId")); // must validate
-                            }
-        
-                            if (inputSourceCustomerAccount.has("paymentProfile")){
-                                billingAccount.setPaymentProfile(inputSourceCustomerAccount.getString("paymentProfile")); // must validate
                             }
 
                             if (inputSourceCustomerAccount.has("cardNumber")){
