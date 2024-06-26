@@ -1254,6 +1254,7 @@ public class MappingService {
                                             photos.add(photo);
                                         }
                                         evenItem.setPhoto(photos);
+                                        isFoundEveBoolean = true;
                                     }
 
 
@@ -1291,6 +1292,7 @@ public class MappingService {
                                         topUp.setChannelId(inputTopUp.getInt("channelId"));
                                     }
                                     evenItem.setTopUp(topUp);
+                                    isFoundEveBoolean = true;
                                 }
 
                                 /*
@@ -1312,6 +1314,7 @@ public class MappingService {
                                         creditLimit.setActionType(inputCreditLimit.getString("actionType"));
                                     }
                                     evenItem.setCreditLimit(creditLimit);
+                                    isFoundEveBoolean = true;
                                 }
 
                                 // Balance transfer info
@@ -1381,6 +1384,7 @@ public class MappingService {
                                     contractInfo.setManageContractType(tMCDTLData.getManageContractType());
                                     contractInfo.setRemark(tMCDTLData.getRemark());
                                     evenItem.setContractInfo(contractInfo);
+                                    isFoundEveBoolean = true;
                                 }
 
                                 /*
@@ -1439,6 +1443,7 @@ public class MappingService {
                                         southernContactAddress.setVillage(inputSouthernContactAddress.getString("village"));
                                     }
                                     evenItem.setSouthernContactAddress(southernContactAddress);
+                                    isFoundEveBoolean = true;
                                 }
 
 
