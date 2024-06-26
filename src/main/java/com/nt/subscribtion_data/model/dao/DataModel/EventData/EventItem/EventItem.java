@@ -2,6 +2,8 @@ package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 
 import java.util.List;
 
+import org.json.JSONArray;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -60,6 +62,9 @@ public class EventItem {
 
     @JsonProperty("destinationSubscriberInfo")
     private EvDestinationSubscriberInfo destinationSubscriberInfo;
+
+    @JsonProperty("subPropertyCode")
+    private JSONArray subPropertyCode;
 
     @JsonProperty("topUp")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

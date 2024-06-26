@@ -1040,6 +1040,11 @@ public class MappingService {
                                         isFoundEveBoolean = true;
                                     }
 
+                                    if (orderItem.has("subPropertyCode")){
+                                        evenItem.setSubPropertyCode(orderItem.getJSONArray("subPropertyCode"));
+                                        isFoundEveBoolean = true;
+                                    }
+
                                     if (orderItem.has("unitType")){
                                         evenItem.setUnitType(orderItem.getString("unitType"));
                                         isFoundEveBoolean = true;
@@ -1506,9 +1511,9 @@ public class MappingService {
                                 }
 
                                 // append eventItem
-                                if(isFoundEveBoolean) {
+                                // if(isFoundEveBoolean) {
                                     evenItems.add(evenItem);
-                                }
+                                // }
 
                             }
                             
@@ -2395,6 +2400,10 @@ public class MappingService {
 
                                     if (orderItem.has("sourceEntity")){
                                         evenItem.setSourceEntity(orderItem.getString("sourceEntity"));
+                                    }
+
+                                    if (orderItem.has("subPropertyCode")){
+                                        evenItem.setSubPropertyCode(orderItem.getJSONArray("subPropertyCode"));
                                     }
 
                                     if (orderItem.has("unitType")){
