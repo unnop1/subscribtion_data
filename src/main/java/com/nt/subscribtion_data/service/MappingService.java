@@ -2457,10 +2457,10 @@ public class MappingService {
                                         JSONObject varietyServiceItem = varietyServices.getJSONObject(index);
                                         VarietyService varietyService = new VarietyService();
                                         if (varietyServiceItem.has("enabledFlag") &&!varietyServiceItem.isNull("enabledFlag")){
-                                            varietyService.setEnabledFlag(orderItem.getInt("enabledFlag"));
+                                            varietyService.setEnabledFlag(varietyServiceItem.getInt("enabledFlag"));
                                         }
                                         if (varietyServiceItem.has("varietyType")&&!varietyServiceItem.isNull("varietyType")){
-                                            varietyService.setVarietyType(orderItem.getString("varietyType"));
+                                            varietyService.setVarietyType(varietyServiceItem.getString("varietyType"));
                                         }
                                         varietyServicesList.add(varietyService);
                                     }
