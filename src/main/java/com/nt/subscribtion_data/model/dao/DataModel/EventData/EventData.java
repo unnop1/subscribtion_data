@@ -66,12 +66,9 @@ public class EventData {
     @JsonProperty("eventItem")
     private List<EventItem> eventItems;
 
-    // @JsonProperty("sourceCustomerAccount")
-    // private SourceCustomerAccount sourceCustomerAccount;
-
-    @JsonProperty("destinationCustomerAccount")
+    @JsonProperty("sourceCustomerAccount")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private DestinationCustomerAccount destinationCustomerAccount;
+    private SourceCustomerAccount sourceCustomerAccount;
 
     @JsonProperty("subscriberInfo")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

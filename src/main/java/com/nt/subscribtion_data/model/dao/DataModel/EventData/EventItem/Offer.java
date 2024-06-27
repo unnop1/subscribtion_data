@@ -1,6 +1,8 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -75,8 +77,8 @@ public class Offer {
     @JsonProperty("descriptionEn")
     private String descriptionEn;
 
-    @JsonProperty("ServiceType")
-    private Long ServiceType;
+    @JsonProperty("serviceType")
+    private String serviceType;
 
     @JsonProperty("ocsOfferingName")
     private String ocsOfferingName;
@@ -145,4 +147,26 @@ public class Offer {
 
     @JsonProperty("canSwapPoFlag")
     private String canSwapPoFlag;
+
+    public void setSaleStartDate(String saleStartDate) {
+        // Parse the original date string
+        OffsetDateTime dateTime = OffsetDateTime.parse(saleStartDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        
+        // Format the date to the desired format
+        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
+        
+        // Assign the formatted date to the variable
+        this.saleStartDate = formattedDate;
+    }
+
+    public void setSaleEndDate(String saleEndDate) {
+        // Parse the original date string
+        OffsetDateTime dateTime = OffsetDateTime.parse(saleEndDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        
+        // Format the date to the desired format
+        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
+        
+        // Assign the formatted date to the variable
+        this.saleEndDate = formattedDate;
+    }
 }

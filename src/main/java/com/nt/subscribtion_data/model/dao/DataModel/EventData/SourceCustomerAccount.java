@@ -49,7 +49,6 @@ public class SourceCustomerAccount {
     private Address address;
 
     @JsonProperty("billingAccount")
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private BillingAccount billingAccount;
 
     @JsonProperty("cardNumber")

@@ -19,6 +19,9 @@ public class EventItem {
     @JsonProperty("itemType")
     private String itemType;
 
+    @JsonProperty("transferType")
+    private String transferType;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     @JsonProperty("effectiveDate")
     private String effectiveDate;

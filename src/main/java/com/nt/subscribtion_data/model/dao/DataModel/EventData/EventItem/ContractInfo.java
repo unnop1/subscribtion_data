@@ -1,6 +1,8 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -113,5 +115,27 @@ public class ContractInfo {
     private String remark;
 
 
+    public void setContractStart(String contractStart) {
+        // Parse the original date string
+        OffsetDateTime dateTime = OffsetDateTime.parse(contractStart, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        
+        // Format the date to the desired format
+        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
+        
+        // Assign the formatted date to the variable
+        this.contractStart = formattedDate;
+    }
+
+
+    public void setContractEnd(String contractEnd) {
+        // Parse the original date string
+        OffsetDateTime dateTime = OffsetDateTime.parse(contractEnd, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        
+        // Format the date to the desired format
+        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
+        
+        // Assign the formatted date to the variable
+        this.contractEnd = formattedDate;
+    }
 
 }

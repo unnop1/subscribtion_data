@@ -33,7 +33,7 @@ public class OfferingSpecData {
     private String descEN;
 
     @JsonProperty("serviceType")
-    private Long serviceType;
+    private String serviceType;
 
     @JsonProperty("primaryOfferingFlag")
     private String primaryOfferingFlag;
