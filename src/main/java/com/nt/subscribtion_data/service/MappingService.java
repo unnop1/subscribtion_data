@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.stream.Collectors;
 
 import org.json.JSONArray;
@@ -60,6 +61,7 @@ import com.nt.subscribtion_data.model.dao.OMMYFRONT.OrderHeaderData;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLClientResp;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransManageContractDTLData;
 import com.nt.subscribtion_data.model.dao.OMUSER.TransNumberDTLClientResp;
+import com.nt.subscribtion_data.model.dao.OMUSER.TransNumberDTLData;
 import com.nt.subscribtion_data.model.dto.ReceiveExpiredDataType;
 import com.nt.subscribtion_data.model.dto.ReceiveOMDataType;
 import com.nt.subscribtion_data.model.dto.ReceiveTopUpDataType;
@@ -299,7 +301,6 @@ public class MappingService {
           }
   
           try{
-              
                 TransManageContractDTLClientResp tMCDTLResp=null;
                 try{
                     String transMasterID = receivedData.getOrderId();
@@ -786,8 +787,11 @@ public class MappingService {
         Data sendData = new Data();
         
         EventData omEv = new EventData();
-
+        INVMappingData invMappingData =null;
+        IMSIOfferingConfig imsiConfigData = null;
+        ListIMSIOfferingConfigClientResp imsiOfferConfigList = null;
         try{
+        
             TransNumberDTLClientResp tNumberDTL = omuserService.getTransNumberDTLData(tMCDTLData.getTransMasterId());
             if(tNumberDTL== null){
                 throw new Exception("transNumberDtl not found ");
@@ -803,6 +807,48 @@ public class MappingService {
                     throw new Exception("transNumberDtl not found msisdn");
                 }
             }
+
+            try{
+                String externalId = tNumberDTL.getData().getMsisdn();
+                INVMappingClientResp invMappingResp = invuserService.getInvMappingData(externalId);
+
+                if (invMappingResp != null){
+                    if (invMappingResp.getData() != null && invMappingResp.getErr() == null){
+                        invMappingData = invMappingResp.getData();
+                        if (invMappingData == null){
+                            throw new Exception("INV mapping not found external id: "+externalId);
+                        }
+                    }else{
+                        INVMappingClientResp invMappingOnlyResp = invuserService.getInvMappingDataOnly(externalId);
+                        invMappingData = invMappingOnlyResp.getData();
+                        if (invMappingData == null){
+                            throw new Exception("INV mapping not found external id: "+externalId);
+                        }
+                    }
+                }else{
+                    INVMappingClientResp invMappingOnlyResp = invuserService.getInvMappingDataOnly(externalId);
+                    invMappingData = invMappingOnlyResp.getData();
+                    if (invMappingData == null){
+                        throw new Exception("INV mapping not found external id: "+externalId);
+                    }
+                }
+            
+                imsiOfferConfigList = cacheUpdater.getIMSIOfferConfigListCache();
+                if (imsiOfferConfigList.getErr() == null){
+                    imsiOfferConfigList = ommyfrontService.getImsiOfferingConfigList();
+                    cacheUpdater.setIMSIOfferConfigListCache(imsiOfferConfigList);
+                }
+
+                if (invMappingData != null){
+                    if(invMappingData.getImsi() != null){
+                        imsiConfigData = getImsiConfigByImsi(invMappingData.getImsi(), imsiOfferConfigList.getData());
+                    }
+
+                }
+            }catch (Exception e){
+                throw new Exception("INV mapping error: " + e.getMessage());
+            }
+
             // eventItem
             List<EventItem> evenItems = new ArrayList<>();
             try{
@@ -845,6 +891,22 @@ public class MappingService {
             }catch (Exception e){
                 throw new Exception("MappingContractManagementData event item mapping contractInfo error: " + e.getMessage());
             }
+
+            // subscriberInfo
+            SubscriberInfo subscriberInfo = new SubscriberInfo();
+            subscriberInfo.setMsisdn(tNumberDTL.getData().getMsisdn());
+
+            List<SourceSimInfo> sourceSimInfos = new ArrayList<SourceSimInfo>();
+            SourceSimInfo sourceSimInfo = new SourceSimInfo();
+            sourceSimInfo.setIccid(tNumberDTL.getData().getIccid());
+            sourceSimInfo.setImsi(tNumberDTL.getData().getImsi());
+            if(imsiConfigData != null){
+                sourceSimInfo.setFrequency(imsiConfigData.getFrequency());
+            }
+            sourceSimInfos.add(sourceSimInfo);
+            subscriberInfo.setSourceSimInfo(sourceSimInfos);
+            omEv.setSubscriberInfo(subscriberInfo);
+            
             sendData.setTriggerDate(triggerDate);
             sendData.setPublishChannel("OM-MFE");
             sendData.setMsisdn(String.format("0%s",tNumberDTL.getData().getMsisdn()));
