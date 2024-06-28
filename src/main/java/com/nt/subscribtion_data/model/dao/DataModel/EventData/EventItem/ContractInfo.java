@@ -9,6 +9,8 @@ import java.time.format.DateTimeFormatter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nt.subscribtion_data.util.DateTime;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -117,6 +119,8 @@ public class ContractInfo {
     private String remark;
 
 
+    
+    
     public void setContractStart(String contractStart) {
         // Parse the original date string
         long timestampMillis = Long.parseLong(contractStart);
@@ -153,6 +157,81 @@ public class ContractInfo {
         
         // Assign the formatted date to the variable
         this.contractEnd = formattedDateTime;
+    }
+
+
+    public void setBypassDate(String bypassDate) {
+        if(bypassDate == null){
+            return;
+        }
+        if(bypassDate.isEmpty() || bypassDate.isBlank()){
+            return;
+        }
+        // Parse the original date string
+        OffsetDateTime dateTime = OffsetDateTime.parse(bypassDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusDays(7);
+        
+        // Format the date to the desired format
+        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
+        
+        // Assign the formatted date to the variable
+        this.bypassDate = DateTime.addZeroConvertISODate(formattedDate);
+    }
+
+    public void setRequestBypassDate(String requestBypassDate) {
+
+        if(bypassDate == null){
+            return;
+        }
+
+        if(bypassDate.isEmpty() || bypassDate.isBlank()){
+            return;
+        }
+
+        // Parse the original date string
+        OffsetDateTime dateTime = OffsetDateTime.parse(requestBypassDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusDays(7);
+        
+        // Format the date to the desired format
+        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
+        
+        // Assign the formatted date to the variable
+        this.requestBypassDate = DateTime.addZeroConvertISODate(formattedDate);
+    }
+
+    public void setApproveBypassDate(String approveBypassDate) {
+        if(bypassDate == null){
+            return;
+        }
+        
+        if(bypassDate.isEmpty() || bypassDate.isBlank()){
+            return;
+        }
+        // Parse the original date string
+        OffsetDateTime dateTime = OffsetDateTime.parse(approveBypassDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusDays(7);
+        
+        // Format the date to the desired format
+        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
+        
+        // Assign the formatted date to the variable
+        this.approveBypassDate = DateTime.addZeroConvertISODate(formattedDate);
+    }
+
+    public void setBillRefDate(String billRefDate) {
+        if(bypassDate == null){
+            return;
+        }
+        
+        if(bypassDate.isEmpty() || bypassDate.isBlank()){
+            return;
+        }
+        
+        // Parse the original date string
+        OffsetDateTime dateTime = OffsetDateTime.parse(billRefDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusDays(7);
+        
+        // Format the date to the desired format
+        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
+        
+        // Assign the formatted date to the variable
+        this.billRefDate = DateTime.addZeroConvertISODate(formattedDate);
     }
 
 }

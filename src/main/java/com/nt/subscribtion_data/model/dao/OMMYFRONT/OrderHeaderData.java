@@ -1,13 +1,5 @@
 package com.nt.subscribtion_data.model.dao.OMMYFRONT;
 
-import java.sql.Clob;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -168,27 +160,4 @@ public class OrderHeaderData {
 
     @JsonProperty("bulkid")
     private String bulkId;
-
-
-    public void setCreateDate(String createDate) {
-        // Parse the original date string
-        OffsetDateTime dateTime = OffsetDateTime.parse(createDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        
-        // Format the date to the desired format
-        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
-        
-        // Assign the formatted date to the variable
-        this.createDate = formattedDate;
-    }
-
-    public void setUpdateDate(String updateDate) {
-        // Parse the original date string
-        OffsetDateTime dateTime = OffsetDateTime.parse(updateDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        
-        // Format the date to the desired format
-        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
-        
-        // Assign the formatted date to the variable
-        this.updateDate = formattedDate;
-    }
 }

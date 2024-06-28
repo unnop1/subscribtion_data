@@ -864,7 +864,6 @@ public class MappingService {
                     contractInfo.setRefDocumentId(tMCDTLData.getRefDocumentId());
                     contractInfo.setContractCode(tMCDTLData.getContractCode());
                     contractInfo.setRefDocumentId(tMCDTLData.getRefDocumentId());
-                    contractInfo.setContractCode(tMCDTLData.getContractCode());
                     contractInfo.setContractType(tMCDTLData.getContractType());
                     contractInfo.setContractDesc(tMCDTLData.getContractDesc());
                     contractInfo.setContractMonth(tMCDTLData.getContractMonth());

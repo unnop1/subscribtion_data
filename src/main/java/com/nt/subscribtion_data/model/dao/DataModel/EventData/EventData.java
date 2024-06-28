@@ -1,7 +1,11 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -11,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.EventItem;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.SubscriberInfo.SubscriberInfo;
+import com.nt.subscribtion_data.util.DateTime;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -49,11 +54,9 @@ public class EventData {
     @JsonProperty("eventType")
     private String eventType;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     @JsonProperty("submitedDate")
     private String submitedDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     @JsonProperty("completedDate")
     private String completedDate;
 
@@ -86,4 +89,27 @@ public class EventData {
 
     @JsonProperty("orderStatus")
     private String orderStatus;
+
+    public void setSubmitedDate(String submitedDate) {
+        // Parse the original date string
+        OffsetDateTime dateTime = OffsetDateTime.parse(submitedDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusDays(7);
+        
+        // Format the date to the desired format
+        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
+        
+        // Assign the formatted date to the variable
+        this.submitedDate = DateTime.addZeroConvertISODate(formattedDate);
+    }
+
+    public void setCompletedDate(String completedDate) {
+        // Parse the original date string
+        OffsetDateTime dateTime = OffsetDateTime.parse(completedDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusDays(7);
+        
+        // Format the date to the desired format
+        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
+        
+        
+        // Assign the formatted date to the variable
+        this.completedDate = DateTime.addZeroConvertISODate(formattedDate);
+    }
 }

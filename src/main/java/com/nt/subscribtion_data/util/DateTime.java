@@ -8,12 +8,13 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.List;
 
 public class DateTime {
 
     public static final String getTimeStampNowStr(){
         // สร้าง DateTimeFormatter ด้วยรูปแบบที่ต้องการ
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
         // รับเวลาปัจจุบันในรูปแบบ LocalDateTime
         LocalDateTime now = LocalDateTime.now();
@@ -39,6 +40,20 @@ public class DateTime {
         String formattedDateTime = now.format(formatter);
 
         return formattedDateTime;
+    }
+
+    public static final String addZeroConvertISODate(String dateStr){
+        // "2001-01-07T10:00:00Z"
+        String[] lastMilliSeconds = dateStr.split(":");
+        if(lastMilliSeconds.length > 0){
+            String lastMilliSecond = lastMilliSeconds[lastMilliSeconds.length-1];
+            if(lastMilliSecond.equals("00Z")){
+                lastMilliSecond = "00.000Z";
+                lastMilliSeconds[lastMilliSeconds.length-1] = lastMilliSecond;
+                return String.join(":",lastMilliSeconds);
+            }
+        }
+        return dateStr;
     }
 
 }

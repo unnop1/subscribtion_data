@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nt.subscribtion_data.util.DateTime;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -150,23 +151,23 @@ public class Offer {
 
     public void setSaleStartDate(String saleStartDate) {
         // Parse the original date string
-        OffsetDateTime dateTime = OffsetDateTime.parse(saleStartDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        OffsetDateTime dateTime = OffsetDateTime.parse(saleStartDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusDays(7);
         
         // Format the date to the desired format
         String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
         
         // Assign the formatted date to the variable
-        this.saleStartDate = formattedDate;
+        this.saleStartDate = DateTime.addZeroConvertISODate(formattedDate);
     }
 
     public void setSaleEndDate(String saleEndDate) {
         // Parse the original date string
-        OffsetDateTime dateTime = OffsetDateTime.parse(saleEndDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        OffsetDateTime dateTime = OffsetDateTime.parse(saleEndDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusDays(7);
         
         // Format the date to the desired format
         String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
         
         // Assign the formatted date to the variable
-        this.saleEndDate = formattedDate;
+        this.saleEndDate = DateTime.addZeroConvertISODate(formattedDate);
     }
 }
