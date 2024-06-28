@@ -51,6 +51,9 @@ public class DateTime {
                 lastMilliSecond = "00.000Z";
                 lastMilliSeconds[lastMilliSeconds.length-1] = lastMilliSecond;
                 return String.join(":",lastMilliSeconds);
+            }else if(!lastMilliSecond.contains(".")){
+                lastMilliSeconds[lastMilliSeconds.length-1] = lastMilliSecond.substring(0, lastMilliSecond.length() - 1) + ".000Z";
+                return String.join(":",lastMilliSeconds);
             }
         }
         return dateStr;
