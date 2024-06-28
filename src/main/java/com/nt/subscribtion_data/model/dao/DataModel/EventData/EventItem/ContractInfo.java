@@ -1,7 +1,9 @@
 package com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -117,25 +119,40 @@ public class ContractInfo {
 
     public void setContractStart(String contractStart) {
         // Parse the original date string
-        OffsetDateTime dateTime = OffsetDateTime.parse(contractStart, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        
-        // Format the date to the desired format
-        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
+        long timestampMillis = Long.parseLong(contractStart);
+
+        // Step 2: Convert the long to an Instant
+        Instant instant = Instant.ofEpochMilli(timestampMillis);
+
+        // Step 3: Convert the Instant to LocalDateTime using the system's default time zone
+        LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+
+        // Step 4: Format the LocalDateTime using DateTimeFormatter.ISO_INSTANT
+        String formattedDateTime = dateTime.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_INSTANT);
+
         
         // Assign the formatted date to the variable
-        this.contractStart = formattedDate;
+        this.contractStart = formattedDateTime;
     }
 
 
     public void setContractEnd(String contractEnd) {
         // Parse the original date string
-        OffsetDateTime dateTime = OffsetDateTime.parse(contractEnd, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        
-        // Format the date to the desired format
-        String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
+        // Parse the original date string
+        long timestampMillis = Long.parseLong(contractEnd);
+
+        // Step 2: Convert the long to an Instant
+        Instant instant = Instant.ofEpochMilli(timestampMillis);
+
+        // Step 3: Convert the Instant to LocalDateTime using the system's default time zone
+        LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+
+        // Step 4: Format the LocalDateTime using DateTimeFormatter.ISO_INSTANT
+        String formattedDateTime = dateTime.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_INSTANT);
+
         
         // Assign the formatted date to the variable
-        this.contractEnd = formattedDate;
+        this.contractEnd = formattedDateTime;
     }
 
 }
