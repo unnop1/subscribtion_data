@@ -1934,7 +1934,7 @@ public class MappingService {
 
                                                     // vat address
                                                     if (sourceCustomerAccountBillingAccount.has("vatAddress")){
-                                                        sourceCustomerAccountVatAddress = inputSourceCustomerAccount.getJSONObject("vatAddress");
+                                                        sourceCustomerAccountVatAddress = sourceCustomerAccountBillingAccount.getJSONObject("vatAddress");
 
                                                         
                                                         if (sourceCustomerAccountVatAddress.has("building")){
@@ -2006,7 +2006,7 @@ public class MappingService {
 
                                                     // vat delivery address
                                                     if (sourceCustomerAccountBillingAccount.has("vatDeliveryAddress")){
-                                                        sourceCustomerAccountVatDeliveryAddress = inputSourceCustomerAccount.getJSONObject("vatDeliveryAddress");
+                                                        sourceCustomerAccountVatDeliveryAddress = sourceCustomerAccountBillingAccount.getJSONObject("vatDeliveryAddress");
 
                                                         
                                                         if (sourceCustomerAccountVatDeliveryAddress.has("building")){
@@ -2486,7 +2486,7 @@ public class MappingService {
 
                                     // vat address
                                     if (sourceCustomerAccountBillingAccount.has("vatAddress")){
-                                        sourceCustomerAccountVatAddress = inputSourceCustomerAccount.getJSONObject("vatAddress");
+                                        sourceCustomerAccountVatAddress = sourceCustomerAccountBillingAccount.getJSONObject("vatAddress");
 
                                         
                                         if (sourceCustomerAccountVatAddress.has("building")){
@@ -2558,7 +2558,7 @@ public class MappingService {
 
                                     // vat delivery address
                                     if (sourceCustomerAccountBillingAccount.has("vatDeliveryAddress")){
-                                        sourceCustomerAccountVatDeliveryAddress = inputSourceCustomerAccount.getJSONObject("vatDeliveryAddress");
+                                        sourceCustomerAccountVatDeliveryAddress = sourceCustomerAccountBillingAccount.getJSONObject("vatDeliveryAddress");
 
                                         
                                         if (sourceCustomerAccountVatDeliveryAddress.has("building")){
@@ -3416,7 +3416,7 @@ public class MappingService {
 
                                                     // vat address
                                                     if (sourceCustomerAccountBillingAccount.has("vatAddress")){
-                                                        sourceCustomerAccountVatAddress = inputSourceCustomerAccount.getJSONObject("vatAddress");
+                                                        sourceCustomerAccountVatAddress = sourceCustomerAccountBillingAccount.getJSONObject("vatAddress");
 
                                                         
                                                         if (sourceCustomerAccountVatAddress.has("building")){
@@ -3488,7 +3488,7 @@ public class MappingService {
 
                                                     // vat delivery address
                                                     if (sourceCustomerAccountBillingAccount.has("vatDeliveryAddress")){
-                                                        sourceCustomerAccountVatDeliveryAddress = inputSourceCustomerAccount.getJSONObject("vatDeliveryAddress");
+                                                        sourceCustomerAccountVatDeliveryAddress = sourceCustomerAccountBillingAccount.getJSONObject("vatDeliveryAddress");
 
                                                         
                                                         if (sourceCustomerAccountVatDeliveryAddress.has("building")){
@@ -4004,7 +4004,7 @@ public class MappingService {
 
                                     // vat address
                                     if (sourceCustomerAccountBillingAccount.has("vatAddress")){
-                                        sourceCustomerAccountVatAddress = inputSourceCustomerAccount.getJSONObject("vatAddress");
+                                        sourceCustomerAccountVatAddress = sourceCustomerAccountBillingAccount.getJSONObject("vatAddress");
 
                                         
                                         if (sourceCustomerAccountVatAddress.has("building")){
@@ -4076,7 +4076,7 @@ public class MappingService {
 
                                     // vat delivery address
                                     if (sourceCustomerAccountBillingAccount.has("vatDeliveryAddress")){
-                                        sourceCustomerAccountVatDeliveryAddress = inputSourceCustomerAccount.getJSONObject("vatDeliveryAddress");
+                                        sourceCustomerAccountVatDeliveryAddress = sourceCustomerAccountBillingAccount.getJSONObject("vatDeliveryAddress");
 
                                         
                                         if (sourceCustomerAccountVatDeliveryAddress.has("building")){
