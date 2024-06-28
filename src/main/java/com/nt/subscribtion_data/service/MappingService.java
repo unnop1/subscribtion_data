@@ -1698,8 +1698,8 @@ public class MappingService {
                                 
                                 
                                 try{
-                                    if (inputData.has("destinationCustomerAccount")){
-                                        inputSourceCustomerAccount = inputData.getJSONObject("destinationCustomerAccount");
+                                    if (orderItem.has("destinationCustomerAccount")){
+                                        inputSourceCustomerAccount = orderItem.getJSONObject("destinationCustomerAccount");
 
                                         if (inputSourceCustomerAccount != null){
                                             if (inputSourceCustomerAccount.has("address")){
@@ -3179,8 +3179,8 @@ public class MappingService {
                                 
                                 
                                 try{
-                                    if (inputData.has("destinationCustomerAccount")){
-                                        inputSourceCustomerAccount = inputData.getJSONObject("destinationCustomerAccount");
+                                    if (orderItem.has("destinationCustomerAccount")){
+                                        inputSourceCustomerAccount = orderItem.getJSONObject("destinationCustomerAccount");
                                         
 
                                         if (inputSourceCustomerAccount != null){
