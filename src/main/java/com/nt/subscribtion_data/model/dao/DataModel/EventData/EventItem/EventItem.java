@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nt.subscribtion_data.model.dao.DataModel.EventData.DestinationCustomerAccount;
 import com.nt.subscribtion_data.model.dao.DataModel.EventData.EventItem.DestinationSubscriberInfo.EvDestinationSubscriberInfo;
 
 import lombok.Getter;
@@ -62,6 +63,10 @@ public class EventItem {
 
     @JsonProperty("photo")
     private List<Photo> photo;
+
+    @JsonProperty("destinationCustomerAccount")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private DestinationCustomerAccount destinationCustomerAccount;
 
     @JsonProperty("destinationSubscriberInfo")
     private EvDestinationSubscriberInfo destinationSubscriberInfo;

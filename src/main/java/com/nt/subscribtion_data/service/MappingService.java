@@ -2200,9 +2200,7 @@ public class MappingService {
                                             destinationCustomerAccount.setAddress(address);
                                             // set billing account
                                             destinationCustomerAccount.setBillingAccount(billingAccount);
-
-                                            omEv.setDestinationCustomerAccount(destinationCustomerAccount);
-
+                                            evenItem.setDestinationCustomerAccount(destinationCustomerAccount);
                                         }
                                         
                                     }
@@ -3683,7 +3681,7 @@ public class MappingService {
                                             // set billing account
                                             destinationCustomerAccount.setBillingAccount(billingAccount);
 
-                                            omEv.setDestinationCustomerAccount(destinationCustomerAccount);
+                                            evenItem.setDestinationCustomerAccount(destinationCustomerAccount);
 
                                         }
                                         
