@@ -26,6 +26,21 @@ public class VatDeliveryAddress {
         "village": ""
     }
      */
+    @JsonProperty("title")
+    private String title;
+
+    @JsonProperty("firstName")
+    private String firstName;
+
+    @JsonProperty("lastName")
+    private String lastName;
+
+    @JsonProperty("companyTitle")
+    private String companyTitle;
+
+    @JsonProperty("company")
+    private String company;
+
     @JsonProperty("building")
     private String building;
 
@@ -46,6 +61,18 @@ public class VatDeliveryAddress {
 
     @JsonProperty("postCode")
     private String postCode;
+
+    @JsonProperty("postalCode")
+    private String postalCode;
+
+    @JsonProperty("countryCode")
+    private String countryCode;
+
+    @JsonProperty("khet")
+    private String khet;
+
+    @JsonProperty("kwang")
+    private String kwang;
 
     @JsonProperty("province")
     private String province;
