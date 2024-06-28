@@ -42,18 +42,19 @@ public class DateTime {
         return formattedDateTime;
     }
 
-    public static final String addZeroConvertISODate(String dateStr){
+    public static final String addZeroConvertISODate(String dateStr) {
         // "2001-01-07T10:00:00Z"
-        String[] lastMilliSeconds = dateStr.split(":");
-        if(lastMilliSeconds.length > 0){
-            String lastMilliSecond = lastMilliSeconds[lastMilliSeconds.length-1];
-            if(lastMilliSecond.equals("00Z")){
-                lastMilliSecond = "00.000Z";
-                lastMilliSeconds[lastMilliSeconds.length-1] = lastMilliSecond;
-                return String.join(":",lastMilliSeconds);
-            }else if(!lastMilliSecond.contains(".")){
-                lastMilliSeconds[lastMilliSeconds.length-1] = lastMilliSecond.substring(0, lastMilliSecond.length() - 1) + ".000Z";
-                return String.join(":",lastMilliSeconds);
+        String[] parts = dateStr.split(":");
+        if (parts.length > 0) {
+            String lastPart = parts[parts.length - 1];
+            if (lastPart.endsWith("Z")) {
+                if (lastPart.equals("00Z")) {
+                    lastPart = "00.000Z";
+                } else if (!lastPart.contains(".")) {
+                    lastPart = lastPart.substring(0, lastPart.length() - 1) + ".000Z";
+                }
+                parts[parts.length - 1] = lastPart;
+                return String.join(":", parts);
             }
         }
         return dateStr;

@@ -136,7 +136,7 @@ public class ContractInfo {
 
         
         // Assign the formatted date to the variable
-        this.contractStart = formattedDateTime;
+        this.contractStart = DateTime.addZeroConvertISODate(formattedDateTime);
     }
 
 
@@ -156,7 +156,7 @@ public class ContractInfo {
 
         
         // Assign the formatted date to the variable
-        this.contractEnd = formattedDateTime;
+        this.contractEnd = DateTime.addZeroConvertISODate(formattedDateTime);
     }
 
 
