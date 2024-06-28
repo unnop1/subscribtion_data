@@ -67,7 +67,7 @@ public class OrderHeaderData {
     private Long revisionNumber;
 
     @JsonProperty("servicetype")
-    private String serviceType;
+    private Integer serviceType;
 
     @JsonProperty("updateby")
     private String updateBy;

@@ -18,7 +18,7 @@ public class EvDestinationSubscriberInfo {
     private String msisdn;
 
     @JsonProperty("serviceType")
-    private String serviceType;
+    private Integer serviceType;
 
     @JsonProperty("reserveFlag")
     private Boolean reserveFlag;

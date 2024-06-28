@@ -1064,7 +1064,7 @@ public class MappingService {
                         }
 
                         if (inputSubscriberInfo.has("serviceType")){
-                            subscriberInfo.setServiceType(inputSubscriberInfo.getString("serviceType"));
+                            subscriberInfo.setServiceType(Integer.valueOf(inputSubscriberInfo.getString("serviceType")));
                         }
 
                         if (inputSubscriberInfo.has("reserveFlag")){
@@ -1630,7 +1630,7 @@ public class MappingService {
                                         }
 
                                         if (inputDestinationSubscriberInfo.has("serviceType")){
-                                            destinationSubscriberInfo.setServiceType(inputDestinationSubscriberInfo.getString("serviceType"));
+                                            destinationSubscriberInfo.setServiceType(Integer.valueOf(inputDestinationSubscriberInfo.getString("serviceType")));
                                         }
 
                                         if (inputDestinationSubscriberInfo.has("destinationSimInfo")){
@@ -2952,7 +2952,7 @@ public class MappingService {
                         }
 
                         if (inputSubscriberInfo.has("serviceType")){
-                            subscriberInfo.setServiceType(inputSubscriberInfo.getString("serviceType"));
+                            subscriberInfo.setServiceType(Integer.valueOf(inputSubscriberInfo.getString("serviceType")));
                         }
 
                         if (inputSubscriberInfo.has("reserveFlag")){
@@ -4465,7 +4465,7 @@ public class MappingService {
 
             offer.setDescriptionEn(ofrspec.getDescEN());
 
-            offer.setServiceType(ofrspec.getServiceType());
+            offer.setServiceType(Integer.valueOf(ofrspec.getServiceType()));
 
             offer.setOcsOfferingName(ofrspec.getOcsofferingname());
 
@@ -4555,7 +4555,7 @@ public class MappingService {
 
             ofrspecExpired.setDescriptionEn(expiredOfrspec.getDescEN());
 
-            ofrspecExpired.setServiceType(expiredOfrspec.getServiceType());
+            ofrspecExpired.setServiceType(Integer.valueOf(expiredOfrspec.getServiceType()));
 
             ofrspecExpired.setOcsOfferingName(expiredOfrspec.getOcsofferingname());
 
