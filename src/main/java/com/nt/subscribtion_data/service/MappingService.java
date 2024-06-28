@@ -1862,7 +1862,7 @@ public class MappingService {
 
                                                     // billing delivery address
                                                     if (sourceCustomerAccountBillingAccount.has("billDeliveryAddress")){
-                                                        sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
+                                                        sourceCustomerAccountBillDeliveryAddress = sourceCustomerAccountBillingAccount.getJSONObject("billDeliveryAddress");
 
                                                         
                                                         if (sourceCustomerAccountBillDeliveryAddress.has("building")){
@@ -2414,7 +2414,7 @@ public class MappingService {
 
                                     // billing delivery address
                                     if (sourceCustomerAccountBillingAccount.has("billDeliveryAddress")){
-                                        sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
+                                        sourceCustomerAccountBillDeliveryAddress = sourceCustomerAccountBillingAccount.getJSONObject("billDeliveryAddress");
 
                                         
                                         if (sourceCustomerAccountBillDeliveryAddress.has("building")){
@@ -3344,7 +3344,7 @@ public class MappingService {
 
                                                     // billing delivery address
                                                     if (sourceCustomerAccountBillingAccount.has("billDeliveryAddress")){
-                                                        sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
+                                                        sourceCustomerAccountBillDeliveryAddress = sourceCustomerAccountBillingAccount.getJSONObject("billDeliveryAddress");
 
                                                         
                                                         if (sourceCustomerAccountBillDeliveryAddress.has("building")){
@@ -3932,7 +3932,7 @@ public class MappingService {
 
                                     // billing delivery address
                                     if (sourceCustomerAccountBillingAccount.has("billDeliveryAddress")){
-                                        sourceCustomerAccountBillDeliveryAddress = inputSourceCustomerAccount.getJSONObject("billDeliveryAddress");
+                                        sourceCustomerAccountBillDeliveryAddress = sourceCustomerAccountBillingAccount.getJSONObject("billDeliveryAddress");
 
                                         
                                         if (sourceCustomerAccountBillDeliveryAddress.has("building")){
