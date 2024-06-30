@@ -151,7 +151,7 @@ public class Offer {
 
     public void setSaleStartDate(String saleStartDate) {
         // Parse the original date string
-        OffsetDateTime dateTime = OffsetDateTime.parse(saleStartDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusDays(7);
+        OffsetDateTime dateTime = OffsetDateTime.parse(saleStartDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusHours(7);
         
         // Format the date to the desired format
         String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
@@ -162,7 +162,7 @@ public class Offer {
 
     public void setSaleEndDate(String saleEndDate) {
         // Parse the original date string
-        OffsetDateTime dateTime = OffsetDateTime.parse(saleEndDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusDays(7);
+        OffsetDateTime dateTime = OffsetDateTime.parse(saleEndDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusHours(7);
         
         // Format the date to the desired format
         String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);

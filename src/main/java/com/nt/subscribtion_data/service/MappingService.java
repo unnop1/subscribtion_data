@@ -898,7 +898,13 @@ public class MappingService {
 
             List<SourceSimInfo> sourceSimInfos = new ArrayList<SourceSimInfo>();
             SourceSimInfo sourceSimInfo = new SourceSimInfo();
-            sourceSimInfo.setIccid(tNumberDTL.getData().getIccid());
+            if(tNumberDTL.getData().getIccid()!=null){
+                sourceSimInfo.setIccid(tNumberDTL.getData().getIccid());
+            }else{
+                if(invMappingData.getSecondaryCode()!=null){
+                    sourceSimInfo.setIccid(String.valueOf(invMappingData.getSecondaryCode()));
+                }
+            }
             sourceSimInfo.setImsi(tNumberDTL.getData().getImsi());
             if(imsiConfigData != null){
                 sourceSimInfo.setFrequency(imsiConfigData.getFrequency());
@@ -1086,6 +1092,10 @@ public class MappingService {
                                     JSONObject inputSourceSimInfoData = inputSourceSimInfo.getJSONObject(index);
                                     if(inputSourceSimInfoData.has("iccid")){
                                         sourceSimInfo.setIccid(inputSourceSimInfoData.getString("iccid"));
+                                    }else{
+                                        if(invMappingData.getSecondaryCode()!= null){
+                                            sourceSimInfo.setIccid(String.valueOf(invMappingData.getSecondaryCode()));
+                                        }
                                     }
                                     sourceSimInfo.setImsi(invMappingData.getImsi()); // query imsi prefix
                                     if(inputSourceSimInfoData.has("simType")){
@@ -3196,6 +3206,10 @@ public class MappingService {
                                     JSONObject inputSourceSimInfoData = inputSourceSimInfo.getJSONObject(index);
                                     if(inputSourceSimInfoData.has("iccid")){
                                         sourceSimInfo.setIccid(inputSourceSimInfoData.getString("iccid"));
+                                    }else{
+                                        if(invMappingData.getSecondaryCode()!= null){
+                                            sourceSimInfo.setIccid(String.valueOf(invMappingData.getSecondaryCode()));
+                                        }
                                     }
                                     sourceSimInfo.setImsi(invMappingData.getImsi()); // query imsi prefix
                                     if(inputSourceSimInfoData.has("simType")){

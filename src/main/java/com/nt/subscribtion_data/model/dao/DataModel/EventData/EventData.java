@@ -92,7 +92,7 @@ public class EventData {
 
     public void setSubmitedDate(String submitedDate) {
         // Parse the original date string
-        OffsetDateTime dateTime = OffsetDateTime.parse(submitedDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusDays(7);
+        OffsetDateTime dateTime = OffsetDateTime.parse(submitedDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusHours(7);
         
         // Format the date to the desired format
         String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
@@ -103,7 +103,7 @@ public class EventData {
 
     public void setCompletedDate(String completedDate) {
         // Parse the original date string
-        OffsetDateTime dateTime = OffsetDateTime.parse(completedDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusDays(7);
+        OffsetDateTime dateTime = OffsetDateTime.parse(completedDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusHours(7);
         
         // Format the date to the desired format
         String formattedDate = dateTime.format(DateTimeFormatter.ISO_INSTANT);
