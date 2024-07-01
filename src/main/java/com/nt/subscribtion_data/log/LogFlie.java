@@ -40,7 +40,7 @@ public class LogFlie {
 
             // Configure FileHandler for log rotation
             // Here, we set a file size limit of 1MB (1 * 1024 * 1024 bytes) and a maximum of 5 log files.
-            FileHandler fileHandler = new FileHandler(pathLog + "/" + fileName, 1024 * 1024, 5, true);
+            FileHandler fileHandler = new FileHandler(pathLog + "/" + fileName, true);
             fileHandler.setFormatter(new PlainTextFormatter());
             logger.addHandler(fileHandler);
             logger.setUseParentHandlers(false); // Prevents logging to console
