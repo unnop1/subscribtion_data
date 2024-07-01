@@ -2,6 +2,7 @@ package com.nt.subscribtion_data.log;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,8 +10,14 @@ import java.util.logging.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.nt.subscribtion_data.model.dao.DataModel.Data;
-
+import java.util.Date;
 public class LogFlie {
+
+    public static String dateFolderName() {
+        Date date = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("MMyyyy");
+        return df.format(date);
+    }
 
 	public static void logMessage(String className, String path, Data data) {
         Logger logger = Logger.getLogger(className);
@@ -18,7 +25,7 @@ public class LogFlie {
         try {
             
             // Use JBoss data directory
-            String jbossDataDir = "data";
+            String jbossDataDir = "./data/logs/subscribtion_data/";
             
             String pathLog = jbossDataDir + "/" + path + "/";
             String fileName = data.getOrderID() + ".json";

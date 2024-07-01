@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.logging.LogFile;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -215,8 +216,8 @@ public class MappingService {
 
                        // System log
                        LogFlie.logMessage(
-                        "subscribtion_data", 
-                        orderType,
+                        "subscribtion_data",
+                        String.format("trigger/%s/%s",LogFlie.dateFolderName(), orderType),
                         sendData
                     );
 
@@ -370,7 +371,7 @@ public class MappingService {
                             // System log
                             LogFlie.logMessage(
                                 "subscribtion_data", 
-                                orderType,
+                                String.format("trigger/%s/%s",LogFlie.dateFolderName(), orderType),
                                 sendData
                             );
   
@@ -520,7 +521,7 @@ public class MappingService {
                         // System log
                         LogFlie.logMessage(
                             "subscribtion_data", 
-                            orderType,
+                            String.format("trigger/%s/%s",LogFlie.dateFolderName(), orderType),
                             sendData
                         );
 
@@ -637,7 +638,7 @@ public class MappingService {
                 // System log
                 LogFlie.logMessage(
                 "subscribtion_data", 
-                orderTypeName,
+                String.format("trigger/%s/%s",LogFlie.dateFolderName(), orderTypeName),
                 sendData
                 );
 
@@ -738,7 +739,7 @@ public class MappingService {
                 // System log
                 LogFlie.logMessage(
                 "subscribtion_data", 
-                orderTypeName,
+                String.format("trigger/%s/%s",LogFlie.dateFolderName(), orderTypeName),
                 sendData
                 );
 
