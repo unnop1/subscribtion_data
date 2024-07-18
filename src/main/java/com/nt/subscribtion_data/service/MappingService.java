@@ -221,6 +221,13 @@ public class MappingService {
                         sendData
                     );
 
+                        // System expired log
+                        LogFlie.logMessage(
+                            "subscribtion_data",
+                            String.format("trigger-expire/%s/%s",LogFlie.dateFolderName(), orderType),
+                            sendData
+                        );
+
                        return sendData;
                    }else{
                        return null;
@@ -374,6 +381,13 @@ public class MappingService {
                                 String.format("trigger/%s/%s",LogFlie.dateFolderName(), orderType),
                                 sendData
                             );
+
+                            // System expired log
+                            LogFlie.logMessage(
+                                "subscribtion_data",
+                                String.format("trigger-expire/%s/%s",LogFlie.dateFolderName(), orderType),
+                                sendData
+                            );
   
                           return sendData;
                       }else{
@@ -525,6 +539,13 @@ public class MappingService {
                             sendData
                         );
 
+                        // System expired log
+                        LogFlie.logMessage(
+                            "subscribtion_data",
+                            String.format("trigger-expire/%s/%s",LogFlie.dateFolderName(), orderType),
+                            sendData
+                        );
+
                         return sendData;
                     }else{
                         return null;
@@ -642,6 +663,13 @@ public class MappingService {
                 sendData
                 );
 
+                // System expired log
+                LogFlie.logMessage(
+                    "subscribtion_data",
+                    String.format("trigger-expire/%s/%s",LogFlie.dateFolderName(), orderTypeName),
+                    sendData
+                );
+
                 return sendData;
             }else{
                 // UnSend to kafka server
@@ -741,6 +769,13 @@ public class MappingService {
                 "subscribtion_data", 
                 String.format("trigger/%s/%s",LogFlie.dateFolderName(), orderTypeName),
                 sendData
+                );
+
+                // System expired log
+                LogFlie.logMessage(
+                    "subscribtion_data",
+                    String.format("trigger-expire/%s/%s",LogFlie.dateFolderName(), orderTypeName),
+                    sendData
                 );
 
                 return sendData;
