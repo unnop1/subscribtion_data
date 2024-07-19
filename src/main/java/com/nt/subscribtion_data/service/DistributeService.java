@@ -6,9 +6,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.nt.subscribtion_data.repo.TriggerRepo;
+import com.nt.subscribtion_data.repo.ConsumerOrderTypeRepo;
 import com.nt.subscribtion_data.repo.OrderTypeRepo;
 import com.nt.subscribtion_data.repo.SaChannelConnectRepo;
 import com.nt.subscribtion_data.entity.TriggerMessageEntity;
+import com.nt.subscribtion_data.entity.view.consumer_ordertype.ConsumerLJoinOrderType;
 import com.nt.subscribtion_data.entity.OrderTypeEntity;
 import com.nt.subscribtion_data.entity.SaChannelConEntity;
 @Component
@@ -19,6 +21,9 @@ public class DistributeService {
 
     @Autowired
     private OrderTypeRepo orderTypeRepo;
+
+    @Autowired
+    private ConsumerOrderTypeRepo consumerOrderTypeRepo;
 
     @Autowired
     private SaChannelConnectRepo saChannelConRepo;
@@ -36,6 +41,11 @@ public class DistributeService {
     public List<SaChannelConEntity> ListChannelConnect() throws SQLException {
         List<SaChannelConEntity> saChannelList = saChannelConRepo.ListChannelConnect();
         return saChannelList;
+    }
+
+    public List<ConsumerLJoinOrderType> ListConsumerOrderTypes(Long orderTypeID) throws SQLException {
+        List<ConsumerLJoinOrderType> conOdtList = consumerOrderTypeRepo.getAllConsumerOrderType(orderTypeID);
+        return conOdtList;
     }
 
     

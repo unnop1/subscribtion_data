@@ -94,6 +94,9 @@ public class MappingService {
     @Autowired
     private CacheUpdater cacheUpdater;
 
+    @Autowired
+    private ExpireTriggerMessageService expireTriggerMessageService;
+
     private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 
@@ -222,11 +225,7 @@ public class MappingService {
                     );
 
                         // System expired log
-                        LogFlie.logMessage(
-                            "subscribtion_data",
-                            String.format("trigger-expire/%s/%s",LogFlie.dateFolderName(), orderType),
-                            sendData
-                        );
+                        expireTriggerMessageService.logExpiredTriggerMessage(orderTypeInfo.getID(), sendData);
 
                        return sendData;
                    }else{
@@ -383,11 +382,7 @@ public class MappingService {
                             );
 
                             // System expired log
-                            LogFlie.logMessage(
-                                "subscribtion_data",
-                                String.format("trigger-expire/%s/%s",LogFlie.dateFolderName(), orderType),
-                                sendData
-                            );
+                            expireTriggerMessageService.logExpiredTriggerMessage(orderTypeInfo.getID(), sendData);
   
                           return sendData;
                       }else{
@@ -540,11 +535,7 @@ public class MappingService {
                         );
 
                         // System expired log
-                        LogFlie.logMessage(
-                            "subscribtion_data",
-                            String.format("trigger-expire/%s/%s",LogFlie.dateFolderName(), orderType),
-                            sendData
-                        );
+                        expireTriggerMessageService.logExpiredTriggerMessage(orderTypeInfo.getID(), sendData);
 
                         return sendData;
                     }else{
@@ -664,11 +655,7 @@ public class MappingService {
                 );
 
                 // System expired log
-                LogFlie.logMessage(
-                    "subscribtion_data",
-                    String.format("trigger-expire/%s/%s",LogFlie.dateFolderName(), orderTypeName),
-                    sendData
-                );
+                expireTriggerMessageService.logExpiredTriggerMessage(orderTypeInfo.getID(), sendData);
 
                 return sendData;
             }else{
@@ -772,11 +759,7 @@ public class MappingService {
                 );
 
                 // System expired log
-                LogFlie.logMessage(
-                    "subscribtion_data",
-                    String.format("trigger-expire/%s/%s",LogFlie.dateFolderName(), orderTypeName),
-                    sendData
-                );
+                expireTriggerMessageService.logExpiredTriggerMessage(orderTypeInfo.getID(), sendData);
 
                 return sendData;
             }else{
@@ -999,25 +982,6 @@ public class MappingService {
                     throw new Exception("INV mapping not found external id: "+externalId);
                 }
             }
-
-            try{
-                ObjectMapper objectMapper = new ObjectMapper();
-                String invdataDebug = objectMapper.writeValueAsString(invMappingData);
-
-                // System log
-                LogFlie.logMessageTest(
-                    "subscribtion_data", 
-                    "debug_subscribtion",
-                    invdataDebug
-                );
-            }catch (Exception e){
-                // System log
-                LogFlie.logMessageTest(
-                    "subscribtion_data", 
-                    "error_subscribtion",
-                    e.getMessage()
-                );
-            }
         
 
             imsiOfferConfigList = cacheUpdater.getIMSIOfferConfigListCache();
@@ -1030,13 +994,6 @@ public class MappingService {
             if (invMappingData != null){
                 if(invMappingData.getImsi() != null){
                     imsiConfigData = getImsiConfigByImsi(invMappingData.getImsi(), imsiOfferConfigList.getData());
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    String imsidataDebug = objectMapper.writeValueAsString(imsiConfigData);
-                    LogFlie.logMessageTest(
-                        "subscribtion_data", 
-                        "debug_subscribtion",
-                        imsidataDebug
-                    );
                 }
             }
         }catch (Exception e){
