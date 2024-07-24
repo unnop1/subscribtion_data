@@ -9,25 +9,32 @@ import org.springframework.stereotype.Service;
 import com.nt.subscribtion_data.entity.view.consumer_ordertype.ConsumerLJoinOrderType;
 import com.nt.subscribtion_data.log.LogFlie;
 
-@Service
+// @Service
 public class ExpireTriggerMessageService {
     
-    @Autowired
-    private DistributeService distributeService;
+    // @Autowired
+    // private DistributeService distributeService;
 
-    public void logExpiredTriggerMessage(Long orderTypeID, Data sendData) {
+    public void logExpiredTriggerMessage(String orderType, Data sendData) {
 
         try{
-            List<ConsumerLJoinOrderType> conOdt = distributeService.ListConsumerOrderTypes(orderTypeID);
+            // List<ConsumerLJoinOrderType> conOdt = distributeService.ListConsumerOrderTypes(orderTypeID);
 
-            for (ConsumerLJoinOrderType consumer : conOdt) {
-                // System expired log
-                LogFlie.logMessage(
-                    "subscribtion_data",
-                    String.format("trigger-expire/%s/%s",LogFlie.dateFolderName(), consumer.getCONSUMER_GROUP()),
-                    sendData
-                );
-            }
+            // for (ConsumerLJoinOrderType consumer : conOdt) {
+            //     // System expired log
+            //     LogFlie.logMessage(
+            //         "subscribtion_data",
+            //         String.format("message-expire/%s/%s",LogFlie.dateFolderName(), consumer.getCONSUMER_GROUP()),
+            //         sendData
+            //     );
+            // }
+
+            // New version
+            LogFlie.logMessage(
+                "subscribtion_data",
+                String.format("message-expire/%s/%s",LogFlie.dateFolderName(), orderType),
+                sendData
+            );
         }catch(Exception e){
             
         }

@@ -225,7 +225,7 @@ public class MappingService {
                     );
 
                         // System expired log
-                        expireTriggerMessageService.logExpiredTriggerMessage(orderTypeInfo.getID(), sendData);
+                        expireTriggerMessageService.logExpiredTriggerMessage(orderType, sendData);
 
                        return sendData;
                    }else{
@@ -382,7 +382,7 @@ public class MappingService {
                             );
 
                             // System expired log
-                            expireTriggerMessageService.logExpiredTriggerMessage(orderTypeInfo.getID(), sendData);
+                            expireTriggerMessageService.logExpiredTriggerMessage(orderType, sendData);
   
                           return sendData;
                       }else{
@@ -535,7 +535,7 @@ public class MappingService {
                         );
 
                         // System expired log
-                        expireTriggerMessageService.logExpiredTriggerMessage(orderTypeInfo.getID(), sendData);
+                        expireTriggerMessageService.logExpiredTriggerMessage(orderType, sendData);
 
                         return sendData;
                     }else{
@@ -655,7 +655,7 @@ public class MappingService {
                 );
 
                 // System expired log
-                expireTriggerMessageService.logExpiredTriggerMessage(orderTypeInfo.getID(), sendData);
+                expireTriggerMessageService.logExpiredTriggerMessage(orderTypeName, sendData);
 
                 return sendData;
             }else{
@@ -759,7 +759,7 @@ public class MappingService {
                 );
 
                 // System expired log
-                expireTriggerMessageService.logExpiredTriggerMessage(orderTypeInfo.getID(), sendData);
+                expireTriggerMessageService.logExpiredTriggerMessage(orderTypeName, sendData);
 
                 return sendData;
             }else{
