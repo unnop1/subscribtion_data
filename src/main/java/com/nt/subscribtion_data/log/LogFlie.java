@@ -15,8 +15,13 @@ public class LogFlie {
 
     public static String dateFolderName() {
         Date date = new Date();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        return df.format(date);
+        SimpleDateFormat monthYearFormat = new SimpleDateFormat("MM-yyyy");
+        SimpleDateFormat yearMonthDayFormat = new SimpleDateFormat("yyyy-MM-dd");
+        
+        String monthYear = monthYearFormat.format(date);
+        String yearMonthDay = yearMonthDayFormat.format(date);
+        
+        return monthYear + "/" + yearMonthDay;
     }
 
 	public static void logMessage(String className, String path, Data data) {
