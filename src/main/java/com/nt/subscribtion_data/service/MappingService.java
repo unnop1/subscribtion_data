@@ -94,7 +94,7 @@ public class MappingService {
     @Autowired
     private CacheUpdater cacheUpdater;
 
-    @Autowired
+    // @Autowired
     private ExpireTriggerMessageService expireTriggerMessageService;
 
     private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
