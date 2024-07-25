@@ -30,7 +30,7 @@ public class LogFlie {
         try {
             
             // Use JBoss data directory
-            String jbossDataDir = "/data/logs/subscribtion_data/";
+            String jbossDataDir = "/data/logs/subscribtion_data";
             
             String pathLog = jbossDataDir + "/" + path + "/";
             String fileName = data.getOrderID() + ".json";
