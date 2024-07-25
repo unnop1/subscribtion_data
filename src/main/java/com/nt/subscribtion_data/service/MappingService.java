@@ -225,7 +225,11 @@ public class MappingService {
                     );
 
                         // System expired log
-                        expireTriggerMessageService.logExpiredTriggerMessage(orderType, sendData);
+                        LogFlie.logMessage(
+                            "subscribtion_data",
+                            String.format("message-expire/%s/%s",LogFlie.dateFolderName(), orderType),
+                            sendData
+                        );      
 
                        return sendData;
                    }else{
@@ -382,7 +386,11 @@ public class MappingService {
                             );
 
                             // System expired log
-                            expireTriggerMessageService.logExpiredTriggerMessage(orderType, sendData);
+                            LogFlie.logMessage(
+                                "subscribtion_data",
+                                String.format("message-expire/%s/%s",LogFlie.dateFolderName(), orderType),
+                                sendData
+                            );
   
                           return sendData;
                       }else{
@@ -535,7 +543,11 @@ public class MappingService {
                         );
 
                         // System expired log
-                        expireTriggerMessageService.logExpiredTriggerMessage(orderType, sendData);
+                        LogFlie.logMessage(
+                            "subscribtion_data",
+                            String.format("message-expire/%s/%s",LogFlie.dateFolderName(), orderType),
+                            sendData
+                        );
 
                         return sendData;
                     }else{
@@ -655,7 +667,11 @@ public class MappingService {
                 );
 
                 // System expired log
-                expireTriggerMessageService.logExpiredTriggerMessage(orderTypeName, sendData);
+                LogFlie.logMessage(
+                    "subscribtion_data",
+                    String.format("message-expire/%s/%s",LogFlie.dateFolderName(), orderTypeName),
+                    sendData
+                );
 
                 return sendData;
             }else{
@@ -759,7 +775,11 @@ public class MappingService {
                 );
 
                 // System expired log
-                expireTriggerMessageService.logExpiredTriggerMessage(orderTypeName, sendData);
+                LogFlie.logMessage(
+                    "subscribtion_data",
+                    String.format("message-expire/%s/%s",LogFlie.dateFolderName(), orderTypeName),
+                    sendData
+                );
 
                 return sendData;
             }else{
